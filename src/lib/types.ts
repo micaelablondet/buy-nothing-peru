@@ -7,6 +7,7 @@ export interface Neighbor {
   phone: string;
   district: string;
   avatarColor: string;
+  avatarImageUrl?: string;
 }
 
 export interface Post {
@@ -28,4 +29,7 @@ export interface CurrentUserProfile {
   district: string;
   /** ISO date — when they joined Barrio */
   memberSince?: string;
+  avatarColor?: string;
+  /** Data URL or remote URL — prototype only */
+  avatarImageUrl?: string;
 }

@@ -41,6 +41,7 @@ interface PrototypeState {
   }) => void;
   clearLocationDetection: () => void;
   setProfile: (profile: CurrentUserProfile) => void;
+  updateProfile: (patch: Partial<CurrentUserProfile>) => void;
   completeOnboarding: () => void;
   acceptRules: () => void;
   setFeedType: (type: PostType) => void;
@@ -118,9 +119,6 @@ function normalizeDemoProfile(
   if (profile.firstName === "Dev") {
     next = { ...next, firstName: "Mica" };
   }
-  if (next.district !== PILOT_DISTRICT) {
-    next = { ...next, district: PILOT_DISTRICT };
-  }
   if (!next.memberSince) {
     next = { ...next, memberSince: defaultProfile.memberSince };
   }
@@ -171,8 +169,22 @@ export const usePrototypeStore = create<PrototypeState>()(
           profile: {
             ...profile,
             memberSince: profile.memberSince ?? new Date().toISOString(),
+            avatarColor: profile.avatarColor ?? "#2d6a4f",
           },
         }),
+
+      updateProfile: (patch) => {
+        const current = get().profile ?? defaultProfile;
+        set({
+          profile: {
+            ...current,
+            ...patch,
+            firstName: patch.firstName?.trim() || current.firstName,
+            memberSince: current.memberSince ?? defaultProfile.memberSince,
+            avatarColor: patch.avatarColor ?? current.avatarColor ?? "#2d6a4f",
+          },
+        });
+      },
 
       completeOnboarding: () => set({ onboardingComplete: true }),
 
@@ -308,7 +320,8 @@ export const usePrototypeStore = create<PrototypeState>()(
             firstName: profile.firstName,
             phone: profile.phone,
             district: profile.district,
-            avatarColor: "#2d6a4f",
+            avatarColor: profile.avatarColor ?? "#2d6a4f",
+            avatarImageUrl: profile.avatarImageUrl,
           };
         }
         return get().neighbors.find((n) => n.id === id);

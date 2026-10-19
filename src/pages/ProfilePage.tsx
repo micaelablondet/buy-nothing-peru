@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ProfileActivePostCard } from "@/components/ProfileActivePostCard";
+import { ProfileEditSheet } from "@/components/ProfileEditSheet";
 import { Avatar } from "@/components/Avatar";
 import { PostCard } from "@/components/PostCard";
 import { formatMemberSince } from "@/lib/formatTime";
@@ -22,10 +23,12 @@ export function ProfilePage() {
   const ravesCount = usePrototypeStore((s) => s.ravesCount);
   const markGiven = usePrototypeStore((s) => s.markGiven);
   const showToast = usePrototypeStore((s) => s.showToast);
+  const updateProfile = usePrototypeStore((s) => s.updateProfile);
   const getNeighbor = usePrototypeStore((s) => s.getNeighbor);
 
   const [tab, setTab] = useState<ProfileTab>("publicaciones");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [editOpen, setEditOpen] = useState(false);
 
   const meProfile = profile ?? defaultProfile;
   const me = getNeighbor(DEMO_USER_ID);
@@ -64,20 +67,34 @@ export function ProfilePage() {
         <h1 className="text-lg font-bold">Mi perfil</h1>
         <button
           type="button"
-          className="rounded-full p-2 text-brand"
+          className="rounded-full p-2 text-emerald-50"
           aria-label="Editar perfil"
-          onClick={() =>
-            showToast("Próximamente: editar foto, nombre y distrito.")
-          }
+          onClick={() => setEditOpen(true)}
         >
           ✎
         </button>
       </header>
 
+      <ProfileEditSheet
+        open={editOpen}
+        profile={meProfile}
+        onClose={() => setEditOpen(false)}
+        onSave={(patch) => {
+          updateProfile(patch);
+          showToast("Perfil actualizado.");
+        }}
+        onError={(message) => showToast(message)}
+      />
+
       <div className="rounded-2xl bg-white p-5 ring-1 ring-border">
         <div className="flex flex-col items-center text-center">
           {me ? (
-            <Avatar name={displayName} color={me.avatarColor} size="lg" />
+            <Avatar
+              name={displayName}
+              color={me.avatarColor}
+              size="lg"
+              imageUrl={me.avatarImageUrl}
+            />
           ) : null}
           <h2 className="mt-4 text-2xl font-bold leading-tight">
             Hola, soy {displayName}

@@ -25,7 +25,7 @@ export function PostDetailPage() {
     return (
       <div className="p-4">
         <p>Publicación no encontrada.</p>
-        <Link to="/feed" className="text-brand underline">
+        <Link to="/feed" className="font-medium text-emerald-50 underline">
           Volver
         </Link>
       </div>
@@ -69,7 +69,7 @@ export function PostDetailPage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="text-sm font-medium text-brand"
+          className="text-sm font-semibold text-emerald-50"
         >
           ← Volver
         </button>

@@ -28,7 +28,7 @@ export function CoordinatePage() {
         <p>Primero elige a un vecino interesado.</p>
         <button
           type="button"
-          className="mt-2 text-brand underline"
+          className="mt-2 font-medium text-emerald-50 underline"
           onClick={() => navigate(`/feed/${postId}`)}
         >
           Volver a la publicación
@@ -65,7 +65,7 @@ export function CoordinatePage() {
       <button
         type="button"
         onClick={() => navigate(`/feed/${post.id}`)}
-        className="text-sm font-medium text-brand"
+        className="text-sm font-semibold text-emerald-50"
       >
         ← Volver
       </button>
