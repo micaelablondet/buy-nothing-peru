@@ -1,0 +1,9 @@
+.claude
+node_modules
+.tools
+.npm-global
+dist
+dist-ssr
+*.local
+.env
+.DS_Store
