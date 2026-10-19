@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Avatar } from "@/components/Avatar";
 import { PidoAskVisual } from "@/components/PidoAskVisual";
 import { PostTypeBadge } from "@/components/PostTypeBadge";
+import { SharePostButton } from "@/components/SharePostButton";
 import { usePrototypeStore } from "@/store/prototypeStore";
 import type { Post } from "@/lib/types";
 
@@ -21,7 +22,10 @@ export function PostCard({ post }: { post: Post }) {
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <PostTypeBadge type={post.type} />
-            <span className="text-xs text-ink-muted">{post.district}</span>
+            <div className="flex items-center gap-1">
+              <SharePostButton post={post} />
+              <span className="text-xs text-ink-muted">{post.district}</span>
+            </div>
           </div>
           <h2 className="line-clamp-2 text-base font-semibold leading-snug">
             {post.title}
@@ -66,7 +70,10 @@ export function PostCard({ post }: { post: Post }) {
       <div className="space-y-2 p-3">
         <div className="flex items-center justify-between gap-2">
           <PostTypeBadge type={post.type} />
-          <span className="text-xs text-ink-muted">{post.district}</span>
+          <div className="flex items-center gap-1">
+            <SharePostButton post={post} />
+            <span className="text-xs text-ink-muted">{post.district}</span>
+          </div>
         </div>
         <h2 className="line-clamp-2 text-base font-semibold leading-snug">
           {post.title}

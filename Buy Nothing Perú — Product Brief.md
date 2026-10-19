@@ -1,6 +1,6 @@
 # Barrio — Product Brief
 
-Oct 16, 2026 · @mica blondet · Updated Oct 19, 2026 (Profile Mi perfil, Pido UX, Barranco pilot, seed media, category rules; home menu + Encuentra already in build)
+Oct 16, 2026 · @mica blondet · Updated Oct 19, 2026 (Profile edit, native share on posts, Pido/Regalo UX, Barranco pilot; **Likes** documented for a future version)
 
 ## One-liner
 
@@ -61,7 +61,7 @@ The MVP covers one loop: post an item, neighbors show interest, the giver picks 
 
 **Out of scope for MVP**
 
-Public reputation scores or ratings (a simple raves count on the profile is allowed, with no stars, scores or rankings), a gratitude feed, events, belonging to multiple communities, maps, subscriptions, **Presto (lend)** in phase 1, and **Presto Servicios** (service barter) until their phases ship, and **Invita a un amigx** (V2). "Apoya a tu Barrio" and "Haz una donación" appear in the MVP only as placeholders that measure interest: no payments.
+Public reputation scores or ratings (a simple raves count on the profile is allowed, with no stars, scores or rankings), **post Likes** (see "Post likes (future)" below), a gratitude feed, events, belonging to multiple communities, maps, subscriptions, **Presto (lend)** in phase 1, and **Presto Servicios** (service barter) until their phases ship, and **Invita a un amigx** (V2). "Apoya a tu Barrio" and "Haz una donación" appear in the MVP only as placeholders that measure interest: no payments.
 
 ## Roadmap
 
@@ -73,7 +73,7 @@ Barrio grows in phases. Each phase reuses the same trust loop: post → Me inter
 | **Next (MVP 2)** | **Presto** (cosas) | Prestar objetos y devolverlos | No — sin precio |
 | **Later (MVP 3)** | **Presto Servicios** | Ofrecer un oficio (electricista, clases, etc.) **a cambio de algo else** | No soles — **trueque** |
 
-Also planned for V2 (MVP 2): **Invita a un amigx**, the referral flow (see "Invita a un amigx (V2)" below).
+Also planned for V2 (MVP 2): **Invita a un amigx**, the referral flow (see "Invita a un amigx (V2)" below), and **Likes** on Regalo and Pido posts (see "Post likes (future)" below).
 
 ### Presto Servicios (future — barter application)
 
@@ -123,7 +123,7 @@ The giver's choice is the key moment: it protects against resellers and is the o
 | Onboarding | Phone number, district or neighborhood | Keep to 2 steps |
 | Community rules | No selling, no trading, safe pickup tips | One screen, accept to continue |
 | Feed | Local **Regalo** and **Pido** posts (MVP 1) | Category filter; Presto in phase 2 |
-| Post detail | **Regalo:** photo (`object-contain`), "Me interesa", **Compartir en WhatsApp**. **Pido:** blue ask illustration (no photo), **Yo tengo** → WhatsApp DM to asker (no share button on Pido detail) | See "Pido: prototype vs MVP" below |
+| Post detail | **Regalo:** photo (`object-contain`), "Me interesa", **share** (native sheet). **Pido:** blue ask illustration (no photo), **Yo tengo** → WhatsApp DM, **share** (native sheet). **Likes** — future | See "Pido: prototype vs MVP" and "Post likes (future)" |
 | Create post | **Regalo:** optional photos. **Pido:** no photos — message-style preview only | Should take under a minute |
 | Choose recipient | List of interested neighbors; giver picks one (on a Pido: list of up to 7 offers; asker picks one) | Notification to the chosen person |
 | WhatsApp handoff | "Coordinar por WhatsApp" button with pre-filled message | Standard WhatsApp link |
@@ -155,7 +155,8 @@ What the hosted clickable build does today vs the MVP spec above.
 | **Pido detail** | No **Compartir en WhatsApp**; **Yo tengo** opens `wa.me` to the asker with a prefilled note to send a photo and coordinate; then **Seguir por WhatsApp** | Bottom sheet offer, 7-cap, verification gate |
 | **Regalo detail** | **Me interesa** → **Elegir receptor** → **Coordinar por WhatsApp** after choice | Notifications, nudges |
 | **Perfil** | Greeting, location pill, raves count (tap = toast), member since, active post cards, **Pedidos** filter label on tabs | Edit profile, raves list |
-| **Removed from UI** | Facilitator role switcher, **Reiniciar demo**, bookmark on post cards | — |
+| **Share** | Native **share** icon on feed cards, search results, and post detail (Web Share API) | — |
+| **Removed from UI** | Facilitator role switcher, **Reiniciar demo**, bookmark on post cards | **Likes** (heart) on posts |
 
 **Seed content (Barranco):** neighbors Carlos, Mariana, etc. post Regalos/Pidos; demo user has an open **Pido** (*Monitor HDMI*) on Perfil for walkthroughs.
 
@@ -273,6 +274,28 @@ Anyone can save a Regalo or a Pido to come back to it later, the way Buy Nothing
 
 - Share of saved posts that later get a "Me interesa" or "Yo tengo" from the same person.
 
+## Post likes (future)
+
+In a **future version** (after MVP 1), users will be able to **like** an open **Regalo** or **Pido** — a light way to show appreciation or “I’m paying attention” without claiming the item or sending an offer.
+
+- **Not Me interesa / Yo tengo:** liking does **not** add the user to the interest list, does **not** share their phone number, and does **not** reserve the gift or the ask.
+- **Where:** a heart (or similar) on the post detail screen and on feed/search cards, alongside **share** and (when restored) **Guardados**.
+- **Visibility:** the poster sees a **like count** on their post; likers are not listed by name in the feed (same privacy posture as save counts).
+- **Scope:** Regalo and Pido in phase 1; extend to **Presto** when that lane ships.
+
+### Acceptance criteria: likes (future)
+
+1. Given an open Regalo or Pido that isn’t mine, I see a like control on the feed card and on the detail screen.
+2. When I tap like, the control fills, the count increases by one, and I can unlike with a second tap.
+3. Liking does not trigger WhatsApp, does not notify the poster by name of who liked, and does not change **Me interesa** / **Yo tengo** state.
+4. Closed or expired posts keep a historical like count but no longer accept new likes.
+
+### Metrics (future)
+
+- Like rate per post type (Regalo vs Pido).
+- Share of posts that receive at least one like before they close.
+- Correlation between likes and later **Me interesa** / **Yo tengo** (exploratory — likes must not substitute for the chooser flow).
+
 ## Home screen, menu and Configuración
 
 Modeled on the Buy Nothing home, side menu and Settings screens. Copy is Spanish-first; the Buy Nothing equivalent is shown for reference.
@@ -350,6 +373,7 @@ A screen for finding a specific thing, modeled on the Buy Nothing Explore screen
 - A label on the photo that identifies the post type: **"Regalo"** (gift icon) or **"Pido"** (question icon), each in its own color so the two are easy to tell apart.
 - Title, the poster's name and photo, how long ago it was posted, and district.
 - A bookmark icon to save it to Guardados (see "Saved posts (Guardados)") — **planned**; not on cards in the current prototype build.
+- A **like** control — **future version** (see "Post likes (future)"); not in the current build.
 - Tapping the item opens the post detail.
 
 ### Acceptance criteria: search

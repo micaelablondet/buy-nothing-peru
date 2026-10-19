@@ -26,12 +26,12 @@ export function NeighborProfilePage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="text-sm font-medium text-brand"
+          className="text-sm font-semibold text-emerald-50"
         >
           ← Volver
         </button>
         <p className="text-sm text-emerald-100/90">Vecino no encontrado.</p>
-        <Link to="/feed" className="text-sm font-semibold text-brand">
+        <Link to="/feed" className="text-sm font-semibold text-emerald-50">
           Ir al inicio
         </Link>
       </div>
@@ -51,7 +51,7 @@ export function NeighborProfilePage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="text-sm font-medium text-brand"
+          className="text-sm font-semibold text-emerald-50"
         >
           ← Volver
         </button>

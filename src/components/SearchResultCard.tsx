@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Avatar } from "@/components/Avatar";
 import { PidoAskVisual } from "@/components/PidoAskVisual";
+import { SharePostButton } from "@/components/SharePostButton";
 import { postCardTypeLabels } from "@/lib/postLabels";
 import { timeAgo } from "@/lib/search";
 import type { Post, PostType } from "@/lib/types";
@@ -67,6 +68,12 @@ export function SearchResultCard({ post }: { post: Post }) {
           <TypeIcon type={post.type} />
           {postCardTypeLabels[post.type]}
         </span>
+        <div className="absolute right-2 top-2">
+          <SharePostButton
+            post={post}
+            className="bg-white/95 shadow-sm ring-1 ring-border"
+          />
+        </div>
       </div>
       <div className="space-y-1 px-0.5 pt-2">
         <h2 className="line-clamp-2 text-sm font-semibold leading-snug">

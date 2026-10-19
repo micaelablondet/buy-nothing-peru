@@ -3,6 +3,7 @@ import { Avatar } from "@/components/Avatar";
 import { PidoAskVisual } from "@/components/PidoAskVisual";
 import { PostTypeBadge } from "@/components/PostTypeBadge";
 import { ReportButton } from "@/components/ReportButton";
+import { SharePostButton } from "@/components/SharePostButton";
 import {
   buildPidoOfferMessage,
   buildWhatsAppDmLink,
@@ -25,7 +26,7 @@ export function PostDetailPage() {
     return (
       <div className="p-4">
         <p>Publicación no encontrada.</p>
-        <Link to="/feed" className="text-brand underline">
+        <Link to="/feed" className="font-medium text-emerald-50 underline">
           Volver
         </Link>
       </div>
@@ -69,11 +70,12 @@ export function PostDetailPage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="text-sm font-medium text-brand"
+          className="text-sm font-semibold text-emerald-50"
         >
           ← Volver
         </button>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
+          <SharePostButton post={post} variant="on-gradient" />
           <ReportButton context="publicación" />
         </div>
       </div>

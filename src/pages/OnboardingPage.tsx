@@ -20,6 +20,9 @@ export function OnboardingPage() {
   );
   const [error, setError] = useState<string | null>(null);
 
+  const canContinueStep1 =
+    firstName.trim().length > 0 && isValidPeruMobile(phone);
+
   const onContinueStep1 = () => {
     if (!firstName.trim()) {
       setError("Escribe tu nombre o cómo te dicen en el barrio.");
@@ -110,8 +113,9 @@ export function OnboardingPage() {
         ) : null}
         <button
           type="button"
+          disabled={step === 1 && !canContinueStep1}
           onClick={step === 1 ? onContinueStep1 : onFinish}
-          className="flex-1 rounded-2xl bg-brand py-3.5 text-base font-semibold text-white"
+          className="flex-1 rounded-2xl bg-brand py-3.5 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {step === 1 ? "Continuar" : "Entrar"}
         </button>

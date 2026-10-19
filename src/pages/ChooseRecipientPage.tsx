@@ -18,7 +18,7 @@ export function ChooseRecipientPage() {
         <p>Solo quien publicó puede elegir receptor.</p>
         <button
           type="button"
-          className="text-brand underline"
+          className="font-medium text-emerald-50 underline"
           onClick={() => navigate("/feed")}
         >
           Ir al feed
@@ -34,7 +34,7 @@ export function ChooseRecipientPage() {
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="text-sm font-medium text-brand"
+        className="text-sm font-semibold text-emerald-50"
       >
         ← Volver
       </button>

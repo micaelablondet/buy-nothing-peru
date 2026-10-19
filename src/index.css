@@ -69,24 +69,46 @@ body {
   color: rgb(167 243 208 / 0.82);
 }
 
-.on-gradient :is(.bg-white, .bg-surface-elevated) {
-  color: var(--color-ink);
-}
-
-.on-gradient :is(.bg-white, .bg-surface-elevated) .text-ink-muted {
-  color: var(--color-ink-muted);
-}
-
-.on-gradient :is(.bg-white, .bg-surface-elevated) .text-ink {
-  color: var(--color-ink);
-}
-
 .on-gradient .text-brand {
   color: #b7e4c7;
 }
 
-.on-gradient :is(.bg-white, .bg-surface-elevated) .text-brand {
+/** White / card surfaces: dark text on the element itself or inside (fixes buttons like Yo tengo). */
+.on-gradient :is(.bg-white, .bg-surface-elevated, .bg-brand-soft) {
+  color: var(--color-ink);
+}
+
+.on-gradient
+  :is(.bg-white, .bg-surface-elevated, .bg-brand-soft):is(
+    .text-ink,
+    .text-ink-muted,
+    .text-brand
+  ),
+.on-gradient :is(.bg-white, .bg-surface-elevated, .bg-brand-soft) .text-ink {
+  color: var(--color-ink);
+}
+
+.on-gradient
+  :is(.bg-white, .bg-surface-elevated, .bg-brand-soft):is(.text-ink-muted),
+.on-gradient
+  :is(.bg-white, .bg-surface-elevated, .bg-brand-soft)
+  .text-ink-muted {
+  color: var(--color-ink-muted);
+}
+
+.on-gradient
+  :is(.bg-white, .bg-surface-elevated, .bg-brand-soft):is(.text-brand),
+.on-gradient :is(.bg-white, .bg-surface-elevated, .bg-brand-soft) .text-brand {
   color: var(--color-brand);
+}
+
+/* Tailwind utilities can override rules above — keep CTA labels readable. */
+.on-gradient :is(button, a):is(.bg-white, .bg-surface-elevated).text-brand {
+  color: var(--color-brand) !important;
+}
+
+.on-gradient :is(button, a):is(.bg-white, .bg-surface-elevated).text-ink-muted {
+  color: var(--color-ink-muted) !important;
 }
 
 .splash-glow {

@@ -55,7 +55,7 @@ export function FeedPage() {
         {hasNearbyListings && visible.length > 0 ? (
           <p className="mt-2 inline-block rounded-full bg-white px-3.5 py-1.5 shadow-md ring-1 ring-emerald-900/15">
             <span className="text-xs font-semibold text-ink">
-              {visible.length} publicaciones cerca de ti en {district}
+              {visible.length} publicaciones en {district}.
             </span>
           </p>
         ) : null}
