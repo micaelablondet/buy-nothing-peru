@@ -102,6 +102,15 @@ body {
   color: var(--color-brand);
 }
 
+/* Tailwind utilities can override rules above — keep CTA labels readable. */
+.on-gradient :is(button, a):is(.bg-white, .bg-surface-elevated).text-brand {
+  color: var(--color-brand) !important;
+}
+
+.on-gradient :is(button, a):is(.bg-white, .bg-surface-elevated).text-ink-muted {
+  color: var(--color-ink-muted) !important;
+}
+
 .splash-glow {
   background: transparent;
 }

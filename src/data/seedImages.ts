@@ -15,8 +15,9 @@ export const seedImageUrls = {
   jacket: [u("photo-1556821840-3a63f95609a7")],
   cookingPot: [u("photo-1556911220-e15b29be8c8f")],
   floorLamp: [local("seed/lampara-de-pie.webp")],
-  defaultPost: [u("photo-1556911220-bff31c812dba")],
+  pomosConTapa: [local("seed/pomos-con-tapa.jpg")],
+  defaultPost: [local("seed/pomos-con-tapa.jpg")],
 } as const;
 
 /** Bump when seed image URLs change so persisted demos refresh. */
-export const SEED_IMAGES_VERSION = 10;
+export const SEED_IMAGES_VERSION = 11;

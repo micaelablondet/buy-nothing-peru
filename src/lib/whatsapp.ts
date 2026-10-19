@@ -25,11 +25,15 @@ export function buildPidoOfferMessage(params: {
 }
 
 export function getPostPublicUrl(postId: string): string | undefined {
-  const base = import.meta.env.VITE_APP_PUBLIC_URL?.replace(/\/$/, "");
-  if (!base) {
-    return undefined;
+  const envBase = import.meta.env.VITE_APP_PUBLIC_URL?.replace(/\/$/, "");
+  if (envBase) {
+    return `${envBase}/feed/${postId}`;
   }
-  return `${base}/feed/${postId}`;
+  if (typeof window !== "undefined") {
+    const pathBase = import.meta.env.BASE_URL.replace(/\/$/, "");
+    return `${window.location.origin}${pathBase}/feed/${postId}`;
+  }
+  return undefined;
 }
 
 export function buildPostShareMessage(params: {

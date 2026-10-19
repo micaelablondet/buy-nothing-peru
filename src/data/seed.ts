@@ -83,11 +83,12 @@ export function createSeedPosts(): Post[] {
       type: "regalo",
       status: "active",
       authorId: "u-ana",
-      title: "Libros de novela (pack x5)",
-      description: "Autores peruanos y latinoamericanos. Ya los leí todos.",
-      category: "Libros",
+      title: "Pomos con tapa",
+      description:
+        "Varios frascos de vidrio con tapa, limpios. Sirven para conservas, especias o organizar la cocina.",
+      category: "Hogar",
       district: PILOT_DISTRICT,
-      imageUrls: [...seedImageUrls.books],
+      imageUrls: [...seedImageUrls.pomosConTapa],
       createdAt: "2026-10-13T16:00:00.000Z",
     },
     {

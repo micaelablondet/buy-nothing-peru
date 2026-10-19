@@ -3,6 +3,7 @@ import { Avatar } from "@/components/Avatar";
 import { PidoAskVisual } from "@/components/PidoAskVisual";
 import { PostTypeBadge } from "@/components/PostTypeBadge";
 import { ReportButton } from "@/components/ReportButton";
+import { SharePostButton } from "@/components/SharePostButton";
 import {
   buildPidoOfferMessage,
   buildWhatsAppDmLink,
@@ -73,7 +74,8 @@ export function PostDetailPage() {
         >
           ← Volver
         </button>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
+          <SharePostButton post={post} variant="on-gradient" />
           <ReportButton context="publicación" />
         </div>
       </div>
