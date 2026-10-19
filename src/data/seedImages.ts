@@ -20,4 +20,4 @@ export const seedImageUrls = {
 } as const;
 
 /** Bump when seed image URLs change so persisted demos refresh. */
-export const SEED_IMAGES_VERSION = 11;
+export const SEED_IMAGES_VERSION = 12;
