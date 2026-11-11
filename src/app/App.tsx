@@ -4,7 +4,12 @@ import { RequireSession } from "@/app/RequireSession";
 import { copy } from "@/copy/es-PE";
 import { EntrarPage } from "@/pages/EntrarPage";
 import { HomeShellPage } from "@/pages/HomeShellPage";
+import { InvitePage } from "@/pages/InvitePage";
+import { LegalPrivacyPage } from "@/pages/LegalPrivacyPage";
+import { LegalTermsPage } from "@/pages/LegalTermsPage";
+import { OnboardingProfilePage } from "@/pages/OnboardingProfilePage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { ProfilePage } from "@/pages/ProfilePage";
 
 export function App() {
   return (
@@ -13,7 +18,12 @@ export function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/app" replace />} />
           <Route path="/entrar" element={<EntrarPage />} />
-          <Route element={<RequireSession />}>
+          <Route path="/invitar" element={<InvitePage />} />
+          <Route path="/onboarding/perfil" element={<OnboardingProfilePage />} />
+          <Route path="/legal/terminos" element={<LegalTermsPage />} />
+          <Route path="/legal/privacidad" element={<LegalPrivacyPage />} />
+
+          <Route element={<RequireSession requireProfile />}>
             <Route path="/app" element={<AppShell />}>
               <Route index element={<HomeShellPage />} />
               <Route
@@ -34,17 +44,10 @@ export function App() {
                   />
                 }
               />
-              <Route
-                path="perfil"
-                element={
-                  <PlaceholderPage
-                    title={copy.shell.profile}
-                    body={copy.shell.emptyProfile}
-                  />
-                }
-              />
+              <Route path="perfil" element={<ProfilePage />} />
             </Route>
           </Route>
+
           <Route path="*" element={<Navigate to="/app" replace />} />
         </Routes>
       </div>

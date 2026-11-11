@@ -27,3 +27,7 @@ preview_bucket_name = "barrio-photos-preview"
 APP_NAME = "Barrio"
 INVITE_REQUIRED = "true"
 ENVIRONMENT = "development"
+APP_BASE_URL = "http://127.0.0.1:8787"
+ADMIN_EMAILS = "mica@valere.io"
+# Secrets (wrangler secret / .dev.vars): SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+# Optional local: DEV_STUB_AUTH=true

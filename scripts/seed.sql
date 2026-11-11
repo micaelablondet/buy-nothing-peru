@@ -4,15 +4,20 @@
 DELETE FROM responses;
 DELETE FROM posts;
 DELETE FROM users;
+DELETE FROM invite_codes;
 DELETE FROM districts;
 
 INSERT INTO districts (id, name, created_at) VALUES
-  ('dist-barranco', 'Barranco', '2026-11-01T00:00:00.000Z');
+  ('dist-barranco', 'Barranco', '2026-11-01T00:00:00.000Z'),
+  ('dist-miraflores', 'Miraflores', '2026-11-01T00:00:00.000Z');
 
-INSERT INTO users (id, google_sub, email, first_name, whatsapp, district_id, is_admin, created_at, deleted_at) VALUES
-  ('user-mica', 'seed-google-mica', 'mica@example.test', 'Mica', '51900000001', 'dist-barranco', 1, '2026-11-01T00:00:00.000Z', NULL),
-  ('user-lucia', 'seed-google-lucia', 'lucia@example.test', 'Lucía', '51900000002', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL),
-  ('user-carlos', 'seed-google-carlos', 'carlos@example.test', 'Carlos', '51900000003', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL);
+INSERT INTO invite_codes (id, code, active, created_at, deactivated_at) VALUES
+  ('invite-phase0', 'BARRIO-PILOTO', 1, '2026-11-01T00:00:00.000Z', NULL);
+
+INSERT INTO users (id, google_sub, email, first_name, display_name, whatsapp, district_id, is_admin, created_at, deleted_at, invite_accepted_at) VALUES
+  ('user-mica', 'seed-google-mica', 'mica@valere.io', 'Mica', 'Mica', '+51900000001', 'dist-barranco', 1, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
+  ('user-lucia', 'seed-google-lucia', 'lucia@example.test', 'Lucía', 'Lucía', '+51900000002', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
+  ('user-carlos', 'seed-google-carlos', 'carlos@example.test', 'Carlos', 'Carlos', '+51900000003', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z');
 
 -- One post per status (minimal titles for e2e later).
 INSERT INTO posts (id, author_id, type, status, title, description, category, district_id, created_at, expires_at, chosen_response_id, delivered_at, withdrawn_at) VALUES

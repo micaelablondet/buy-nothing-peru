@@ -1,14 +1,14 @@
 import { NavLink, Outlet, useNavigate, useOutletContext } from "react-router-dom";
-import { copy } from "@/copy/es-PE";
-import { logoutStubSession } from "@/lib/api";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import { copy } from "@/copy/es-PE";
+import { logout } from "@/lib/api";
 
 export function AppShell() {
   const { me } = useOutletContext<SessionOutletContext>();
   const navigate = useNavigate();
 
   const onSignOut = async () => {
-    await logoutStubSession();
+    await logout();
     navigate("/entrar", { replace: true });
   };
 
@@ -16,7 +16,9 @@ export function AppShell() {
     <div className="app-shell">
       <header className="app-shell__header">
         <p className="app-shell__brand">{copy.appName}</p>
-        <p className="app-shell__user">Hola, {me.firstName}</p>
+        <p className="app-shell__user">
+          {copy.shell.greeting.replace("{name}", me.displayName)}
+        </p>
         <button
           type="button"
           className="app-shell__signout"
