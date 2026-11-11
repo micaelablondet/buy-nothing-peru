@@ -1,0 +1,50 @@
+/**
+ * Barrio design tokens (SPEC §11, OQ-01).
+ * Phase 0 proposal: calm green + ink on cream. Approve or replace before M1.
+ * Components must use these variables — no hard-coded hex in UI.
+ */
+:root {
+  /* Color */
+  --color-surface: #f7f6f2;
+  --color-surface-elevated: #ffffff;
+  --color-ink: #1b4332;
+  --color-ink-muted: #52796f;
+  --color-brand: #2d6a4f;
+  --color-brand-soft: #d8f3dc;
+  --color-border: #e4e6e3;
+  --color-danger: #9b2226;
+  --color-on-brand: #ffffff;
+  --color-focus: #40916c;
+
+  /* Spacing (4px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  /* Type */
+  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --line-tight: 1.25;
+  --line-normal: 1.5;
+
+  /* Radius & tap */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+  --tap-min: 2.75rem; /* 44px */
+
+  /* Layout */
+  --shell-max: 26.875rem; /* 430px phone frame */
+}

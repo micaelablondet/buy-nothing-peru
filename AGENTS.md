@@ -39,7 +39,7 @@ Barrio is a free-giving web app (PWA) for neighbors in Peru. **`SPEC.md` is the 
 1. Create a **branch per requirement group** (e.g. `m3-responses-handoff`). Never commit straight to `main`.
 2. Implement in the vertical-slice order in `SPEC.md` section 13. Do not start a slice before the previous one passes its exit criteria.
 3. Write tests **with** the code: unit tests for the state machine and rules, Playwright e2e for the core loop, and the authorization tests in `SPEC.md` 12.3.
-4. Run lint, type-check, unit tests and e2e before opening a PR. (Exact commands live in `package.json`; keep this line in sync: `TODO fill in once scaffolded`.)
+4. Run lint, type-check, unit tests and e2e before opening a PR. Commands: `npm run typecheck`, `npm test`, `npm run build` (e2e/Playwright from M3; lint TBD).
 5. Open a **pull request** that lists the requirement IDs covered, what changed, how it was tested, and anything you were unsure about.
 6. **CI must be green** before merge. If a check fails, fix it; do not disable or skip tests.
 7. Prefer a **review by a different model or agent** than the one that wrote the code (a second model catches blind spots the first one shares with its own work).

@@ -4,6 +4,9 @@ node_modules
 .npm-global
 dist
 dist-ssr
+.wrangler
+.dev.vars
 *.local
 .env
 .DS_Store
+worker-configuration.d.ts
