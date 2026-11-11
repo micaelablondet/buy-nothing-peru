@@ -1,5 +1,11 @@
 import { NavLink, Outlet, useNavigate, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import {
+  HomeIcon,
+  ProfileIcon,
+  PublishIcon,
+  SearchIcon,
+} from "@/components/NavIcons";
 import { copy } from "@/copy/es-PE";
 import { logout } from "@/lib/api";
 
@@ -32,18 +38,34 @@ export function AppShell() {
         <Outlet />
       </main>
 
-      <nav className="app-shell__nav" aria-label="Principal">
-        <NavLink to="/app" end className={navClass}>
-          {copy.shell.home}
+      <nav className="app-shell__nav" aria-label={copy.shell.navAria}>
+        <NavLink to="/app" end className={navClass} aria-label={copy.shell.home}>
+          <HomeIcon className="app-shell__nav-icon" />
+          <span className="app-shell__nav-label">{copy.shell.home}</span>
         </NavLink>
-        <NavLink to="/app/busca" className={navClass}>
-          {copy.shell.search}
+        <NavLink
+          to="/app/busca"
+          className={navClass}
+          aria-label={copy.shell.search}
+        >
+          <SearchIcon className="app-shell__nav-icon" />
+          <span className="app-shell__nav-label">{copy.shell.search}</span>
         </NavLink>
-        <NavLink to="/app/publica" className={navClass}>
-          {copy.shell.publish}
+        <NavLink
+          to="/app/publica"
+          className={navClass}
+          aria-label={copy.shell.publish}
+        >
+          <PublishIcon className="app-shell__nav-icon" />
+          <span className="app-shell__nav-label">{copy.shell.publish}</span>
         </NavLink>
-        <NavLink to="/app/perfil" className={navClass}>
-          {copy.shell.profile}
+        <NavLink
+          to="/app/perfil"
+          className={navClass}
+          aria-label={copy.shell.profile}
+        >
+          <ProfileIcon className="app-shell__nav-icon" />
+          <span className="app-shell__nav-label">{copy.shell.profile}</span>
         </NavLink>
       </nav>
     </div>

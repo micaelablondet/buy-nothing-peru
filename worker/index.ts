@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { buildGoogleAuthUrl, exchangeGoogleCode, googleConfigured } from "./auth/google";
+import { expireOpenPosts } from "./db/posts";
 import {
   createUser,
   deleteAccount,
@@ -12,6 +13,7 @@ import {
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
 import { normalizePeruWhatsApp } from "./lib/whatsapp";
+import { registerPostRoutes } from "./routes/posts";
 import {
   clearPendingCookie,
   clearSessionCookie,
@@ -40,7 +42,7 @@ app.use(
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M1",
+    slice: "M2",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
@@ -262,6 +264,17 @@ app.get("/api/districts", async (c) => {
   return c.json({ districts: rows.results ?? [] });
 });
 
+registerPostRoutes(app);
+
+/** Dev/manual trigger for POST-06 expiry (also runs on cron). */
+app.post("/api/jobs/expire-posts", async (c) => {
+  if (c.env.ENVIRONMENT === "production") {
+    return c.json({ error: "not_available" }, 404);
+  }
+  const result = await expireOpenPosts(c.env.DB, new Date().toISOString());
+  return c.json({ ok: true, ...result });
+});
+
 /** AUTH-04 placeholder — every /admin route 403 for non-admins. */
 app.all("/api/admin/*", async (c) => {
   const session = await readSession(c.req.header("Cookie") ?? null, c.env.SESSION_SECRET);
@@ -271,7 +284,7 @@ app.all("/api/admin/*", async (c) => {
   if (!session.isAdmin) {
     return c.json({ error: "forbidden" }, 403);
   }
-  return c.json({ ok: true, slice: "M1", note: "Admin UI arrives in M6" });
+  return c.json({ ok: true, slice: "M2", note: "Admin UI arrives in M6" });
 });
 
 app.get("/api/seed-stats", async (c) => {
@@ -339,4 +352,17 @@ function clearOauthStateCookie(env: WorkerEnv): string {
   return parts.join("; ");
 }
 
-export default app;
+export default {
+  fetch: app.fetch,
+  async scheduled(
+    _controller: ScheduledController,
+    env: WorkerEnv,
+    ctx: ExecutionContext,
+  ) {
+    ctx.waitUntil(
+      expireOpenPosts(env.DB, new Date().toISOString()).then((result) => {
+        console.log(`expireOpenPosts: ${result.expired}`);
+      }),
+    );
+  },
+};

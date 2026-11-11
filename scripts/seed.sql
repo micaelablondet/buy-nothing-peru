@@ -1,6 +1,7 @@
 -- Seed data for local / CI (SPEC.md §12.4). Safe to re-run after wiping D1.
 -- WhatsApp numbers exist only in DB for handoff tests — never exposed by open APIs.
 
+DELETE FROM post_photos;
 DELETE FROM responses;
 DELETE FROM posts;
 DELETE FROM users;
@@ -19,16 +20,16 @@ INSERT INTO users (id, google_sub, email, first_name, display_name, whatsapp, di
   ('user-lucia', 'seed-google-lucia', 'lucia@example.test', 'Lucía', 'Lucía', '+51900000002', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
   ('user-carlos', 'seed-google-carlos', 'carlos@example.test', 'Carlos', 'Carlos', '+51900000003', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z');
 
--- One post per status (minimal titles for e2e later).
-INSERT INTO posts (id, author_id, type, status, title, description, category, district_id, created_at, expires_at, chosen_response_id, delivered_at, withdrawn_at) VALUES
-  ('post-open-regalo', 'user-mica', 'regalo', 'open', 'Microondas seed', 'Solo para seed / e2e.', 'Electrónicos', 'dist-barranco', '2026-11-08T10:00:00.000Z', '2026-11-15T10:00:00.000Z', NULL, NULL, NULL),
-  ('post-open-pido', 'user-lucia', 'pido', 'open', 'Macetas seed', 'Solo para seed / e2e.', 'Hogar', 'dist-barranco', '2026-11-08T11:00:00.000Z', '2026-11-15T11:00:00.000Z', NULL, NULL, NULL),
-  ('post-chosen', 'user-mica', 'regalo', 'chosen', 'Libros seed', 'Elegido, no entregado.', 'Libros', 'dist-barranco', '2026-11-05T10:00:00.000Z', NULL, 'resp-chosen-1', NULL, NULL),
-  ('post-delivered', 'user-carlos', 'regalo', 'delivered', 'Lámpara seed', 'Entregado.', 'Hogar', 'dist-barranco', '2026-11-01T10:00:00.000Z', NULL, 'resp-delivered-1', '2026-11-03T18:00:00.000Z', NULL),
-  ('post-withdrawn', 'user-lucia', 'regalo', 'withdrawn', 'Chaqueta seed', 'Retirado.', 'Ropa', 'dist-barranco', '2026-11-02T10:00:00.000Z', NULL, NULL, NULL, '2026-11-04T12:00:00.000Z'),
-  ('post-expired', 'user-carlos', 'pido', 'expired', 'Sillas seed', 'Expiró sin elegir.', 'Hogar', 'dist-barranco', '2026-10-20T10:00:00.000Z', '2026-10-27T10:00:00.000Z', NULL, NULL, NULL),
-  ('post-removed', 'user-mica', 'regalo', 'removed', 'Item removido', 'Removido por admin.', 'Otros', 'dist-barranco', '2026-11-01T08:00:00.000Z', NULL, NULL, NULL, NULL),
-  ('post-closed', 'user-lucia', 'regalo', 'closed', 'Cerrado seed', 'Chosen sin Entregado (OQ-05).', 'Hogar', 'dist-barranco', '2026-10-01T10:00:00.000Z', NULL, 'resp-closed-1', NULL, NULL);
+-- One post per status (categories from POST-08).
+INSERT INTO posts (id, author_id, type, status, title, description, category, district_id, created_at, expires_at, chosen_response_id, delivered_at, withdrawn_at, chosen_at) VALUES
+  ('post-open-regalo', 'user-mica', 'regalo', 'open', 'Microondas seed', 'Solo para seed / e2e.', 'Electrodomésticos', 'dist-barranco', '2026-11-08T10:00:00.000Z', '2026-11-15T10:00:00.000Z', NULL, NULL, NULL, NULL),
+  ('post-open-pido', 'user-lucia', 'pido', 'open', 'Macetas seed', 'Solo para seed / e2e.', 'Plantas y jardín', 'dist-barranco', '2026-11-08T11:00:00.000Z', '2026-11-15T11:00:00.000Z', NULL, NULL, NULL, NULL),
+  ('post-chosen', 'user-mica', 'regalo', 'chosen', 'Libros seed', 'Elegido, no entregado.', 'Libros y útiles', 'dist-barranco', '2026-11-05T10:00:00.000Z', NULL, 'resp-chosen-1', NULL, NULL, '2026-11-05T12:00:00.000Z'),
+  ('post-delivered', 'user-carlos', 'regalo', 'delivered', 'Lámpara seed', 'Entregado.', 'Hogar y cocina', 'dist-barranco', '2026-11-01T10:00:00.000Z', NULL, 'resp-delivered-1', '2026-11-03T18:00:00.000Z', NULL, '2026-11-02T10:00:00.000Z'),
+  ('post-withdrawn', 'user-lucia', 'regalo', 'withdrawn', 'Chaqueta seed', 'Retirado.', 'Ropa', 'dist-barranco', '2026-11-02T10:00:00.000Z', NULL, NULL, NULL, '2026-11-04T12:00:00.000Z', NULL),
+  ('post-expired', 'user-carlos', 'pido', 'expired', 'Sillas seed', 'Expiró sin elegir.', 'Muebles', 'dist-barranco', '2026-10-20T10:00:00.000Z', '2026-10-27T10:00:00.000Z', NULL, NULL, NULL, NULL),
+  ('post-removed', 'user-mica', 'regalo', 'removed', 'Item removido', 'Removido por admin.', 'Otros', 'dist-barranco', '2026-11-01T08:00:00.000Z', NULL, NULL, NULL, NULL, NULL),
+  ('post-closed', 'user-lucia', 'regalo', 'closed', 'Cerrado seed', 'Chosen sin Entregado (OQ-05).', 'Hogar y cocina', 'dist-barranco', '2026-10-01T10:00:00.000Z', NULL, 'resp-closed-1', NULL, NULL, '2026-10-02T12:00:00.000Z');
 
 INSERT INTO responses (id, post_id, responder_id, status, created_at, withdrawn_at) VALUES
   ('resp-active-1', 'post-open-regalo', 'user-lucia', 'active', '2026-11-08T12:00:00.000Z', NULL),

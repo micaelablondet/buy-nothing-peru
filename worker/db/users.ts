@@ -1,5 +1,6 @@
 import { isAdminEmail } from "../lib/admin";
 import type { SessionUser, WorkerEnv } from "../env";
+import { withdrawPost } from "./posts";
 
 export type UserRow = {
   id: string;
@@ -119,34 +120,28 @@ export async function updateProfile(
 /** PROF-04: soft-delete personal data; withdraw open posts; anonymize label. */
 export async function deleteAccount(db: D1Database, userId: string): Promise<void> {
   const now = new Date().toISOString();
-  await db.batch([
-    db
-      .prepare(
-        `UPDATE posts SET status = 'withdrawn', withdrawn_at = ?
-         WHERE author_id = ? AND status IN ('open', 'chosen')`,
-      )
-      .bind(now, userId),
-    db
-      .prepare(
-        `UPDATE responses SET status = 'not_chosen'
-         WHERE post_id IN (
-           SELECT id FROM posts WHERE author_id = ? AND status = 'withdrawn'
-         ) AND status = 'active'`,
-      )
-      .bind(userId),
-    db
-      .prepare(
-        `UPDATE users SET
-           google_sub = NULL,
-           email = NULL,
-           first_name = 'Ex vecino',
-           display_name = 'Ex vecino',
-           whatsapp = NULL,
-           deleted_at = ?
-         WHERE id = ?`,
-      )
-      .bind(now, userId),
-  ]);
+  const openOrChosen = await db
+    .prepare(
+      `SELECT id FROM posts WHERE author_id = ? AND status IN ('open', 'chosen')`,
+    )
+    .bind(userId)
+    .all<{ id: string }>();
+  for (const row of openOrChosen.results ?? []) {
+    await withdrawPost(db, row.id, userId, now);
+  }
+  await db
+    .prepare(
+      `UPDATE users SET
+         google_sub = NULL,
+         email = NULL,
+         first_name = 'Ex vecino',
+         display_name = 'Ex vecino',
+         whatsapp = NULL,
+         deleted_at = ?
+       WHERE id = ?`,
+    )
+    .bind(now, userId)
+    .run();
 }
 
 export async function findActiveInvite(
