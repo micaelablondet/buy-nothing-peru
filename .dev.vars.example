@@ -1,0 +1,6 @@
+# Copy to .dev.vars (gitignored) for local Worker secrets.
+SESSION_SECRET=local-dev-session-secret-change-me
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+# Set true to enable stub sign-in without Google (local only)
+DEV_STUB_AUTH=true

@@ -2,28 +2,26 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { fetchMe, type MeResponse } from "@/lib/api";
 
-export type SessionOutletContext = { me: MeResponse };
+export type SessionOutletContext = { me: MeResponse; refreshMe: () => Promise<void> };
 
-export function RequireSession() {
+export function RequireSession({
+  requireProfile = true,
+}: {
+  requireProfile?: boolean;
+}) {
   const location = useLocation();
   const [me, setMe] = useState<MeResponse | null | undefined>(undefined);
 
+  const load = async () => {
+    try {
+      setMe(await fetchMe());
+    } catch {
+      setMe(null);
+    }
+  };
+
   useEffect(() => {
-    let cancelled = false;
-    fetchMe()
-      .then((user) => {
-        if (!cancelled) {
-          setMe(user);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setMe(null);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
+    void load();
   }, []);
 
   if (me === undefined) {
@@ -38,5 +36,24 @@ export function RequireSession() {
     return <Navigate to="/entrar" replace state={{ from: location }} />;
   }
 
-  return <Outlet context={{ me } satisfies SessionOutletContext} />;
+  if (requireProfile && !me.profileComplete) {
+    return (
+      <Navigate
+        to="/onboarding/perfil"
+        replace
+        state={{ from: location }}
+      />
+    );
+  }
+
+  return (
+    <Outlet
+      context={
+        {
+          me,
+          refreshMe: load,
+        } satisfies SessionOutletContext
+      }
+    />
+  );
 }

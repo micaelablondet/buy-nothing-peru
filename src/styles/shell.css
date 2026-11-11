@@ -67,6 +67,111 @@
   cursor: not-allowed;
 }
 
+.btn-secondary,
+.btn-danger {
+  min-height: var(--tap-min);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.btn-secondary {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+}
+
+.btn-danger {
+  border: 0;
+  background: transparent;
+  color: var(--color-danger);
+  text-decoration: underline;
+  padding-left: 0;
+}
+
+.entrar__legal {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.entrar__legal a {
+  color: var(--color-brand);
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field__label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.field__hint {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.field__input {
+  min-height: var(--tap-min);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--color-surface-elevated);
+  color: var(--color-ink);
+  font-size: var(--text-md);
+}
+
+.legal {
+  padding: var(--space-6) var(--space-5) var(--space-10);
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  background: var(--color-surface);
+  min-height: 100%;
+}
+
+.legal__back {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-brand);
+  font-weight: 600;
+  text-decoration: none;
+  min-height: var(--tap-min);
+  line-height: var(--tap-min);
+}
+
+.legal h1 {
+  font-size: var(--text-2xl);
+  margin: 0 0 var(--space-4);
+}
+
+.legal h2 {
+  font-size: var(--text-lg);
+  margin: var(--space-6) 0 var(--space-2);
+}
+
+.legal p,
+.legal li {
+  color: var(--color-ink);
+  font-size: var(--text-md);
+  line-height: var(--line-normal);
+}
+
+.legal__meta {
+  margin-top: var(--space-8);
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
 .app-shell {
   display: flex;
   flex-direction: column;

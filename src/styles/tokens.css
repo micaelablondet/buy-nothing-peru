@@ -1,6 +1,6 @@
 /**
  * Barrio design tokens (SPEC §11, OQ-01).
- * Phase 0 proposal: calm green + ink on cream. Approve or replace before M1.
+ * Approved palette: calm green + ink on cream.
  * Components must use these variables — no hard-coded hex in UI.
  */
 :root {
