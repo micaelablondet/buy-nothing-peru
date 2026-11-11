@@ -45,6 +45,7 @@ export const copy = {
     deleteConfirm:
       "Esto borra tus datos personales y retira tus publicaciones abiertas. ¿Continuar?",
     deleted: "Cuenta eliminada.",
+    myPosts: "Mis publicaciones",
   },
 
   shell: {
@@ -53,14 +54,64 @@ export const copy = {
     publish: "Publica",
     profile: "Perfil",
     greeting: "Hola, {name}",
-    emptyHomeTitle: "Aquí verás el feed",
-    emptyHomeBody:
-      "M1: ya puedes entrar con Google e completar tu perfil. El feed llega en M2.",
     emptySearch: "La búsqueda llega más adelante.",
-    emptyPublish: "Publicar Regalo o Pido llega en M2.",
     signOut: "Salir",
-    seedLabel: "Datos seed",
-    healthOk: "API lista",
+  },
+
+  feed: {
+    tabRegalos: "Regalos",
+    tabPidos: "Pidos",
+    emptyRegalos: "Aún no hay regalos abiertos en tu distrito.",
+    emptyPidos: "Aún no hay pedidos abiertos en tu distrito.",
+    allCategories: "Todas",
+    by: "de {name}",
+  },
+
+  publish: {
+    title: "Publica",
+    chooseType: "¿Qué quieres publicar?",
+    regalo: "Regalo",
+    pido: "Pido",
+    regaloHint: "Algo que das gratis a un vecino.",
+    pidoHint: "Algo que necesitas; un vecino puede ofrecerlo.",
+    titleLabel: "Título",
+    descriptionLabel: "Descripción",
+    categoryLabel: "Categoría",
+    photosLabel: "Fotos",
+    photosHintRegalo: "1 a 3 fotos (obligatorio).",
+    photosHintPido: "Foto de referencia opcional (máx. 1).",
+    addPhotos: "Agregar fotos",
+    photosSelected: "{count} foto(s)",
+    submit: "Publicar",
+    publishing: "Publicando…",
+  },
+
+  post: {
+    back: "Volver",
+    withdraw: "Retirar publicación",
+    withdrawConfirm: "¿Retirar esta publicación? Dejará de verse en el feed.",
+    verInteresados: "Ver interesados",
+    verOfertas: "Ver ofertas",
+    meInteresa: "Me interesa",
+    yoTengo: "Yo tengo",
+    responsesEmpty: "Aún no hay respuestas. Llegan en el siguiente paso (M3).",
+    respondSoon: "Responder llega en el siguiente paso.",
+    status: {
+      open: "Abierto",
+      chosen: "Elegido",
+      delivered: "Entregado",
+      withdrawn: "Retirado",
+      expired: "Venció",
+      removed: "Removido",
+      closed: "Cerrado",
+    },
+    yaResuelto: "Ya resuelto",
+    vencio: "Venció",
+  },
+
+  myPosts: {
+    title: "Mis publicaciones",
+    empty: "Todavía no has publicado nada.",
   },
 
   legal: {
@@ -99,6 +150,7 @@ export const copy = {
     session: "No pudimos iniciar sesión.",
     network: "Sin conexión con el servidor.",
     forbidden: "No tienes permiso.",
+    notFound: "No encontramos esa publicación.",
   },
 } as const;
 

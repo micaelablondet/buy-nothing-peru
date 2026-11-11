@@ -140,3 +140,115 @@ export async function fetchSeedStats(): Promise<{
 export function googleAuthHref(): string {
   return "/api/auth/google";
 }
+
+export type PostType = "regalo" | "pido";
+
+export type PostSummary = {
+  id: string;
+  type: PostType;
+  status: string;
+  title: string;
+  description: string;
+  category: string | null;
+  districtId: string;
+  districtName: string;
+  authorName: string;
+  createdAt: string;
+  expiresAt: string | null;
+  isOwner: boolean;
+  photos: { id: string; position: number; url: string }[];
+  actions: {
+    canWithdraw: boolean;
+    showOwnerResponses: boolean;
+    showRespond: boolean;
+    statusOnly: boolean;
+  };
+};
+
+export async function fetchCategories(): Promise<string[]> {
+  const res = await fetch("/api/categories", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("categories_failed");
+  }
+  const data = await parseJson<{ categories: string[] }>(res);
+  return data.categories;
+}
+
+export async function fetchFeed(input: {
+  type: PostType;
+  districtId?: string | null;
+  category?: string | null;
+}): Promise<PostSummary[]> {
+  const params = new URLSearchParams({ type: input.type });
+  if (input.districtId) {
+    params.set("districtId", input.districtId);
+  }
+  if (input.category) {
+    params.set("category", input.category);
+  }
+  const res = await fetch(`/api/feed?${params}`, { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("feed_failed");
+  }
+  const data = await parseJson<{ posts: PostSummary[] }>(res);
+  return data.posts;
+}
+
+export async function fetchMyPosts(): Promise<PostSummary[]> {
+  const res = await fetch("/api/me/posts", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("my_posts_failed");
+  }
+  const data = await parseJson<{ posts: PostSummary[] }>(res);
+  return data.posts;
+}
+
+export async function fetchPost(id: string): Promise<PostSummary> {
+  const res = await fetch(`/api/posts/${id}`, { credentials: "include" });
+  if (res.status === 404) {
+    throw new Error("not_found");
+  }
+  if (!res.ok) {
+    throw new Error("post_failed");
+  }
+  return parseJson(res);
+}
+
+export async function createPost(input: {
+  type: PostType;
+  title: string;
+  description: string;
+  category: string;
+  photos: File[];
+}): Promise<PostSummary> {
+  const form = new FormData();
+  form.set("type", input.type);
+  form.set("title", input.title);
+  form.set("description", input.description);
+  form.set("category", input.category);
+  for (const photo of input.photos) {
+    form.append("photos", photo);
+  }
+  const res = await fetch("/api/posts", {
+    method: "POST",
+    credentials: "include",
+    body: form,
+  });
+  const data = await parseJson<PostSummary & { message?: string }>(res);
+  if (!res.ok) {
+    throw new Error(data.message || "create_failed");
+  }
+  return data;
+}
+
+export async function withdrawPost(id: string): Promise<PostSummary> {
+  const res = await fetch(`/api/posts/${id}/withdraw`, {
+    method: "POST",
+    credentials: "include",
+  });
+  const data = await parseJson<PostSummary & { message?: string }>(res);
+  if (!res.ok) {
+    throw new Error(data.message || "withdraw_failed");
+  }
+  return data;
+}

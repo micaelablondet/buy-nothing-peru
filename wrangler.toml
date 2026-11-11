@@ -31,3 +31,7 @@ APP_BASE_URL = "http://127.0.0.1:8787"
 ADMIN_EMAILS = "mica@valere.io"
 # Secrets (wrangler secret / .dev.vars): SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
 # Optional local: DEV_STUB_AUTH=true
+
+# POST-06: expire open posts past expires_at (idempotent)
+[triggers]
+crons = ["0 * * * *"]

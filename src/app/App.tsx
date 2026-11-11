@@ -2,13 +2,17 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/app/AppShell";
 import { RequireSession } from "@/app/RequireSession";
 import { copy } from "@/copy/es-PE";
+import { CreatePostPage } from "@/pages/CreatePostPage";
 import { EntrarPage } from "@/pages/EntrarPage";
-import { HomeShellPage } from "@/pages/HomeShellPage";
+import { FeedPage } from "@/pages/FeedPage";
 import { InvitePage } from "@/pages/InvitePage";
 import { LegalPrivacyPage } from "@/pages/LegalPrivacyPage";
 import { LegalTermsPage } from "@/pages/LegalTermsPage";
+import { MyPostsPage } from "@/pages/MyPostsPage";
 import { OnboardingProfilePage } from "@/pages/OnboardingProfilePage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { PostDetailPage } from "@/pages/PostDetailPage";
+import { PostResponsesPage } from "@/pages/PostResponsesPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 
 export function App() {
@@ -25,7 +29,7 @@ export function App() {
 
           <Route element={<RequireSession requireProfile />}>
             <Route path="/app" element={<AppShell />}>
-              <Route index element={<HomeShellPage />} />
+              <Route index element={<FeedPage />} />
               <Route
                 path="busca"
                 element={
@@ -35,16 +39,11 @@ export function App() {
                   />
                 }
               />
-              <Route
-                path="publica"
-                element={
-                  <PlaceholderPage
-                    title={copy.shell.publish}
-                    body={copy.shell.emptyPublish}
-                  />
-                }
-              />
+              <Route path="publica" element={<CreatePostPage />} />
               <Route path="perfil" element={<ProfilePage />} />
+              <Route path="mis-publicaciones" element={<MyPostsPage />} />
+              <Route path="p/:id" element={<PostDetailPage />} />
+              <Route path="p/:id/respuestas" element={<PostResponsesPage />} />
             </Route>
           </Route>
 
