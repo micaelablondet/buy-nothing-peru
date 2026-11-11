@@ -53,6 +53,7 @@ export const copy = {
     search: "Busca",
     publish: "Publica",
     profile: "Perfil",
+    navAria: "Principal",
     greeting: "Hola, {name}",
     emptySearch: "La búsqueda llega más adelante.",
     signOut: "Salir",
