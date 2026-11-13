@@ -112,6 +112,7 @@ export const copy = {
     choose: "Elegir",
     chooseConfirm: "¿Elegir a {name}? No se puede cambiar después.",
     goHandoff: "Ir al recojo",
+    shareWhatsApp: "Compartir en WhatsApp",
     status: {
       open: "Abierto",
       chosen: "Elegido",
@@ -182,6 +183,10 @@ export const copy = {
     privacyDeleteBody:
       "En Perfil → Eliminar mi cuenta borramos nombre, correo, WhatsApp y el vínculo con Google; retiramos publicaciones abiertas; en entregas ya cerradas tu nombre pasa a «Ex vecino».",
     meta: "Versión piloto · Barranco · 2026",
+  },
+
+  public: {
+    unavailable: "Esta publicación ya no está disponible",
   },
 
   errors: {

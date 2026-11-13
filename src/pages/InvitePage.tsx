@@ -1,10 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { copy } from "@/copy/es-PE";
-import { submitInviteCode } from "@/lib/api";
+import { goAfterAuth, submitInviteCode } from "@/lib/api";
 
 export function InvitePage() {
-  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +13,7 @@ export function InvitePage() {
     setError(null);
     try {
       const result = await submitInviteCode(code);
-      navigate(result.next, { replace: true });
+      goAfterAuth(result.next);
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.invite.invalid);
       setBusy(false);

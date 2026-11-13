@@ -33,7 +33,12 @@ export function RequireSession({
   }
 
   if (!me) {
-    return <Navigate to="/entrar" replace state={{ from: location }} />;
+    const next = `${location.pathname}${location.search}`;
+    const entrar =
+      next.startsWith("/app") || next.startsWith("/p/")
+        ? `/entrar?next=${encodeURIComponent(next)}`
+        : "/entrar";
+    return <Navigate to={entrar} replace state={{ from: location }} />;
   }
 
   if (requireProfile && !me.profileComplete) {

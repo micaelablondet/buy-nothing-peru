@@ -38,7 +38,10 @@ export async function fetchMe(): Promise<MeResponse | null> {
   return parseJson<MeResponse>(res);
 }
 
-export async function startStubSession(): Promise<MeResponse> {
+export async function startStubSession(): Promise<{
+  user: MeResponse;
+  next: string;
+}> {
   const res = await fetch("/api/dev/session", {
     method: "POST",
     credentials: "include",
@@ -46,8 +49,17 @@ export async function startStubSession(): Promise<MeResponse> {
   if (!res.ok) {
     throw new Error("session_failed");
   }
-  const data = await parseJson<{ user: MeResponse }>(res);
-  return data.user;
+  const data = await parseJson<{ user: MeResponse; next?: string }>(res);
+  return { user: data.user, next: data.next || "/app" };
+}
+
+export async function setAuthReturnPath(next: string): Promise<void> {
+  await fetch("/api/auth/return-path", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ next }),
+  });
 }
 
 export async function submitInviteCode(
@@ -75,14 +87,16 @@ export async function updateProfile(input: {
   displayName: string;
   whatsapp: string;
   districtId: string;
-}): Promise<MeResponse> {
+}): Promise<MeResponse & { next?: string }> {
   const res = await fetch("/api/me/profile", {
     method: "PATCH",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
-  const data = await parseJson<MeResponse & { message?: string }>(res);
+  const data = await parseJson<MeResponse & { message?: string; next?: string }>(
+    res,
+  );
   if (!res.ok) {
     throw new Error(data.message || "profile_failed");
   }
@@ -137,8 +151,33 @@ export async function fetchSeedStats(): Promise<{
   return parseJson(res);
 }
 
-export function googleAuthHref(): string {
-  return "/api/auth/google";
+export function googleAuthHref(next?: string | null): string {
+  if (!next) {
+    return "/api/auth/google";
+  }
+  return `/api/auth/google?next=${encodeURIComponent(next)}`;
+}
+
+/** Prefer full document load so `/p/{id}` hits Worker SSR (PUB-02), not the SPA. */
+export function goAfterAuth(next: string): void {
+  window.location.assign(next);
+}
+
+export async function recordShareClick(
+  postId: string,
+): Promise<{ url: string }> {
+  const res = await fetch(`/api/posts/${postId}/share`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+      "X-Requested-With": "fetch",
+    },
+  });
+  if (!res.ok) {
+    throw new Error("share_failed");
+  }
+  return parseJson<{ url: string }>(res);
 }
 
 export type PostType = "regalo" | "pido";
