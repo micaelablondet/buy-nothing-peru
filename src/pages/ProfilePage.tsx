@@ -59,6 +59,11 @@ export function ProfilePage() {
       <Link className="btn-secondary" to="/app/mis-publicaciones">
         {copy.profile.myPosts}
       </Link>
+      {me.isAdmin ? (
+        <Link className="btn-secondary" to="/admin">
+          {copy.admin.link}
+        </Link>
+      ) : null}
       <form className="form-stack" onSubmit={(e) => void onSave(e)}>
         <label className="field">
           <span className="field__label">{copy.onboarding.name}</span>

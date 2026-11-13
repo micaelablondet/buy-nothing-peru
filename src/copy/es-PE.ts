@@ -93,6 +93,50 @@ export const copy = {
     photosSelected: "{count} foto(s)",
     submit: "Publicar",
     publishing: "Publicando…",
+    prohibitedTitle: "No publiques",
+    prohibitedIntro:
+      "Antes de publicar, revisa que no sea nada de esta lista:",
+  },
+
+  report: {
+    label: "Reportar",
+    title: "Reportar",
+    reasonLabel: "Motivo",
+    textLabel: "Detalle (opcional)",
+    submit: "Enviar reporte",
+    thanks: "Gracias. Revisaremos este reporte.",
+    close: "Cerrar",
+  },
+
+  disc: {
+    title: "¿Cómo lo habrías hecho sin Barrio?",
+    submit: "Enviar",
+    dismiss: "Ahora no",
+    thanks: "Gracias por tu respuesta.",
+  },
+
+  admin: {
+    title: "Admin",
+    reports: "Reportes abiertos",
+    posts: "Publicaciones",
+    invites: "Códigos de invitación",
+    metrics: "Métricas",
+    remove: "Remover",
+    removeConfirm: "¿Remover esta publicación? Dejará de verse en el feed y en la página pública.",
+    emptyReports: "No hay reportes abiertos.",
+    newInvite: "Nuevo código",
+    activate: "Activar",
+    deactivate: "Desactivar",
+    accounts: "Cuentas",
+    chWeek: "Entregas esta semana (CH/wk)",
+    responseRate: "Tasa de respuesta 48h",
+    medianPost: "Mediana tiempo de publicación",
+    inflation: "Confirmación de recibido",
+    discBreakdown: "Respuestas DISC-01",
+    link: "Ir a admin",
+    viewPost: "Ver publicación",
+    active: "Activo",
+    inactive: "Inactivo",
   },
 
   post: {
@@ -119,7 +163,7 @@ export const copy = {
       delivered: "Entregado",
       withdrawn: "Retirado",
       expired: "Venció",
-      removed: "Removido",
+      removed: "Eliminado",
       closed: "Cerrado",
     },
     yaResuelto: "Ya resuelto",
@@ -163,7 +207,16 @@ export const copy = {
     termsUseItems: [
       "Solo regalar o pedir cosas entre vecinos, sin plata.",
       "Coordinar la entrega por WhatsApp de forma respetuosa.",
-      "No publicar armas, drogas, alcohol, medicinas, animales vivos, objetos robados o ilegales, ni comida perecible abierta.",
+      "No publicar artículos de la lista de prohibidos.",
+    ],
+    prohibitedTitle: "Artículos prohibidos",
+    prohibitedItems: [
+      "Armas",
+      "Drogas y alcohol",
+      "Medicinas",
+      "Animales vivos",
+      "Objetos robados o ilegales",
+      "Comida perecible o abierta",
     ],
     termsAccountsTitle: "Cuentas",
     termsAccountsBody:

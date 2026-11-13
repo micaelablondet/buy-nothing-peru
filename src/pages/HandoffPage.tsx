@@ -5,14 +5,23 @@ import {
   fetchHandoff,
   markDelivered,
   markReceived,
+  submitDiscAnswer,
   type HandoffPayload,
 } from "@/lib/api";
+
+const DISC_OPTIONS = [
+  "Por el grupo de WhatsApp",
+  "No lo habría hecho",
+  "De otra forma",
+] as const;
 
 export function HandoffPage() {
   const { id = "" } = useParams();
   const [data, setData] = useState<HandoffPayload | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [discDismissed, setDiscDismissed] = useState(false);
+  const [discThanks, setDiscThanks] = useState(false);
 
   const reload = () =>
     fetchHandoff(id)
@@ -62,6 +71,22 @@ export function HandoffPage() {
     }
   };
 
+  const onDisc = async (answer: string) => {
+    setBusy(true);
+    try {
+      await submitDiscAnswer(id, answer);
+      setDiscThanks(true);
+      await reload();
+    } catch {
+      setError(copy.errors.network);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const showDisc =
+    data.showDiscSurvey && !discDismissed && !discThanks && !data.discAnswer;
+
   return (
     <section className="handoff">
       <Link to={`/app/p/${id}`} className="legal__back">
@@ -99,6 +124,34 @@ export function HandoffPage() {
       {data.receivedConfirmed ? (
         <p className="feed__meta">{copy.handoff.receivedDone}</p>
       ) : null}
+
+      {showDisc ? (
+        <div className="disc-survey">
+          <h2 className="publish__title">{copy.disc.title}</h2>
+          {DISC_OPTIONS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className="btn-secondary"
+              disabled={busy}
+              onClick={() => void onDisc(option)}
+            >
+              {option}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="btn-text"
+            onClick={() => setDiscDismissed(true)}
+          >
+            {copy.disc.dismiss}
+          </button>
+        </div>
+      ) : null}
+      {discThanks || data.discAnswer ? (
+        <p className="feed__meta">{copy.disc.thanks}</p>
+      ) : null}
+
       {error ? <p className="entrar__error">{error}</p> : null}
     </section>
   );

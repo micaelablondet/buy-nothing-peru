@@ -22,6 +22,7 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     delivered_at: null,
     withdrawn_at: null,
     received_confirmed_at: null,
+    disc_answer: null,
     author_display_name: "Micaela Blondet",
     author_first_name: "Micaela",
     district_name: "Barranco",

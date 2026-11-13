@@ -15,6 +15,12 @@ export function LegalTermsPage() {
           <li key={item}>{item}</li>
         ))}
       </ul>
+      <h2>{copy.legal.prohibitedTitle}</h2>
+      <ul>
+        {copy.legal.prohibitedItems.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
       <h2>{copy.legal.termsAccountsTitle}</h2>
       <p>{copy.legal.termsAccountsBody}</p>
       <p className="legal__meta">{copy.legal.meta}</p>

@@ -7,7 +7,7 @@ const STATUS_LABEL: Record<string, string> = {
   delivered: "Entregado",
   withdrawn: "Retirado",
   expired: "Venció",
-  removed: "Removido",
+  removed: "Eliminado",
   closed: "Cerrado",
 };
 

@@ -8,6 +8,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import { ReportButton } from "@/components/ReportButton";
 import { ResponseSheet } from "@/components/ResponseSheet";
 import { SharePostButton } from "@/components/SharePostButton";
 import { copy } from "@/copy/es-PE";
@@ -145,6 +146,7 @@ export function PostDetailPage() {
       <p className="post-detail__body">{post.description}</p>
 
       <SharePostButton postId={post.id} />
+      <ReportButton postId={post.id} />
 
       {actions?.showOwnerResponses ? (
         <Link className="btn-primary" to={`/app/p/${post.id}/respuestas`}>

@@ -1,7 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { copy } from "@/copy/es-PE";
-import { createPost, fetchCategories, type PostType } from "@/lib/api";
+import {
+  createPost,
+  fetchCategories,
+  recordPostFormOpened,
+  type PostType,
+} from "@/lib/api";
 import { maybeOfferPushAfterAction } from "@/lib/offerPush";
 import { resizeImageFile } from "@/lib/resizeImage";
 
@@ -16,6 +21,7 @@ export function CreatePostPage() {
   const [photos, setPhotos] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formSessionId, setFormSessionId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories()
@@ -49,6 +55,7 @@ export function CreatePostPage() {
         description,
         category,
         photos,
+        formSessionId: formSessionId ?? undefined,
       });
       void maybeOfferPushAfterAction();
       navigate(`/app/p/${post.id}`, { replace: true });
@@ -56,6 +63,15 @@ export function CreatePostPage() {
       setError(err instanceof Error ? err.message : copy.errors.network);
       setBusy(false);
     }
+  };
+
+  const openForm = (nextType: PostType) => {
+    const sessionId = crypto.randomUUID();
+    setType(nextType);
+    setPhotos([]);
+    setFormSessionId(sessionId);
+    setStep("form");
+    void recordPostFormOpened({ type: nextType, formSessionId: sessionId });
   };
 
   if (step === "choose") {
@@ -66,11 +82,7 @@ export function CreatePostPage() {
         <button
           type="button"
           className="btn-primary"
-          onClick={() => {
-            setType("regalo");
-            setPhotos([]);
-            setStep("form");
-          }}
+          onClick={() => openForm("regalo")}
         >
           {copy.publish.regalo}
         </button>
@@ -78,11 +90,7 @@ export function CreatePostPage() {
         <button
           type="button"
           className="btn-secondary"
-          onClick={() => {
-            setType("pido");
-            setPhotos([]);
-            setStep("form");
-          }}
+          onClick={() => openForm("pido")}
         >
           {copy.publish.pido}
         </button>
@@ -164,6 +172,15 @@ export function CreatePostPage() {
             </span>
           ) : null}
         </label>
+        <div className="publish__prohibited">
+          <p className="field__label">{copy.publish.prohibitedTitle}</p>
+          <p className="field__hint">{copy.publish.prohibitedIntro}</p>
+          <ul>
+            {copy.legal.prohibitedItems.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
         <button type="submit" className="btn-primary" disabled={busy}>
           {busy ? copy.publish.publishing : copy.publish.submit}
         </button>
