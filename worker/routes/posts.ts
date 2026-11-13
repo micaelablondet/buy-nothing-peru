@@ -13,6 +13,7 @@ import {
   type PostRow,
 } from "../db/posts";
 import type { SessionUser, WorkerEnv } from "../env";
+import { enrichPostActions } from "./responses";
 import { readSession } from "../session";
 
 type AppEnv = {
@@ -45,11 +46,18 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       c.env.DB,
       posts.map((p) => p.id),
     );
-    return c.json({
-      posts: posts.map((p) =>
-        serializePost(p, covers.get(p.id) ? [covers.get(p.id)!] : [], session.id),
-      ),
-    });
+    const serialized = [];
+    for (const p of posts) {
+      serialized.push(
+        await serializePost(
+          c.env.DB,
+          p,
+          covers.get(p.id) ? [covers.get(p.id)!] : [],
+          session,
+        ),
+      );
+    }
+    return c.json({ posts: serialized });
   });
 
   app.get("/api/me/posts", async (c) => {
@@ -62,11 +70,18 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       c.env.DB,
       posts.map((p) => p.id),
     );
-    return c.json({
-      posts: posts.map((p) =>
-        serializePost(p, covers.get(p.id) ? [covers.get(p.id)!] : [], session.id),
-      ),
-    });
+    const serialized = [];
+    for (const p of posts) {
+      serialized.push(
+        await serializePost(
+          c.env.DB,
+          p,
+          covers.get(p.id) ? [covers.get(p.id)!] : [],
+          session,
+        ),
+      );
+    }
+    return c.json({ posts: serialized });
   });
 
   app.get("/api/posts/:id", async (c) => {
@@ -79,7 +94,7 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       return c.json({ error: "not_found" }, 404);
     }
     const photos = await listPhotosForPost(c.env.DB, post.id);
-    return c.json(serializePost(post, photos, session.id));
+    return c.json(await serializePost(c.env.DB, post, photos, session));
   });
 
   app.post("/api/posts", async (c) => {
@@ -161,7 +176,7 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       nowIso,
     });
     const photoRows = await listPhotosForPost(c.env.DB, created.id);
-    return c.json(serializePost(created, photoRows, session.id), 201);
+    return c.json(await serializePost(c.env.DB, created, photoRows, session), 201);
   });
 
   app.post("/api/posts/:id/withdraw", async (c) => {
@@ -188,7 +203,7 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       );
     }
     const photos = await listPhotosForPost(c.env.DB, result.post.id);
-    return c.json(serializePost(result.post, photos, session.id));
+    return c.json(await serializePost(c.env.DB, result.post, photos, session));
   });
 
   app.get("/api/photos/*", async (c) => {
@@ -216,13 +231,13 @@ async function requireSession(
   return readSession(c.req.header("Cookie") ?? null, c.env.SESSION_SECRET);
 }
 
-function serializePost(
+async function serializePost(
+  db: D1Database,
   post: PostRow,
   photos: { id: string; r2_key: string; position: number }[],
-  viewerId: string,
+  viewer: SessionUser,
 ) {
-  const isOwner = post.author_id === viewerId;
-  const closed = !["open", "chosen"].includes(post.status);
+  const actions = await enrichPostActions(db, post, viewer);
   return {
     id: post.id,
     type: post.type,
@@ -235,17 +250,12 @@ function serializePost(
     authorName: publicAuthorName(post),
     createdAt: post.created_at,
     expiresAt: post.expires_at,
-    isOwner,
+    isOwner: post.author_id === viewer.id,
     photos: photos.map((p) => ({
       id: p.id,
       position: p.position,
       url: `/api/photos/${p.r2_key}`,
     })),
-    actions: {
-      canWithdraw: isOwner && (post.status === "open" || post.status === "chosen"),
-      showOwnerResponses: isOwner && post.status === "open",
-      showRespond: !isOwner && post.status === "open",
-      statusOnly: closed || post.status === "chosen",
-    },
+    actions,
   };
 }

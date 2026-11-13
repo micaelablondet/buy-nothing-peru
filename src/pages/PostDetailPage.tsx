@@ -1,32 +1,65 @@
 import { useEffect, useState } from "react";
 import {
   Link,
+  useLocation,
   useNavigate,
   useOutletContext,
   useParams,
+  useSearchParams,
 } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import { ResponseSheet } from "@/components/ResponseSheet";
 import { copy } from "@/copy/es-PE";
 import { formatPostAge } from "@/lib/formatAge";
-import { fetchPost, withdrawPost, type PostSummary } from "@/lib/api";
+import {
+  fetchDistricts,
+  fetchPost,
+  withdrawMyResponse,
+  withdrawPost,
+  type PostSummary,
+} from "@/lib/api";
 
 export function PostDetailPage() {
   const { id = "" } = useParams();
   const { me } = useOutletContext<SessionOutletContext>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [params] = useSearchParams();
   const [post, setPost] = useState<PostSummary | null | undefined>(undefined);
+  const [myDistrictName, setMyDistrictName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
-  useEffect(() => {
+  const reload = () =>
     fetchPost(id)
       .then(setPost)
       .catch(() => {
         setPost(null);
         setError(copy.errors.notFound);
       });
+
+  useEffect(() => {
+    void reload();
   }, [id]);
+
+  useEffect(() => {
+    fetchDistricts()
+      .then((list) => {
+        const match = list.find((d) => d.id === me.districtId);
+        setMyDistrictName(match?.name ?? "");
+      })
+      .catch(() => setMyDistrictName(""));
+  }, [me.districtId]);
+
+  useEffect(() => {
+    const open =
+      params.get("responder") === "1" ||
+      Boolean((location.state as { openRespond?: boolean } | null)?.openRespond);
+    if (open && me.whatsapp) {
+      setSheetOpen(true);
+    }
+  }, [params, location.state, me.whatsapp]);
 
   if (post === undefined) {
     return <div className="shell-loading">…</div>;
@@ -40,6 +73,7 @@ export function PostDetailPage() {
     );
   }
 
+  const actions = post.actions;
   const statusLabel =
     copy.post.status[post.status as keyof typeof copy.post.status] ??
     post.status;
@@ -50,8 +84,7 @@ export function PostDetailPage() {
     }
     setBusy(true);
     try {
-      const updated = await withdrawPost(post.id);
-      setPost(updated);
+      setPost(await withdrawPost(post.id));
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.network);
     } finally {
@@ -62,11 +95,28 @@ export function PostDetailPage() {
   const onRespond = () => {
     if (!me.whatsapp) {
       navigate("/onboarding/perfil", {
-        state: { from: { pathname: `/app/p/${post.id}` } },
+        state: {
+          from: { pathname: `/app/p/${post.id}`, search: "?responder=1" },
+        },
       });
       return;
     }
-    setNote(copy.post.respondSoon);
+    setSheetOpen(true);
+  };
+
+  const onWithdrawResponse = async () => {
+    if (!actions?.myResponseId) {
+      return;
+    }
+    setBusy(true);
+    try {
+      await withdrawMyResponse(actions.myResponseId);
+      await reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : copy.errors.network);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -93,40 +143,60 @@ export function PostDetailPage() {
       </p>
       <p className="post-detail__body">{post.description}</p>
 
-      {post.actions.showOwnerResponses ? (
-        <Link
-          className="btn-primary"
-          to={`/app/p/${post.id}/respuestas`}
-        >
+      {actions?.showOwnerResponses ? (
+        <Link className="btn-primary" to={`/app/p/${post.id}/respuestas`}>
           {post.type === "regalo"
             ? copy.post.verInteresados
             : copy.post.verOfertas}
+          {actions.activeResponseCount > 0
+            ? ` (${actions.activeResponseCount})`
+            : ""}
         </Link>
       ) : null}
 
-      {post.actions.showRespond ? (
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={onRespond}
-        >
+      {actions?.showRespond ? (
+        <button type="button" className="btn-primary" onClick={onRespond}>
           {post.type === "regalo" ? copy.post.meInteresa : copy.post.yoTengo}
         </button>
       ) : null}
 
-      {!post.actions.showRespond &&
-      !post.actions.showOwnerResponses &&
-      post.status !== "open" ? (
+      {actions?.alreadyResponded ? (
+        <>
+          <p className="post-detail__status">
+            {post.type === "regalo"
+              ? copy.post.yaTeIntereso
+              : copy.post.yaOfreciste}
+          </p>
+          <button
+            type="button"
+            className="btn-secondary"
+            disabled={busy}
+            onClick={() => void onWithdrawResponse()}
+          >
+            {copy.post.withdrawResponse}
+          </button>
+        </>
+      ) : null}
+
+      {actions?.capped ? (
         <p className="post-detail__status">
-          {post.status === "expired"
-            ? copy.post.vencio
-            : post.status === "open"
-              ? statusLabel
-              : copy.post.yaResuelto}
+          {post.type === "pido" ? copy.post.capPido : copy.post.capRegalo}
         </p>
       ) : null}
 
-      {post.actions.canWithdraw ? (
+      {actions?.showHandoff ? (
+        <Link className="btn-primary" to={`/app/p/${post.id}/recojo`}>
+          {copy.post.goHandoff}
+        </Link>
+      ) : null}
+
+      {actions?.statusOnly && !actions.showHandoff ? (
+        <p className="post-detail__status">
+          {post.status === "expired" ? copy.post.vencio : copy.post.yaResuelto}
+        </p>
+      ) : null}
+
+      {actions?.canWithdraw ? (
         <button
           type="button"
           className="btn-danger"
@@ -137,8 +207,21 @@ export function PostDetailPage() {
         </button>
       ) : null}
 
-      {note ? <p className="feed__meta">{note}</p> : null}
       {error ? <p className="entrar__error">{error}</p> : null}
+
+      {sheetOpen ? (
+        <ResponseSheet
+          postId={post.id}
+          postType={post.type}
+          displayName={me.displayName}
+          districtName={myDistrictName || post.districtName}
+          onClose={() => setSheetOpen(false)}
+          onDone={() => {
+            setSheetOpen(false);
+            void reload();
+          }}
+        />
+      ) : null}
     </article>
   );
 }

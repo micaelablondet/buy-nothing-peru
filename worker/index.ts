@@ -14,6 +14,7 @@ import {
 import type { SessionUser, WorkerEnv } from "./env";
 import { normalizePeruWhatsApp } from "./lib/whatsapp";
 import { registerPostRoutes } from "./routes/posts";
+import { registerResponseRoutes } from "./routes/responses";
 import {
   clearPendingCookie,
   clearSessionCookie,
@@ -42,7 +43,7 @@ app.use(
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M2",
+    slice: "M3",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
@@ -265,6 +266,7 @@ app.get("/api/districts", async (c) => {
 });
 
 registerPostRoutes(app);
+registerResponseRoutes(app);
 
 /** Dev/manual trigger for POST-06 expiry (also runs on cron). */
 app.post("/api/jobs/expire-posts", async (c) => {
@@ -284,7 +286,7 @@ app.all("/api/admin/*", async (c) => {
   if (!session.isAdmin) {
     return c.json({ error: "forbidden" }, 403);
   }
-  return c.json({ ok: true, slice: "M2", note: "Admin UI arrives in M6" });
+  return c.json({ ok: true, slice: "M3", note: "Admin UI arrives in M6" });
 });
 
 app.get("/api/seed-stats", async (c) => {

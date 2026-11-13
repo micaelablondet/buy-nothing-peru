@@ -51,13 +51,22 @@ export function OnboardingProfilePage() {
     setError(null);
     try {
       await updateProfile({ displayName, whatsapp, districtId });
-      const from = (location.state as { from?: { pathname?: string } } | null)
-        ?.from?.pathname;
+      const from = (
+        location.state as {
+          from?: { pathname?: string; search?: string };
+        } | null
+      )?.from;
+      const path = from?.pathname;
       const next =
-        from && from !== "/onboarding/perfil" && !from.startsWith("/entrar")
-          ? from
+        path && path !== "/onboarding/perfil" && !path.startsWith("/entrar")
+          ? `${path}${from?.search ?? ""}`
           : "/app";
-      navigate(next, { replace: true });
+      navigate(next, {
+        replace: true,
+        state: from?.search?.includes("responder=1")
+          ? { openRespond: true }
+          : undefined,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.session);
       setBusy(false);
