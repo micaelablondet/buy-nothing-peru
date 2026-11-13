@@ -1,5 +1,6 @@
 import type { Hono } from "hono";
 import { POST_CATEGORIES } from "../domain/categories";
+import { recordEvent } from "../db/events";
 import {
   createPost,
   findPostById,
@@ -8,11 +9,17 @@ import {
   listMyPosts,
   listPhotosForPost,
   publicAuthorName,
+  setDiscAnswer,
   validatePostInput,
   withdrawPost,
   type PostRow,
 } from "../db/posts";
+import { findResponseById } from "../db/responses";
 import type { SessionUser, WorkerEnv } from "../env";
+import { isDiscAnswer } from "../lib/disc";
+import { isGiver } from "../lib/handoff";
+import { PROHIBITED_ITEMS } from "../lib/prohibited";
+import { assertUnderPostLimit } from "../lib/rateLimit";
 import { enrichPostActions } from "./responses";
 import { readSession } from "../session";
 
@@ -26,6 +33,35 @@ const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export function registerPostRoutes(app: Hono<AppEnv>) {
   app.get("/api/categories", (c) => c.json({ categories: POST_CATEGORIES }));
+
+  app.get("/api/prohibited-items", (c) =>
+    c.json({ items: PROHIBITED_ITEMS }),
+  );
+
+  /** ANLY-01: post_form_opened */
+  app.post("/api/events/post-form-opened", async (c) => {
+    const session = await requireSession(c);
+    if (!session) {
+      return c.json({ error: "unauthorized" }, 401);
+    }
+    const body = (await c.req.json().catch(() => ({}))) as {
+      type?: string;
+      formSessionId?: string;
+    };
+    const type = body.type === "pido" ? "pido" : body.type === "regalo" ? "regalo" : null;
+    const formSessionId = body.formSessionId?.trim();
+    if (!type || !formSessionId) {
+      return c.json({ error: "validation" }, 400);
+    }
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: session.id,
+      name: "post_form_opened",
+      props: { type, formSessionId },
+      nowIso: new Date().toISOString(),
+    });
+    return c.json({ ok: true });
+  });
 
   app.get("/api/feed", async (c) => {
     const session = await requireSession(c);
@@ -109,11 +145,18 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       );
     }
 
+    const nowIso = new Date().toISOString();
+    const limit = await assertUnderPostLimit(c.env.DB, session.id, nowIso);
+    if (!limit.ok) {
+      return c.json({ error: "rate_limited", message: limit.message }, 429);
+    }
+
     const form = await c.req.formData();
     const typeRaw = String(form.get("type") ?? "");
     const title = String(form.get("title") ?? "");
     const description = String(form.get("description") ?? "");
     const category = String(form.get("category") ?? "");
+    const formSessionId = String(form.get("formSessionId") ?? "").trim() || null;
     const files: File[] = [];
     for (const item of form.getAll("photos")) {
       if (typeof item === "string") {
@@ -137,7 +180,6 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
     }
     const type = typeRaw as "regalo" | "pido";
 
-    const nowIso = new Date().toISOString();
     const postId = crypto.randomUUID();
     const photos: { id: string; r2Key: string; position: number }[] = [];
 
@@ -175,8 +217,60 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       photos,
       nowIso,
     });
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: session.id,
+      name: "post_created",
+      props: { type, postId: created.id, formSessionId },
+      nowIso,
+    });
     const photoRows = await listPhotosForPost(c.env.DB, created.id);
     return c.json(await serializePost(c.env.DB, created, photoRows, session), 201);
+  });
+
+  /** DISC-01 — giver only after Entregado */
+  app.post("/api/posts/:id/disc", async (c) => {
+    const session = await requireSession(c);
+    if (!session) {
+      return c.json({ error: "unauthorized" }, 401);
+    }
+    const body = (await c.req.json().catch(() => ({}))) as { answer?: string };
+    const answer = body.answer?.trim() ?? "";
+    if (!isDiscAnswer(answer)) {
+      return c.json({ error: "validation", message: "Elige una opción." }, 400);
+    }
+    const post = await findPostById(c.env.DB, c.req.param("id"));
+    if (!post) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    let chosenResponderId: string | null = null;
+    if (post.chosen_response_id) {
+      const chosen = await findResponseById(c.env.DB, post.chosen_response_id);
+      chosenResponderId = chosen?.responder_id ?? null;
+    }
+    if (
+      !isGiver({
+        postType: post.type,
+        viewerId: session.id,
+        authorId: post.author_id,
+        chosenResponderId,
+      })
+    ) {
+      return c.json({ error: "forbidden" }, 403);
+    }
+    const result = await setDiscAnswer(c.env.DB, post.id, answer);
+    if (!result.ok) {
+      const status = result.error === "not_found" ? 404 : 409;
+      return c.json({ error: result.error }, status);
+    }
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: session.id,
+      name: "disc_answered",
+      props: { postId: result.post.id, answer },
+      nowIso: new Date().toISOString(),
+    });
+    return c.json({ ok: true, discAnswer: answer });
   });
 
   app.post("/api/posts/:id/withdraw", async (c) => {

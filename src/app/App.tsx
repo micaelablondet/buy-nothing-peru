@@ -15,6 +15,7 @@ import { HandoffPage } from "@/pages/HandoffPage";
 import { InboxPage } from "@/pages/InboxPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { PostResponsesPage } from "@/pages/PostResponsesPage";
+import { AdminPage } from "@/pages/AdminPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 
 export function App() {
@@ -30,6 +31,7 @@ export function App() {
           <Route path="/legal/privacidad" element={<LegalPrivacyPage />} />
 
           <Route element={<RequireSession requireProfile />}>
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/app" element={<AppShell />}>
               <Route index element={<FeedPage />} />
               <Route

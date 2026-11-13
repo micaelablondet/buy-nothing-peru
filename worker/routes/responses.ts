@@ -1,6 +1,7 @@
 import type { Hono } from "hono";
 import { recordEvent } from "../db/events";
 import { notifyUser } from "../lib/notify";
+import { assertUnderResponseLimit } from "../lib/rateLimit";
 import {
   chooseResponse,
   countActiveResponses,
@@ -76,6 +77,12 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
         },
         403,
       );
+    }
+
+    const rateNow = new Date().toISOString();
+    const limit = await assertUnderResponseLimit(c.env.DB, session.id, rateNow);
+    if (!limit.ok) {
+      return c.json({ error: "rate_limited", message: limit.message }, 429);
     }
 
     const post = await findPostById(c.env.DB, c.req.param("id"));
@@ -176,6 +183,13 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
       postId: post.id,
       nowIso,
     });
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: session.id,
+      name: "response_created",
+      props: { postId: post.id, responseId: result.response.id },
+      nowIso,
+    });
 
     return c.json(
       {
@@ -210,6 +224,13 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
             : 409;
       return c.json({ error: result.error }, status);
     }
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: session.id,
+      name: "response_withdrawn",
+      props: { responseId: result.response.id, postId: result.response.post_id },
+      nowIso: new Date().toISOString(),
+    });
     return c.json({
       response: {
         id: result.response.id,
@@ -252,6 +273,13 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
         nowIso,
       });
     }
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: session.id,
+      name: "response_chosen",
+      props: { postId: result.post.id, responseId: body.responseId },
+      nowIso,
+    });
     return c.json({ postId: result.post.id, status: result.post.status });
   });
 
@@ -319,6 +347,16 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
         (post.status === "chosen" || post.status === "delivered") &&
         !post.received_confirmed_at,
       receivedConfirmed: Boolean(post.received_confirmed_at),
+      discAnswer: post.disc_answer,
+      showDiscSurvey:
+        isGiver({
+          postType: post.type,
+          viewerId: session.id,
+          authorId: post.author_id,
+          chosenResponderId,
+        }) &&
+        post.status === "delivered" &&
+        !post.disc_answer,
       coverUrl: photos[0] ? `/api/photos/${photos[0].r2_key}` : null,
       authorName: publicAuthorName(post),
     });
@@ -387,11 +425,17 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
     ) {
       return c.json({ error: "forbidden" }, 403);
     }
-    const updated = await markReceived(
-      c.env.DB,
-      post.id,
-      new Date().toISOString(),
-    );
+    const nowIso = new Date().toISOString();
+    const updated = await markReceived(c.env.DB, post.id, nowIso);
+    if (updated?.received_confirmed_at) {
+      await recordEvent(c.env.DB, {
+        id: crypto.randomUUID(),
+        userId: session.id,
+        name: "handoff_received_confirmed",
+        props: { postId: post.id },
+        nowIso,
+      });
+    }
     return c.json({
       postId: updated?.id ?? post.id,
       receivedConfirmed: Boolean(updated?.received_confirmed_at),

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { ReportButton } from "@/components/ReportButton";
 import { copy } from "@/copy/es-PE";
 import { formatPostAge } from "@/lib/formatAge";
 import {
@@ -71,6 +72,7 @@ export function PostResponsesPage() {
                 {item.districtName} · {formatPostAge(item.createdAt)}
               </p>
               {item.note ? <p className="response-card__note">{item.note}</p> : null}
+              <ReportButton postId={id} responseId={item.id} />
               {post?.status === "open" ? (
                 <button
                   type="button"

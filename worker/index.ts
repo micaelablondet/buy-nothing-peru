@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { buildGoogleAuthUrl, exchangeGoogleCode, googleConfigured } from "./auth/google";
+import { recordEvent } from "./db/events";
 import { expireOpenPosts } from "./db/posts";
 import { runNudgeJob } from "./jobs/nudge";
 import {
@@ -14,15 +15,21 @@ import {
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
 import {
+  assertAuthIpLimit,
+  clientIp,
+} from "./lib/rateLimit";
+import {
   clearReturnPathCookie,
   readReturnPath,
   returnPathSetCookie,
   sanitizeReturnPath,
 } from "./lib/returnPath";
 import { normalizePeruWhatsApp } from "./lib/whatsapp";
+import { registerAdminRoutes } from "./routes/admin";
 import { registerNotificationRoutes } from "./routes/notifications";
 import { registerPostRoutes } from "./routes/posts";
 import { registerPublicRoutes } from "./routes/public";
+import { registerReportRoutes } from "./routes/reports";
 import { registerResponseRoutes } from "./routes/responses";
 import {
   clearPendingCookie,
@@ -52,7 +59,7 @@ app.use(
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M5",
+    slice: "M6",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
@@ -90,6 +97,18 @@ app.get("/api/auth/google", async (c) => {
       },
       503,
     );
+  }
+  const ip = clientIp(
+    c.req.header("X-Forwarded-For"),
+    c.req.header("CF-Connecting-IP"),
+  );
+  const authLimit = await assertAuthIpLimit(
+    c.env.DB,
+    ip,
+    new Date().toISOString(),
+  );
+  if (!authLimit.ok) {
+    return c.json({ error: "rate_limited", message: authLimit.message }, 429);
   }
   const next = sanitizeReturnPath(c.req.query("next"));
   if (next) {
@@ -137,13 +156,21 @@ app.get("/api/auth/google/callback", async (c) => {
     }
 
     if (c.env.INVITE_REQUIRED !== "true") {
+      const nowIso = new Date().toISOString();
       const user = await createUser(c.env.DB, {
         id: crypto.randomUUID(),
         googleSub: identity.googleSub,
         email: identity.email,
         displayName: identity.displayName,
-        inviteAcceptedAt: new Date().toISOString(),
+        inviteAcceptedAt: nowIso,
         districtId: DEFAULT_DISTRICT,
+      });
+      await recordEvent(c.env.DB, {
+        id: crypto.randomUUID(),
+        userId: user.id,
+        name: "user_signed_up",
+        props: { via_invite: false },
+        nowIso,
       });
       const session = rowToSession(user, c.env.ADMIN_EMAILS);
       appendCookie(c, await sessionSetCookie(c.env, session));
@@ -165,6 +192,18 @@ app.post("/api/auth/invite", async (c) => {
   const pending = await readPending(c.req.header("Cookie") ?? null, c.env.SESSION_SECRET);
   if (!pending) {
     return c.json({ error: "pending_required" }, 401);
+  }
+  const ip = clientIp(
+    c.req.header("X-Forwarded-For"),
+    c.req.header("CF-Connecting-IP"),
+  );
+  const authLimit = await assertAuthIpLimit(
+    c.env.DB,
+    ip,
+    new Date().toISOString(),
+  );
+  if (!authLimit.ok) {
+    return c.json({ error: "rate_limited", message: authLimit.message }, 429);
   }
   const body = (await c.req.json().catch(() => ({}))) as { code?: string };
   const code = body.code?.trim() ?? "";
@@ -189,13 +228,21 @@ app.post("/api/auth/invite", async (c) => {
     });
   }
 
+  const nowIso = new Date().toISOString();
   const user = await createUser(c.env.DB, {
     id: crypto.randomUUID(),
     googleSub: pending.googleSub,
     email: pending.email,
     displayName: pending.displayName,
-    inviteAcceptedAt: new Date().toISOString(),
+    inviteAcceptedAt: nowIso,
     districtId: DEFAULT_DISTRICT,
+  });
+  await recordEvent(c.env.DB, {
+    id: crypto.randomUUID(),
+    userId: user.id,
+    name: "user_signed_up",
+    props: { via_invite: true },
+    nowIso,
   });
   const session = rowToSession(user, c.env.ADMIN_EMAILS);
   appendCookie(c, await sessionSetCookie(c.env, session));
@@ -306,14 +353,26 @@ registerPostRoutes(app);
 registerResponseRoutes(app);
 registerNotificationRoutes(app);
 registerPublicRoutes(app);
+registerReportRoutes(app);
+registerAdminRoutes(app);
 
 /** Dev/manual trigger for POST-06 expiry (also runs on cron). */
 app.post("/api/jobs/expire-posts", async (c) => {
   if (c.env.ENVIRONMENT === "production") {
     return c.json({ error: "not_available" }, 404);
   }
-  const result = await expireOpenPosts(c.env.DB, new Date().toISOString());
-  return c.json({ ok: true, ...result });
+  const nowIso = new Date().toISOString();
+  const result = await expireOpenPosts(c.env.DB, nowIso);
+  for (const postId of result.ids) {
+    await recordEvent(c.env.DB, {
+      id: crypto.randomUUID(),
+      userId: null,
+      name: "post_expired",
+      props: { postId },
+      nowIso,
+    });
+  }
+  return c.json({ ok: true, expired: result.expired });
 });
 
 /** Dev/manual trigger for NOTIF-04 nudge. */
@@ -323,18 +382,6 @@ app.post("/api/jobs/nudge", async (c) => {
   }
   const result = await runNudgeJob(c.env.DB, new Date().toISOString());
   return c.json({ ok: true, ...result });
-});
-
-/** AUTH-04 placeholder — every /admin route 403 for non-admins. */
-app.all("/api/admin/*", async (c) => {
-  const session = await readSession(c.req.header("Cookie") ?? null, c.env.SESSION_SECRET);
-  if (!session) {
-    return c.json({ error: "unauthorized" }, 401);
-  }
-  if (!session.isAdmin) {
-    return c.json({ error: "forbidden" }, 403);
-  }
-  return c.json({ ok: true, slice: "M5", note: "Admin UI arrives in M6" });
 });
 
 app.get("/api/seed-stats", async (c) => {
@@ -425,7 +472,16 @@ export default {
     const now = new Date().toISOString();
     ctx.waitUntil(
       Promise.all([
-        expireOpenPosts(env.DB, now).then((result) => {
+        expireOpenPosts(env.DB, now).then(async (result) => {
+          for (const postId of result.ids) {
+            await recordEvent(env.DB, {
+              id: crypto.randomUUID(),
+              userId: null,
+              name: "post_expired",
+              props: { postId },
+              nowIso: now,
+            });
+          }
           console.log(`expireOpenPosts: ${result.expired}`);
         }),
         runNudgeJob(env.DB, now).then((result) => {

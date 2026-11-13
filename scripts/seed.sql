@@ -2,6 +2,8 @@
 -- WhatsApp numbers exist only in DB for handoff tests — never exposed by open APIs.
 
 DELETE FROM push_subscriptions;
+DELETE FROM rate_counters;
+DELETE FROM reports;
 DELETE FROM notifications;
 DELETE FROM events;
 DELETE FROM post_photos;

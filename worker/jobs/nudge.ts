@@ -1,5 +1,6 @@
 /** NOTIF-04: idempotent 48h nudge for open posts with a first response. */
 
+import { recordEvent } from "../db/events";
 import {
   hasRecordatorioForPost,
   insertNotification,
@@ -78,6 +79,13 @@ export async function runNudgeJob(
       userId: row.author_id,
       type: "recordatorio",
       postId: row.id,
+      nowIso,
+    });
+    await recordEvent(db, {
+      id: crypto.randomUUID(),
+      userId: row.author_id,
+      name: "nudge_sent",
+      props: { postId: row.id },
       nowIso,
     });
     nudged += 1;

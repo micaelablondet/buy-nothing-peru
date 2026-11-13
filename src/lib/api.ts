@@ -258,18 +258,34 @@ export async function fetchPost(id: string): Promise<PostSummary> {
   return parseJson(res);
 }
 
+export async function recordPostFormOpened(input: {
+  type: PostType;
+  formSessionId: string;
+}): Promise<void> {
+  await fetch("/api/events/post-form-opened", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
 export async function createPost(input: {
   type: PostType;
   title: string;
   description: string;
   category: string;
   photos: File[];
+  formSessionId?: string;
 }): Promise<PostSummary> {
   const form = new FormData();
   form.set("type", input.type);
   form.set("title", input.title);
   form.set("description", input.description);
   form.set("category", input.category);
+  if (input.formSessionId) {
+    form.set("formSessionId", input.formSessionId);
+  }
   for (const photo of input.photos) {
     form.append("photos", photo);
   }
@@ -375,6 +391,8 @@ export type HandoffPayload = {
   canMarkDelivered: boolean;
   canMarkReceived: boolean;
   receivedConfirmed: boolean;
+  discAnswer: string | null;
+  showDiscSurvey: boolean;
   coverUrl: string | null;
   authorName: string;
 };
@@ -473,4 +491,191 @@ export async function savePushSubscription(input: {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
+}
+
+export async function fetchReportReasons(): Promise<string[]> {
+  const res = await fetch("/api/report-reasons", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("report_reasons_failed");
+  }
+  const data = await parseJson<{ reasons: string[] }>(res);
+  return data.reasons;
+}
+
+export async function submitReport(input: {
+  postId: string;
+  responseId?: string | null;
+  reason: string;
+  text?: string;
+}): Promise<void> {
+  const res = await fetch("/api/reports", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const data = await parseJson<{ message?: string }>(res);
+  if (!res.ok) {
+    throw new Error(data.message || "report_failed");
+  }
+}
+
+export async function submitDiscAnswer(
+  postId: string,
+  answer: string,
+): Promise<void> {
+  const res = await fetch(`/api/posts/${postId}/disc`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ answer }),
+  });
+  if (!res.ok) {
+    throw new Error("disc_failed");
+  }
+}
+
+export async function fetchAdminReports(): Promise<
+  {
+    id: string;
+    postId: string;
+    postTitle: string;
+    responseId: string | null;
+    reason: string;
+    text: string | null;
+    reporterName: string;
+    createdAt: string;
+  }[]
+> {
+  const res = await fetch("/api/admin/reports", { credentials: "include" });
+  if (res.status === 403) {
+    throw new Error("forbidden");
+  }
+  if (!res.ok) {
+    throw new Error("admin_reports_failed");
+  }
+  const data = await parseJson<{
+    reports: {
+      id: string;
+      postId: string;
+      postTitle: string;
+      responseId: string | null;
+      reason: string;
+      text: string | null;
+      reporterName: string;
+      createdAt: string;
+    }[];
+  }>(res);
+  return data.reports;
+}
+
+export async function fetchAdminPosts(): Promise<
+  {
+    id: string;
+    type: string;
+    status: string;
+    title: string;
+    createdAt: string;
+    districtName: string;
+    authorName: string;
+  }[]
+> {
+  const res = await fetch("/api/admin/posts", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("admin_posts_failed");
+  }
+  const data = await parseJson<{
+    posts: {
+      id: string;
+      type: string;
+      status: string;
+      title: string;
+      createdAt: string;
+      districtName: string;
+      authorName: string;
+    }[];
+  }>(res);
+  return data.posts;
+}
+
+export async function adminRemovePost(id: string): Promise<void> {
+  const res = await fetch(`/api/admin/posts/${id}/remove`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("remove_failed");
+  }
+}
+
+export async function fetchAdminInvites(): Promise<
+  {
+    id: string;
+    code: string;
+    active: boolean;
+    createdAt: string;
+    deactivatedAt: string | null;
+  }[]
+> {
+  const res = await fetch("/api/admin/invites", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("admin_invites_failed");
+  }
+  const data = await parseJson<{
+    invites: {
+      id: string;
+      code: string;
+      active: boolean;
+      createdAt: string;
+      deactivatedAt: string | null;
+    }[];
+  }>(res);
+  return data.invites;
+}
+
+export async function createAdminInvite(code: string): Promise<void> {
+  const res = await fetch("/api/admin/invites", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code }),
+  });
+  const data = await parseJson<{ message?: string }>(res);
+  if (!res.ok) {
+    throw new Error(data.message || "invite_create_failed");
+  }
+}
+
+export async function setAdminInviteActive(
+  id: string,
+  active: boolean,
+): Promise<void> {
+  const res = await fetch(`/api/admin/invites/${id}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ active }),
+  });
+  if (!res.ok) {
+    throw new Error("invite_update_failed");
+  }
+}
+
+export type AdminMetrics = {
+  accounts: number;
+  completedHandoffsThisWeek: number;
+  responseRate48h: number | null;
+  medianPostFormMs: number | null;
+  discAnswers: Record<string, number>;
+  inflationCheck: number | null;
+  weekStart: string;
+  weekEnd: string;
+};
+
+export async function fetchAdminMetrics(): Promise<AdminMetrics> {
+  const res = await fetch("/api/admin/metrics", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("admin_metrics_failed");
+  }
+  return parseJson(res);
 }

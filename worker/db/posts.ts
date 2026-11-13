@@ -21,6 +21,7 @@ export type PostRow = {
   delivered_at: string | null;
   withdrawn_at: string | null;
   received_confirmed_at: string | null;
+  disc_answer: string | null;
   author_display_name: string | null;
   author_first_name: string;
   district_name: string;
@@ -28,7 +29,7 @@ export type PostRow = {
 
 const POST_SELECT = `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
               p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
-              p.delivered_at, p.withdrawn_at, p.received_confirmed_at,
+              p.delivered_at, p.withdrawn_at, p.received_confirmed_at, p.disc_answer,
               u.display_name AS author_display_name, u.first_name AS author_first_name,
               d.name AS district_name
        FROM posts p
@@ -271,11 +272,64 @@ export async function withdrawPost(
   return { ok: true, post: updated };
 }
 
-/** Idempotent expiry job (POST-06). */
+/** SAFE-03: admin remove via postStateMachine only. */
+export async function removePost(
+  db: D1Database,
+  postId: string,
+): Promise<
+  | { ok: true; post: PostRow }
+  | { ok: false; error: "not_found" | "illegal_transition" }
+> {
+  const post = await findPostById(db, postId);
+  if (!post) {
+    return { ok: false, error: "not_found" };
+  }
+  const next = applyPostTransition(post.status, "remove");
+  if (!next.ok) {
+    return { ok: false, error: "illegal_transition" };
+  }
+  await db
+    .prepare(`UPDATE posts SET status = ? WHERE id = ?`)
+    .bind(next.to, postId)
+    .run();
+  const updated = await findPostById(db, postId);
+  if (!updated) {
+    return { ok: false, error: "not_found" };
+  }
+  return { ok: true, post: updated };
+}
+
+export async function setDiscAnswer(
+  db: D1Database,
+  postId: string,
+  answer: string,
+): Promise<
+  | { ok: true; post: PostRow }
+  | { ok: false; error: "not_found" | "not_delivered" }
+> {
+  const post = await findPostById(db, postId);
+  if (!post) {
+    return { ok: false, error: "not_found" };
+  }
+  if (post.status !== "delivered") {
+    return { ok: false, error: "not_delivered" };
+  }
+  await db
+    .prepare(`UPDATE posts SET disc_answer = ? WHERE id = ?`)
+    .bind(answer, postId)
+    .run();
+  const updated = await findPostById(db, postId);
+  if (!updated) {
+    return { ok: false, error: "not_found" };
+  }
+  return { ok: true, post: updated };
+}
+
+/** Idempotent expiry job (POST-06). Returns expired post ids for ANLY-01. */
 export async function expireOpenPosts(
   db: D1Database,
   nowIso: string,
-): Promise<{ expired: number }> {
+): Promise<{ expired: number; ids: string[] }> {
   const candidates = await db
     .prepare(
       `SELECT id, status, expires_at FROM posts WHERE status = 'open' AND expires_at IS NOT NULL AND expires_at <= ?`,
@@ -284,6 +338,7 @@ export async function expireOpenPosts(
     .all<{ id: string; status: PostStatus; expires_at: string | null }>();
 
   let expired = 0;
+  const ids: string[] = [];
   for (const row of candidates.results ?? []) {
     if (!shouldExpire(row.status, row.expires_at, nowIso)) {
       continue;
@@ -301,9 +356,10 @@ export async function expireOpenPosts(
       .run();
     if ((result.meta.changes ?? 0) > 0) {
       expired += 1;
+      ids.push(row.id);
     }
   }
-  return { expired };
+  return { expired, ids };
 }
 
 export function publicAuthorName(row: PostRow): string {
