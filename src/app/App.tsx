@@ -12,6 +12,7 @@ import { MyPostsPage } from "@/pages/MyPostsPage";
 import { OnboardingProfilePage } from "@/pages/OnboardingProfilePage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { HandoffPage } from "@/pages/HandoffPage";
+import { InboxPage } from "@/pages/InboxPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { PostResponsesPage } from "@/pages/PostResponsesPage";
 import { ProfilePage } from "@/pages/ProfilePage";
@@ -42,6 +43,7 @@ export function App() {
               />
               <Route path="publica" element={<CreatePostPage />} />
               <Route path="perfil" element={<ProfilePage />} />
+              <Route path="inbox" element={<InboxPage />} />
               <Route path="mis-publicaciones" element={<MyPostsPage />} />
               <Route path="p/:id" element={<PostDetailPage />} />
               <Route path="p/:id/respuestas" element={<PostResponsesPage />} />

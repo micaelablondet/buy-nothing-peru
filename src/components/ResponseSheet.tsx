@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { copy } from "@/copy/es-PE";
 import { createResponse, type PostType } from "@/lib/api";
+import { maybeOfferPushAfterAction } from "@/lib/offerPush";
 import { resizeImageFile } from "@/lib/resizeImage";
 
 type Props = {
@@ -33,6 +34,7 @@ export function ResponseSheet({
     setError(null);
     try {
       await createResponse({ postId, note, photo });
+      void maybeOfferPushAfterAction();
       onDone();
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.network);

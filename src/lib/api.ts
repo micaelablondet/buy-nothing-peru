@@ -372,3 +372,66 @@ export async function markReceived(postId: string): Promise<void> {
     throw new Error("received_failed");
   }
 }
+
+export type InboxItem = {
+  id: string;
+  type: string;
+  title: string;
+  postId: string | null;
+  postTitle: string | null;
+  readAt: string | null;
+  createdAt: string;
+  href: string;
+};
+
+export async function fetchNotifications(): Promise<{
+  notifications: InboxItem[];
+  unread: number;
+}> {
+  const res = await fetch("/api/notifications", { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("notifications_failed");
+  }
+  return parseJson(res);
+}
+
+export async function fetchUnreadCount(): Promise<number> {
+  const res = await fetch("/api/notifications/unread-count", {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    return 0;
+  }
+  const data = await parseJson<{ unread: number }>(res);
+  return data.unread;
+}
+
+export async function markNotificationRead(id: string): Promise<void> {
+  await fetch(`/api/notifications/${id}/read`, {
+    method: "POST",
+    credentials: "include",
+  });
+}
+
+export async function fetchPushConfig(): Promise<{
+  vapidPublicKey: string | null;
+  pushConfigured: boolean;
+}> {
+  const res = await fetch("/api/push/config", { credentials: "include" });
+  if (!res.ok) {
+    return { vapidPublicKey: null, pushConfigured: false };
+  }
+  return parseJson(res);
+}
+
+export async function savePushSubscription(input: {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+}): Promise<void> {
+  await fetch("/api/push/subscribe", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}

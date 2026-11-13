@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { buildGoogleAuthUrl, exchangeGoogleCode, googleConfigured } from "./auth/google";
 import { expireOpenPosts } from "./db/posts";
+import { runNudgeJob } from "./jobs/nudge";
 import {
   createUser,
   deleteAccount,
@@ -13,6 +14,7 @@ import {
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
 import { normalizePeruWhatsApp } from "./lib/whatsapp";
+import { registerNotificationRoutes } from "./routes/notifications";
 import { registerPostRoutes } from "./routes/posts";
 import { registerResponseRoutes } from "./routes/responses";
 import {
@@ -43,7 +45,7 @@ app.use(
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M3",
+    slice: "M4",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
@@ -267,6 +269,7 @@ app.get("/api/districts", async (c) => {
 
 registerPostRoutes(app);
 registerResponseRoutes(app);
+registerNotificationRoutes(app);
 
 /** Dev/manual trigger for POST-06 expiry (also runs on cron). */
 app.post("/api/jobs/expire-posts", async (c) => {
@@ -274,6 +277,15 @@ app.post("/api/jobs/expire-posts", async (c) => {
     return c.json({ error: "not_available" }, 404);
   }
   const result = await expireOpenPosts(c.env.DB, new Date().toISOString());
+  return c.json({ ok: true, ...result });
+});
+
+/** Dev/manual trigger for NOTIF-04 nudge. */
+app.post("/api/jobs/nudge", async (c) => {
+  if (c.env.ENVIRONMENT === "production") {
+    return c.json({ error: "not_available" }, 404);
+  }
+  const result = await runNudgeJob(c.env.DB, new Date().toISOString());
   return c.json({ ok: true, ...result });
 });
 
@@ -286,7 +298,7 @@ app.all("/api/admin/*", async (c) => {
   if (!session.isAdmin) {
     return c.json({ error: "forbidden" }, 403);
   }
-  return c.json({ ok: true, slice: "M3", note: "Admin UI arrives in M6" });
+  return c.json({ ok: true, slice: "M4", note: "Admin UI arrives in M6" });
 });
 
 app.get("/api/seed-stats", async (c) => {
@@ -361,10 +373,16 @@ export default {
     env: WorkerEnv,
     ctx: ExecutionContext,
   ) {
+    const now = new Date().toISOString();
     ctx.waitUntil(
-      expireOpenPosts(env.DB, new Date().toISOString()).then((result) => {
-        console.log(`expireOpenPosts: ${result.expired}`);
-      }),
+      Promise.all([
+        expireOpenPosts(env.DB, now).then((result) => {
+          console.log(`expireOpenPosts: ${result.expired}`);
+        }),
+        runNudgeJob(env.DB, now).then((result) => {
+          console.log(`runNudgeJob: ${result.nudged}`);
+        }),
+      ]),
     );
   },
 };

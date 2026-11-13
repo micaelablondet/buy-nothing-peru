@@ -1,5 +1,7 @@
-import { NavLink, Outlet, useNavigate, useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useNavigate, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import { BellIcon } from "@/components/BellIcon";
 import {
   HomeIcon,
   ProfileIcon,
@@ -7,11 +9,24 @@ import {
   SearchIcon,
 } from "@/components/NavIcons";
 import { copy } from "@/copy/es-PE";
-import { logout } from "@/lib/api";
+import { fetchUnreadCount, logout } from "@/lib/api";
 
 export function AppShell() {
   const { me } = useOutletContext<SessionOutletContext>();
   const navigate = useNavigate();
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    fetchUnreadCount()
+      .then(setUnread)
+      .catch(() => setUnread(0));
+    const timer = window.setInterval(() => {
+      fetchUnreadCount()
+        .then(setUnread)
+        .catch(() => null);
+    }, 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const onSignOut = async () => {
     await logout();
@@ -25,6 +40,20 @@ export function AppShell() {
         <p className="app-shell__user">
           {copy.shell.greeting.replace("{name}", me.displayName)}
         </p>
+        <Link
+          to="/app/inbox"
+          className="app-shell__bell"
+          aria-label={
+            unread > 0
+              ? copy.shell.inboxUnread.replace("{count}", String(unread))
+              : copy.shell.inbox
+          }
+        >
+          <BellIcon />
+          {unread > 0 ? (
+            <span className="app-shell__badge">{unread > 9 ? "9+" : unread}</span>
+          ) : null}
+        </Link>
         <button
           type="button"
           className="app-shell__signout"
