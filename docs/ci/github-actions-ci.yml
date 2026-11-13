@@ -1,3 +1,4 @@
+# Canonical CI lives at `.github/workflows/ci.yml`. This copy is for reference.
 name: CI
 
 on:
@@ -9,23 +10,24 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
-
-      - name: Install
-        run: npm ci
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Unit tests
-        run: npm test
-
-      - name: Build
-        run: npm run build
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run db:reset:local
+      - run: |
+          printf '%s\n' \
+            'SESSION_SECRET=ci-test-secret-min-16' \
+            'DEV_STUB_AUTH=true' \
+            'GOOGLE_CLIENT_ID=' \
+            'GOOGLE_CLIENT_SECRET=' \
+            > .dev.vars
+      - run: npx playwright install chromium --with-deps
+      - run: npm run test:e2e
+        env:
+          CI: "true"

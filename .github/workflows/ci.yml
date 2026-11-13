@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Local D1 migrate + seed
+        run: npm run db:reset:local
+
+      - name: Dev vars for stub auth e2e
+        run: |
+          printf '%s\n' \
+            'SESSION_SECRET=ci-test-secret-min-16' \
+            'DEV_STUB_AUTH=true' \
+            'GOOGLE_CLIENT_ID=' \
+            'GOOGLE_CLIENT_SECRET=' \
+            > .dev.vars
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: E2E (authz + smoke)
+        run: npm run test:e2e
+        env:
+          CI: "true"

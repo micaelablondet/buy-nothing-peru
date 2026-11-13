@@ -1,8 +1,10 @@
 import { fetchPushConfig, savePushSubscription } from "@/lib/api";
+import { armInstallPrompt } from "@/lib/install";
 import { markPushOffered, shouldOfferPush, subscribeToPush } from "@/lib/push";
 
-/** Call after a successful first post or response (NOTIF-02). Silent on failure. */
+/** Call after a successful first post or response (NOTIF-02 + R-06). Silent on failure. */
 export async function maybeOfferPushAfterAction(): Promise<void> {
+  armInstallPrompt();
   if (!shouldOfferPush()) {
     return;
   }
