@@ -4,3 +4,6 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 # Set true to enable stub sign-in without Google (local only)
 DEV_STUB_AUTH=true
+# Optional Web Push (NOTIF-02). Inbox works without these.
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=

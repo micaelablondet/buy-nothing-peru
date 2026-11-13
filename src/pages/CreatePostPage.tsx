@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { copy } from "@/copy/es-PE";
 import { createPost, fetchCategories, type PostType } from "@/lib/api";
+import { maybeOfferPushAfterAction } from "@/lib/offerPush";
 import { resizeImageFile } from "@/lib/resizeImage";
 
 export function CreatePostPage() {
@@ -49,6 +50,7 @@ export function CreatePostPage() {
         category,
         photos,
       });
+      void maybeOfferPushAfterAction();
       navigate(`/app/p/${post.id}`, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.network);

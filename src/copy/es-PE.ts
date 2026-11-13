@@ -57,6 +57,14 @@ export const copy = {
     greeting: "Hola, {name}",
     emptySearch: "La búsqueda llega más adelante.",
     signOut: "Salir",
+    inbox: "Notificaciones",
+    inboxUnread: "{count} sin leer",
+  },
+
+  inbox: {
+    title: "Notificaciones",
+    empty: "No tienes notificaciones todavía.",
+    forPost: "por «{title}»",
   },
 
   feed: {

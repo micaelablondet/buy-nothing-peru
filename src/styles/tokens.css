@@ -42,7 +42,7 @@
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
-  --radius-full: 9999px;
+  --radius-full: 9999px; /* pills / badges */
   --tap-min: 2.75rem; /* 44px */
 
   /* Layout */

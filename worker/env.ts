@@ -15,6 +15,9 @@ export type WorkerEnv = {
   GOOGLE_CLIENT_SECRET: string;
   /** Optional: allow POST /api/dev/session when "true" and not production. */
   DEV_STUB_AUTH?: string;
+  /** Web Push VAPID keys (optional; inbox works without them). */
+  VAPID_PUBLIC_KEY?: string;
+  VAPID_PRIVATE_KEY?: string;
 };
 
 export type SessionUser = {

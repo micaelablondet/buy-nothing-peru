@@ -1,6 +1,6 @@
 import type { Hono } from "hono";
 import { recordEvent } from "../db/events";
-import { insertNotification } from "../db/notifications";
+import { notifyUser } from "../lib/notify";
 import {
   chooseResponse,
   countActiveResponses,
@@ -170,8 +170,7 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
       return c.json({ error: result.error }, 400);
     }
 
-    await insertNotification(c.env.DB, {
-      id: crypto.randomUUID(),
+    await notifyUser(c.env, {
       userId: post.author_id,
       type: post.type === "pido" ? "nueva_oferta" : "nuevo_interesado",
       postId: post.id,
@@ -246,8 +245,7 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
     }
     const chosen = await findResponseById(c.env.DB, body.responseId);
     if (chosen) {
-      await insertNotification(c.env.DB, {
-        id: crypto.randomUUID(),
+      await notifyUser(c.env, {
         userId: chosen.responder_id,
         type: "te_eligieron",
         postId: result.post.id,
