@@ -4,6 +4,7 @@ import { copy } from "@/copy/es-PE";
 import {
   fetchDistricts,
   fetchMe,
+  goAfterAuth,
   updateProfile,
   type MeResponse,
 } from "@/lib/api";
@@ -50,22 +51,33 @@ export function OnboardingProfilePage() {
     setBusy(true);
     setError(null);
     try {
-      await updateProfile({ displayName, whatsapp, districtId });
+      const result = await updateProfile({ displayName, whatsapp, districtId });
       const from = (
         location.state as {
           from?: { pathname?: string; search?: string };
         } | null
       )?.from;
       const path = from?.pathname;
-      const next =
+      const fromPath =
         path && path !== "/onboarding/perfil" && !path.startsWith("/entrar")
           ? `${path}${from?.search ?? ""}`
-          : "/app";
+          : null;
+      const next =
+        fromPath ||
+        (result.next && result.next !== "/onboarding/perfil"
+          ? result.next
+          : null) ||
+        "/app";
+      if (next.startsWith("/p/")) {
+        goAfterAuth(next);
+        return;
+      }
       navigate(next, {
         replace: true,
-        state: from?.search?.includes("responder=1")
-          ? { openRespond: true }
-          : undefined,
+        state:
+          next.includes("responder=1") || from?.search?.includes("responder=1")
+            ? { openRespond: true }
+            : undefined,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.session);

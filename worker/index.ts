@@ -13,9 +13,16 @@ import {
   updateProfile,
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
+import {
+  clearReturnPathCookie,
+  readReturnPath,
+  returnPathSetCookie,
+  sanitizeReturnPath,
+} from "./lib/returnPath";
 import { normalizePeruWhatsApp } from "./lib/whatsapp";
 import { registerNotificationRoutes } from "./routes/notifications";
 import { registerPostRoutes } from "./routes/posts";
+import { registerPublicRoutes } from "./routes/public";
 import { registerResponseRoutes } from "./routes/responses";
 import {
   clearPendingCookie,
@@ -45,7 +52,7 @@ app.use(
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M4",
+    slice: "M5",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
@@ -62,6 +69,17 @@ app.get("/api/auth/config", (c) =>
   }),
 );
 
+/** PUB-04: persist safe return path before Google / stub sign-in. */
+app.post("/api/auth/return-path", async (c) => {
+  const body = (await c.req.json().catch(() => ({}))) as { next?: string };
+  const next = sanitizeReturnPath(body.next);
+  if (!next) {
+    return c.json({ error: "invalid_next" }, 400);
+  }
+  appendCookie(c, returnPathSetCookie(c.env, next));
+  return c.json({ ok: true, next });
+});
+
 /** AUTH-01 */
 app.get("/api/auth/google", async (c) => {
   if (!googleConfigured(c.env)) {
@@ -72,6 +90,10 @@ app.get("/api/auth/google", async (c) => {
       },
       503,
     );
+  }
+  const next = sanitizeReturnPath(c.req.query("next"));
+  if (next) {
+    appendCookie(c, returnPathSetCookie(c.env, next));
   }
   const state = crypto.randomUUID();
   const stateCookie = [
@@ -111,7 +133,7 @@ app.get("/api/auth/google/callback", async (c) => {
       appendCookie(c, await sessionSetCookie(c.env, session));
       appendCookie(c, clearPendingCookie(c.env));
       appendCookie(c, clearOauthStateCookie(c.env));
-      return c.redirect(postAuthPath(session), 302);
+      return c.redirect(finishAuthRedirect(c, session, cookie), 302);
     }
 
     if (c.env.INVITE_REQUIRED !== "true") {
@@ -127,7 +149,7 @@ app.get("/api/auth/google/callback", async (c) => {
       appendCookie(c, await sessionSetCookie(c.env, session));
       appendCookie(c, clearPendingCookie(c.env));
       appendCookie(c, clearOauthStateCookie(c.env));
-      return c.redirect(postAuthPath(session), 302);
+      return c.redirect(finishAuthRedirect(c, session, cookie), 302);
     }
 
     appendCookie(c, await pendingSetCookie(c.env, identity));
@@ -155,12 +177,16 @@ app.post("/api/auth/invite", async (c) => {
     return c.json({ error: "invalid_code", message: "Código inválido" }, 400);
   }
 
+  const cookie = c.req.header("Cookie") ?? "";
   const existing = await findUserByGoogleSub(c.env.DB, pending.googleSub);
   if (existing) {
     const session = rowToSession(existing, c.env.ADMIN_EMAILS);
     appendCookie(c, await sessionSetCookie(c.env, session));
     appendCookie(c, clearPendingCookie(c.env));
-    return c.json({ user: publicMe(session), next: postAuthPath(session) });
+    return c.json({
+      user: publicMe(session),
+      next: finishAuthRedirect(c, session, cookie),
+    });
   }
 
   const user = await createUser(c.env.DB, {
@@ -174,7 +200,10 @@ app.post("/api/auth/invite", async (c) => {
   const session = rowToSession(user, c.env.ADMIN_EMAILS);
   appendCookie(c, await sessionSetCookie(c.env, session));
   appendCookie(c, clearPendingCookie(c.env));
-  return c.json({ user: publicMe(session), next: postAuthPath(session) });
+  return c.json({
+    user: publicMe(session),
+    next: finishAuthRedirect(c, session, cookie),
+  });
 });
 
 app.post("/api/auth/logout", async (c) => {
@@ -194,7 +223,11 @@ app.post("/api/dev/session", async (c) => {
   }
   const session = rowToSession(seed, c.env.ADMIN_EMAILS);
   appendCookie(c, await sessionSetCookie(c.env, session));
-  return c.json({ user: publicMe(session) });
+  const cookie = c.req.header("Cookie") ?? "";
+  return c.json({
+    user: publicMe(session),
+    next: finishAuthRedirect(c, session, cookie),
+  });
 });
 
 app.get("/api/me", async (c) => {
@@ -245,9 +278,11 @@ app.patch("/api/me/profile", async (c) => {
   if (!updated) {
     return c.json({ error: "not_found" }, 404);
   }
-  const next = rowToSession(updated, c.env.ADMIN_EMAILS);
-  appendCookie(c, await sessionSetCookie(c.env, next));
-  return c.json(publicMe(next));
+  const nextSession = rowToSession(updated, c.env.ADMIN_EMAILS);
+  appendCookie(c, await sessionSetCookie(c.env, nextSession));
+  const cookie = c.req.header("Cookie") ?? "";
+  const returnTo = finishAuthRedirect(c, nextSession, cookie);
+  return c.json({ ...publicMe(nextSession), next: returnTo });
 });
 
 app.delete("/api/me", async (c) => {
@@ -270,6 +305,7 @@ app.get("/api/districts", async (c) => {
 registerPostRoutes(app);
 registerResponseRoutes(app);
 registerNotificationRoutes(app);
+registerPublicRoutes(app);
 
 /** Dev/manual trigger for POST-06 expiry (also runs on cron). */
 app.post("/api/jobs/expire-posts", async (c) => {
@@ -298,7 +334,7 @@ app.all("/api/admin/*", async (c) => {
   if (!session.isAdmin) {
     return c.json({ error: "forbidden" }, 403);
   }
-  return c.json({ ok: true, slice: "M4", note: "Admin UI arrives in M6" });
+  return c.json({ ok: true, slice: "M5", note: "Admin UI arrives in M6" });
 });
 
 app.get("/api/seed-stats", async (c) => {
@@ -338,11 +374,24 @@ function publicMe(session: SessionUser) {
   };
 }
 
-function postAuthPath(session: SessionUser): string {
+/**
+ * PUB-04: after auth/invite/profile, send the user back to a safe stored path
+ * (e.g. `/p/{id}`). Keep the cookie until the profile is complete.
+ */
+function finishAuthRedirect(
+  c: {
+    header: (name: string, value: string, options?: { append: boolean }) => void;
+    env: WorkerEnv;
+  },
+  session: SessionUser,
+  cookieHeader: string,
+): string {
   if (!session.profileComplete) {
     return "/onboarding/perfil";
   }
-  return "/app";
+  const stored = readReturnPath(cookieHeader);
+  appendCookie(c, clearReturnPathCookie(c.env));
+  return stored ?? "/app";
 }
 
 function appendCookie(

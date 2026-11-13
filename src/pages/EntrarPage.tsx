@@ -1,20 +1,34 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { copy } from "@/copy/es-PE";
 import {
   fetchAuthConfig,
   fetchMe,
+  goAfterAuth,
   googleAuthHref,
+  setAuthReturnPath,
   startStubSession,
   type AuthConfig,
 } from "@/lib/api";
 
+function safeNext(raw: string | null): string | null {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) {
+    return null;
+  }
+  if (raw.startsWith("/p/") || raw === "/app" || raw.startsWith("/app/")) {
+    return raw;
+  }
+  return null;
+}
+
 export function EntrarPage() {
   const [params] = useSearchParams();
+  const next = safeNext(params.get("next"));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState<AuthConfig | null>(null);
   const [hasSession, setHasSession] = useState<boolean | null>(null);
+  const [returnReady, setReturnReady] = useState(!next);
 
   useEffect(() => {
     const oauthError = params.get("error");
@@ -35,16 +49,35 @@ export function EntrarPage() {
       );
   }, [params]);
 
+  useEffect(() => {
+    if (!next) {
+      setReturnReady(true);
+      return;
+    }
+    void setAuthReturnPath(next)
+      .catch(() => undefined)
+      .finally(() => setReturnReady(true));
+  }, [next]);
+
+  useEffect(() => {
+    if (hasSession && returnReady) {
+      goAfterAuth(next ?? "/app");
+    }
+  }, [hasSession, returnReady, next]);
+
   if (hasSession) {
-    return <Navigate to="/app" replace />;
+    return <div className="shell-loading">…</div>;
   }
 
   const onStub = async () => {
     setBusy(true);
     setError(null);
     try {
-      await startStubSession();
-      window.location.href = "/app";
+      if (next) {
+        await setAuthReturnPath(next);
+      }
+      const result = await startStubSession();
+      goAfterAuth(result.next || next || "/app");
     } catch {
       setError(copy.errors.session);
       setBusy(false);
@@ -58,7 +91,7 @@ export function EntrarPage() {
       <p className="entrar__body">{copy.entrar.body}</p>
 
       {config?.googleConfigured ? (
-        <a className="btn-primary" href={googleAuthHref()}>
+        <a className="btn-primary" href={googleAuthHref(next)}>
           {copy.entrar.ctaGoogle}
         </a>
       ) : (
@@ -69,7 +102,7 @@ export function EntrarPage() {
         <button
           type="button"
           className="btn-secondary"
-          disabled={busy}
+          disabled={busy || !returnReady}
           onClick={() => void onStub()}
         >
           {copy.entrar.ctaStub}

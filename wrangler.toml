@@ -10,7 +10,8 @@ workers_dev = true
 directory = "./dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
-run_worker_first = ["/api/*"]
+# /p/* must hit the Worker for SSR + Open Graph (PUB-02), not the SPA asset.
+run_worker_first = ["/api/*", "/p/*"]
 
 [[d1_databases]]
 binding = "DB"

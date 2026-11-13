@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
 import { ResponseSheet } from "@/components/ResponseSheet";
+import { SharePostButton } from "@/components/SharePostButton";
 import { copy } from "@/copy/es-PE";
 import { formatPostAge } from "@/lib/formatAge";
 import {
@@ -142,6 +143,8 @@ export function PostDetailPage() {
         {copy.feed.by.replace("{name}", post.authorName)}
       </p>
       <p className="post-detail__body">{post.description}</p>
+
+      <SharePostButton postId={post.id} />
 
       {actions?.showOwnerResponses ? (
         <Link className="btn-primary" to={`/app/p/${post.id}/respuestas`}>
