@@ -19,13 +19,7 @@ Open the Vite URL, tap **Continuar como Mica (prueba)** for the stub session (M1
 
 ## CI workflow file
 
-The GitHub Actions workflow lives at `docs/ci/github-actions-ci.yml` until a token with the **`workflow`** scope can place it under `.github/workflows/ci.yml`:
-
-```bash
-mkdir -p .github/workflows
-cp docs/ci/github-actions-ci.yml .github/workflows/ci.yml
-git add .github/workflows/ci.yml && git commit -m "ci: enable GitHub Actions checks" && git push
-```
+CI lives at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) (typecheck, unit tests, build, Playwright e2e). A reference copy remains in `docs/ci/github-actions-ci.yml`.
 
 ## Create the Cloudflare project (once)
 

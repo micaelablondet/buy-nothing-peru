@@ -10,3 +10,6 @@ dist-ssr
 .env
 .DS_Store
 worker-configuration.d.ts
+/playwright-report/
+/test-results/
+/blob-report/

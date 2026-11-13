@@ -242,6 +242,19 @@ export const copy = {
     unavailable: "Esta publicación ya no está disponible",
   },
 
+  install: {
+    body: "Para recibir avisos en el celular, añade Barrio a tu pantalla de inicio.",
+    cta: "Añadir a inicio",
+    iosHint:
+      "En iPhone: Comparte → Añadir a pantalla de inicio. Así también funcionan las notificaciones.",
+    dismiss: "Ahora no",
+  },
+
+  footer: {
+    terms: "Términos",
+    privacy: "Privacidad",
+  },
+
   errors: {
     session: "No pudimos iniciar sesión.",
     network: "Sin conexión con el servidor.",

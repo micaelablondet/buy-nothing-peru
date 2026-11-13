@@ -59,7 +59,7 @@ app.use(
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M6",
+    slice: "M7",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
