@@ -20,10 +20,20 @@ export type PostRow = {
   chosen_at: string | null;
   delivered_at: string | null;
   withdrawn_at: string | null;
+  received_confirmed_at: string | null;
   author_display_name: string | null;
   author_first_name: string;
   district_name: string;
 };
+
+const POST_SELECT = `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
+              p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
+              p.delivered_at, p.withdrawn_at, p.received_confirmed_at,
+              u.display_name AS author_display_name, u.first_name AS author_first_name,
+              d.name AS district_name
+       FROM posts p
+       JOIN users u ON u.id = p.author_id
+       JOIN districts d ON d.id = p.district_id`;
 
 export type PhotoRow = {
   id: string;
@@ -131,17 +141,7 @@ export async function findPostById(
   id: string,
 ): Promise<PostRow | null> {
   return db
-    .prepare(
-      `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
-              p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
-              p.delivered_at, p.withdrawn_at,
-              u.display_name AS author_display_name, u.first_name AS author_first_name,
-              d.name AS district_name
-       FROM posts p
-       JOIN users u ON u.id = p.author_id
-       JOIN districts d ON d.id = p.district_id
-       WHERE p.id = ?`,
-    )
+    .prepare(`${POST_SELECT} WHERE p.id = ?`)
     .bind(id)
     .first<PostRow>();
 }
@@ -159,14 +159,7 @@ export async function listFeed(
   if (input.category) {
     const rows = await db
       .prepare(
-        `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
-                p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
-                p.delivered_at, p.withdrawn_at,
-                u.display_name AS author_display_name, u.first_name AS author_first_name,
-                d.name AS district_name
-         FROM posts p
-         JOIN users u ON u.id = p.author_id
-         JOIN districts d ON d.id = p.district_id
+        `${POST_SELECT}
          WHERE p.status = 'open' AND p.type = ? AND p.district_id = ? AND p.category = ?
          ORDER BY p.created_at DESC
          LIMIT ?`,
@@ -177,14 +170,7 @@ export async function listFeed(
   }
   const rows = await db
     .prepare(
-      `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
-              p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
-              p.delivered_at, p.withdrawn_at,
-              u.display_name AS author_display_name, u.first_name AS author_first_name,
-              d.name AS district_name
-       FROM posts p
-       JOIN users u ON u.id = p.author_id
-       JOIN districts d ON d.id = p.district_id
+      `${POST_SELECT}
        WHERE p.status = 'open' AND p.type = ? AND p.district_id = ?
        ORDER BY p.created_at DESC
        LIMIT ?`,
@@ -200,14 +186,7 @@ export async function listMyPosts(
 ): Promise<PostRow[]> {
   const rows = await db
     .prepare(
-      `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
-              p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
-              p.delivered_at, p.withdrawn_at,
-              u.display_name AS author_display_name, u.first_name AS author_first_name,
-              d.name AS district_name
-       FROM posts p
-       JOIN users u ON u.id = p.author_id
-       JOIN districts d ON d.id = p.district_id
+      `${POST_SELECT}
        WHERE p.author_id = ?
        ORDER BY p.created_at DESC`,
     )

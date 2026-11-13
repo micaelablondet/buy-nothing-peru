@@ -95,8 +95,15 @@ export const copy = {
     verOfertas: "Ver ofertas",
     meInteresa: "Me interesa",
     yoTengo: "Yo tengo",
-    responsesEmpty: "Aún no hay respuestas. Llegan en el siguiente paso (M3).",
-    respondSoon: "Responder llega en el siguiente paso.",
+    yaTeIntereso: "Ya te interesó",
+    yaOfreciste: "Ya ofreciste",
+    withdrawResponse: "Retirar mi respuesta",
+    capRegalo: "Ya hay 7 interesados",
+    capPido: "Ya hay 7 ofertas",
+    responsesEmpty: "Aún no hay respuestas.",
+    choose: "Elegir",
+    chooseConfirm: "¿Elegir a {name}? No se puede cambiar después.",
+    goHandoff: "Ir al recojo",
     status: {
       open: "Abierto",
       chosen: "Elegido",
@@ -108,6 +115,28 @@ export const copy = {
     },
     yaResuelto: "Ya resuelto",
     vencio: "Venció",
+  },
+
+  respond: {
+    titleRegalo: "Me interesa",
+    titlePido: "Yo tengo",
+    note: "Nota",
+    noteHint: "Máx. 140 caracteres",
+    previewAs: "Así te verá: {name} · {district}",
+    addPhoto: "Añadir foto",
+    confirm: "Enviar",
+    pidoDefault: "Hola, yo tengo esto y te lo regalo.",
+    close: "Cerrar",
+  },
+
+  handoff: {
+    title: "Coordina el recojo",
+    with: "Con {name}",
+    writeWhatsApp: "Escribir por WhatsApp",
+    tip: "Coordina el recojo en un lugar público y de día.",
+    delivered: "Entregado",
+    received: "Lo recibí",
+    receivedDone: "Confirmaste que lo recibiste.",
   },
 
   myPosts: {

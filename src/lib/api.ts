@@ -161,8 +161,13 @@ export type PostSummary = {
     canWithdraw: boolean;
     showOwnerResponses: boolean;
     showRespond: boolean;
+    alreadyResponded: boolean;
+    myResponseId: string | null;
+    capped: boolean;
+    activeResponseCount: number;
+    showHandoff: boolean;
     statusOnly: boolean;
-  };
+  } | null;
 };
 
 export async function fetchCategories(): Promise<string[]> {
@@ -251,4 +256,119 @@ export async function withdrawPost(id: string): Promise<PostSummary> {
     throw new Error(data.message || "withdraw_failed");
   }
   return data;
+}
+
+export type ResponseItem = {
+  id: string;
+  note: string | null;
+  createdAt: string;
+  name: string;
+  districtName: string | null;
+  photoUrl: string | null;
+};
+
+export async function fetchPostResponses(postId: string): Promise<ResponseItem[]> {
+  const res = await fetch(`/api/posts/${postId}/responses`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("responses_failed");
+  }
+  const data = await parseJson<{ responses: ResponseItem[] }>(res);
+  return data.responses;
+}
+
+export async function createResponse(input: {
+  postId: string;
+  note: string;
+  photo?: File | null;
+}): Promise<void> {
+  const form = new FormData();
+  form.set("note", input.note);
+  if (input.photo) {
+    form.set("photo", input.photo);
+  }
+  const res = await fetch(`/api/posts/${input.postId}/responses`, {
+    method: "POST",
+    credentials: "include",
+    body: form,
+  });
+  const data = await parseJson<{ message?: string }>(res);
+  if (!res.ok) {
+    throw new Error(data.message || "response_failed");
+  }
+}
+
+export async function withdrawMyResponse(responseId: string): Promise<void> {
+  const res = await fetch(`/api/responses/${responseId}/withdraw`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("withdraw_response_failed");
+  }
+}
+
+export async function chooseResponse(
+  postId: string,
+  responseId: string,
+): Promise<void> {
+  const res = await fetch(`/api/posts/${postId}/choose`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ responseId }),
+  });
+  if (!res.ok) {
+    throw new Error("choose_failed");
+  }
+}
+
+export type HandoffPayload = {
+  postId: string;
+  title: string;
+  type: PostType;
+  status: string;
+  tip: string;
+  otherParty: { name: string; whatsapp: string };
+  waUrl: string;
+  prefilledText: string;
+  canMarkDelivered: boolean;
+  canMarkReceived: boolean;
+  receivedConfirmed: boolean;
+  coverUrl: string | null;
+  authorName: string;
+};
+
+export async function fetchHandoff(postId: string): Promise<HandoffPayload> {
+  const res = await fetch(`/api/posts/${postId}/handoff`, {
+    credentials: "include",
+  });
+  if (res.status === 403) {
+    throw new Error("forbidden");
+  }
+  if (!res.ok) {
+    throw new Error("handoff_failed");
+  }
+  return parseJson(res);
+}
+
+export async function markDelivered(postId: string): Promise<void> {
+  const res = await fetch(`/api/posts/${postId}/delivered`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("delivered_failed");
+  }
+}
+
+export async function markReceived(postId: string): Promise<void> {
+  const res = await fetch(`/api/posts/${postId}/received`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("received_failed");
+  }
 }

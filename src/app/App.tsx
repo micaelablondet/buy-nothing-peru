@@ -11,6 +11,7 @@ import { LegalTermsPage } from "@/pages/LegalTermsPage";
 import { MyPostsPage } from "@/pages/MyPostsPage";
 import { OnboardingProfilePage } from "@/pages/OnboardingProfilePage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { HandoffPage } from "@/pages/HandoffPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { PostResponsesPage } from "@/pages/PostResponsesPage";
 import { ProfilePage } from "@/pages/ProfilePage";
@@ -44,6 +45,7 @@ export function App() {
               <Route path="mis-publicaciones" element={<MyPostsPage />} />
               <Route path="p/:id" element={<PostDetailPage />} />
               <Route path="p/:id/respuestas" element={<PostResponsesPage />} />
+              <Route path="p/:id/recojo" element={<HandoffPage />} />
             </Route>
           </Route>
 
