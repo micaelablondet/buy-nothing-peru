@@ -2,7 +2,7 @@
 
 Free-giving PWA for neighbors in Peru (**Regalo** / **Pido**). Spec: [`SPEC.md`](./SPEC.md). Agent rules: [`AGENTS.md`](./AGENTS.md).
 
-**Current slice:** **M7 Phase 0 launch** — product slices M0–M6 complete; launch ops checklist in [`docs/phase0-launch.md`](./docs/phase0-launch.md).
+**Status:** slices M0–M7 built. **Next:** M8 pre-launch hardening and M9 Parkside restyle, then the Phase 0 launch ([`docs/phase0-launch.md`](./docs/phase0-launch.md)). M10 moves admin to its own URL before Phase 1. Prompts for each slice: [`docs/cursor-prompts.md`](./docs/cursor-prompts.md).
 
 ## Quick start
 
@@ -30,7 +30,7 @@ Sign in with **Continuar con cuenta seed (dev)** on `/entrar` when stub auth is 
 | `npm run db:reset:local` | Local D1 migrate + seed |
 | `npm run deploy` | Build + `wrangler deploy` |
 
-Setup: [`docs/m0-setup.md`](./docs/m0-setup.md). Launch: [`docs/phase0-launch.md`](./docs/phase0-launch.md). Free-plan limits: [`docs/cloudflare-free-limits.md`](./docs/cloudflare-free-limits.md).
+Setup: [`docs/m0-setup.md`](./docs/m0-setup.md), admin portal (M10): [`docs/m10-admin-portal-setup.md`](./docs/m10-admin-portal-setup.md). Decisions: [`docs/adr/`](./docs/adr/). Launch: [`docs/phase0-launch.md`](./docs/phase0-launch.md). Free-plan limits: [`docs/cloudflare-free-limits.md`](./docs/cloudflare-free-limits.md).
 
 ## Stack (DEC-15)
 

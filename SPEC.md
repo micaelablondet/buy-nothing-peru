@@ -1,6 +1,6 @@
 # Barrio: Solution Requirements Document (SRD)
 
-**Version:** v0.1 | **Date:** November 10, 2026 | **Status:** DRAFT, ready to build Phase 0
+**Version:** v0.3 | **Date:** November 16, 2026 | **Status:** M0 to M7 built; Phase 0 not launched. Next: M8 hardening and M9 Parkside, then launch (section 13)
 **Owner:** Micaela (Mica) Blondet, product | **Builders:** Mica + coding agents (Cursor)
 **Source of truth:** this file (`SPEC.md`) in the repo. Any hosted copy (Claude Doc, Google Doc) is an export.
 **Adapted from:** the Valere SRD template, trimmed for a solo, agent-built side project.
@@ -14,12 +14,15 @@
 - Each requirement has acceptance criteria in Given/When/Then form or a single testable statement. A requirement is **done** only when its criteria pass in an automated test (see section 12).
 - If something is ambiguous or missing, **stop and add it to section 14 (Open questions)**. Do not guess.
 - UI copy is Spanish (Peru, informal "tú"). This document is English. Spanish strings are in `code font`.
-- Rules specific to coding agents live in `AGENTS.md`.
+- Rules specific to coding agents live in `AGENTS.md`. Human setup: `docs/m0-setup.md` (base) and `docs/m10-admin-portal-setup.md` (admin portal). Launch ops: `docs/phase0-launch.md`. Ready-to-paste prompts for the next slices: `docs/cursor-prompts.md`. Architecture decisions: `docs/adr/`.
+- **Admin, now and later:** in Phase 0 the admin screen lives at `/admin` inside the end-user app (as built). Before Phase 1, M10 moves it to a **separate app on its own URL** (DEC-21, DEC-22). Requirements say which state they describe.
 
 ### Change log
 | Version | Date | Change |
 |---|---|---|
 | v0.1 | 2026-11-10 | First draft from the product brief and the decision session (see section 15) |
+| v0.2 | 2026-11-10 | Resolved OQ-01, OQ-02, OQ-05 (DEC-17 to DEC-19); Pido photo confirmed optional (DEC-20); visual identity now comes from the Parkside design system (section 11); M0 exit criteria and launch checklist updated |
+| v0.3 | 2026-11-16 | **Reconciled with the code as built (M0 to M7).** Admin moves to a separate app on its own URL before Phase 1 (DEC-21, DEC-22), as a second Worker in the same package (no monorepo restructure). New slices: M8 pre-launch hardening (AUTH-04 revised, SAFE-05), M9 Parkside restyle (token mapping in 11.3, light theme only, DEC-23), M10 admin portal split (ADMIN-04 to ADMIN-06). Real names used: Worker `barrio`, `APP_BASE_URL`, `/api/auth/google/callback`. R-09, R-10, OQ-10 added; OQ-04 widened; launch checklist and Phase 1 gate updated. Added `docs/adr/0001-separate-admin-portal.md`, `docs/m10-admin-portal-setup.md`, `docs/cursor-prompts.md`, `design/parkside.tokens.json` |
 
 ---
 
@@ -83,7 +86,7 @@ No user research has been done yet beyond Mica's own experience of her building.
 | **Giver** | A neighbor with something to give | Post quickly, pick the right recipient, hand over, mark done |
 | **Asker** | A neighbor who needs something | Post a Pido, compare offers, pick one |
 | **Building staff** | Concierges, cleaning staff and others who work in the building; counted as users | Same flows as neighbors. Simple, large-text, low-literacy-friendly UI |
-| **Admin** | Mica | Review reports, remove posts, manage the invite code, read metrics |
+| **Admin** | Mica (optionally one trusted co-admin) | Review reports, remove posts, manage invite codes, read metrics. Phase 0: `/admin` in the end-user app. From M10: the **admin portal**, a separate app on its own URL (DEC-21) |
 
 Neighbors and staff are the same account type in the product. Nothing in the data model distinguishes them (see section 14, OQ-09 if you later want to segment).
 
@@ -92,7 +95,7 @@ Neighbors and staff are the same account type in the product. Nothing in the dat
 ## 5. Scope
 
 ### 5.1 In scope (V1)
-Google sign-in; building invite code (Phase 0); profile with a self-declared WhatsApp number; Regalo and Pido posts with photos; feed with category filter; responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin view; minimal analytics; Terms and Privacy pages.
+Google sign-in; building invite code (Phase 0); profile with a self-declared WhatsApp number; Regalo and Pido posts with photos; feed with category filter; responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages.
 
 ### 5.2 Non-goals (do NOT build in V1)
 - **Presto (lending)** and any lending states (due dates, returns, overdue).
@@ -104,7 +107,9 @@ Google sign-in; building invite code (Phase 0); profile with a self-declared Wha
 - SMS or email sending of any kind. Notifications are web push and in-app only.
 - Full-text search, maps, geolocation, address collection.
 - Native iOS/Android apps. Multiple languages. Offline mode.
-- Moderation tooling beyond the admin report view.
+- Moderation tooling beyond ADMIN-01 to ADMIN-06. From M10, any admin feature inside the end-user app.
+- **Dark mode.** Parkside has a dark theme, but Barrio ships light only in V1 (DEC-23).
+- Admin roles or permissions levels. Every admin can do everything in the admin portal.
 - Cross-district discovery beyond a district filter.
 
 ### 5.3 Phases
@@ -154,7 +159,7 @@ Terminology (use consistently in code and UI):
 ### 7.2 Entities (logical; exact columns may vary, names must not)
 | Entity | Key fields |
 |---|---|
-| `users` | id, google_sub (unique), display_name, whatsapp_e164, district, is_admin (derived from allowlist), created_at, deleted_at |
+| `users` | id, google_sub (unique), display_name, whatsapp_e164, district, created_at, deleted_at. **Admin status is never stored** on the user or in the session (AUTH-04). The unused `users.is_admin` column from M0 is dropped in M10 |
 | `posts` | id, type (`regalo`\|`pido`), owner_id, title (max 60), description (max 500), category, district, status, chosen_response_id, created_at, expires_at, chosen_at, delivered_at, received_confirmed_at (nullable, HAND-04), disc_answer (nullable, DISC-01) |
 | `post_photos` | id, post_id, r2_key, position (Regalo: 1 to 3 required; Pido: 0 to 1 optional) |
 | `responses` | id, post_id, user_id, note (max 140), photo_r2_key (optional, Pido only), status, created_at |
@@ -162,14 +167,14 @@ Terminology (use consistently in code and UI):
 | `push_subscriptions` | id, user_id, endpoint, keys, created_at |
 | `reports` | id, reporter_id, post_id, response_id (nullable), reason, text, status, created_at |
 | `invite_codes` | id, code, active, created_at |
-| `events` | id, user_id (nullable), name, props (json), created_at |
+| `events` | id, user_id (nullable), name, props (json), created_at. Admin actions use name `admin_action` with `props.admin_email` (ADMIN-06) |
 
 ### 7.3 Post state machine
 `open` → `chosen` → `delivered`
 `open` → `expired` (7 days after creation with no choice)
 `open` or `chosen` → `withdrawn` (owner cancels)
-`any` → `removed` (admin)
-`chosen` → `closed` (14 days after choice with no delivery) *(assumption, see OQ-05)*
+`any` → `removed` (admin only)
+`chosen` → `closed` (14 days after choice with no delivery; not counted as a handoff; see DEC-19)
 
 Only the transitions above are legal. All transitions go through one module (`postStateMachine`) with unit tests. UI never writes status directly.
 
@@ -196,7 +201,7 @@ A response is `not_chosen` when another response is chosen on the same post. A u
 | AUTH-01 | P0 | Sign in with **Google** (OpenID Connect), basic scopes only (`openid`, `email`, `profile`). No passwords. | **Given** a signed-out user **When** they tap `Continuar con Google` and complete consent **Then** they land signed in. No scope beyond openid/email/profile is ever requested. |
 | AUTH-02 | P0 | **Invite code gate** for new accounts when `INVITE_REQUIRED=true`. Existing accounts are not asked again. | **Given** a new Google user and an active code **When** they enter the correct code **Then** the account is created. A wrong or inactive code shows `Código inválido` and creates nothing. With `INVITE_REQUIRED=false` the step is skipped. |
 | AUTH-03 | P0 | Sessions via signed, HttpOnly, Secure, SameSite=Lax cookie, 30-day lifetime. Logout clears it. | A request without a valid session to any write endpoint returns 401. |
-| AUTH-04 | P0 | Admin = user whose Google email is in the `ADMIN_EMAILS` allowlist (env var). | A non-admin receives 403 on every `/admin` route and API. |
+| AUTH-04 | P0 | **Admin check.** *Phase 0 (M8):* admin = signed-in user whose **current** Google email is in `ADMIN_EMAILS`, checked against the database user and the allowlist **on every admin request**. Admin status is never read from the session token. `ADMIN_EMAILS` is a Worker **secret**, not a value in `wrangler.toml`. *From M10:* the end-user app has **no admin role and no admin routes**; all admin work happens in the admin portal (ADMIN-04). | *M8:* **Given** an admin whose email is removed from `ADMIN_EMAILS` **When** they call any `/api/admin/*` route with their existing session **Then** 403, with no re-login needed. `wrangler.toml` contains no email. *M10:* `/admin` and `/api/admin/*` on the end-user host return **404**; end-user code imports nothing from the admin code (checked in CI). |
 | PROF-01 | P0 | Onboarding after first sign-in: display name (prefilled from Google, editable), **WhatsApp number (required)**, district (default `Barranco`). | **Given** an incomplete profile **When** the user tries to post or respond **Then** they are sent to complete the profile and returned to the same screen. |
 | PROF-02 | P0 | WhatsApp number validated as a Peruvian mobile: `+51` followed by 9 digits starting with 9. Stored as E.164. **Not verified in V1.** | `987654321` and `+51987654321` are accepted and stored as `+51987654321`. `12345` is rejected with a clear message. |
 | PROF-03 | P0 | User can edit name, number and district at any time. | Changes appear on the user's future posts and responses. |
@@ -258,19 +263,30 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 | PUB-03 | P0 | `Compartir en WhatsApp` button on post detail opens `https://wa.me/?text=<title + link>`. | Event `share_clicked` recorded. |
 | PUB-04 | P0 | Acting on a public page (responding, posting) requires sign-in and returns the user to that page. | After Google sign-in and any needed invite/profile steps, the user returns to `/p/{id}`. |
 
-### 8.7 Safety, reports and admin (SAFE, ADMIN)
+### 8.7 Safety and reports (SAFE)
 
 | ID | Pri | Requirement | Acceptance criteria |
 |---|---|---|---|
 | SAFE-01 | P0 | `Reportar` on every post and response with reasons: `Artículo prohibido`, `Estafa o engaño`, `Comportamiento inapropiado`, `Otro` plus optional text. | A report is stored and appears in the admin view. The reporter sees a confirmation. |
 | SAFE-02 | P0 | **Prohibited-items list** shown at post creation and in the Terms. Draft list: weapons, drugs and alcohol, medicines, live animals, stolen or illegal items, perishable or opened food. | The list is visible before submit on both post types. Mica reviews the final list (OQ-07). |
-| SAFE-03 | P0 | Admin can **remove** a post. | Post becomes `removed` and leaves feed and public page (public page shows `Esta publicación ya no está disponible`). |
+| SAFE-03 | P0 | Admin can **remove** a post. | Post becomes `removed` (through `postStateMachine`) and leaves feed and public page (public page shows `Esta publicación ya no está disponible`). |
 | SAFE-04 | P0 | **Rate limits:** per user, max 10 posts/day and 30 responses/day; per IP, sensible limits on auth endpoints. | Exceeding returns a friendly Spanish message. |
-| ADMIN-01 | P0 | Admin view at `/admin`: open reports, posts list with remove action. | Only admins can access (AUTH-04). |
-| ADMIN-02 | P0 | Admin can create, activate and deactivate invite codes. | A deactivated code is rejected at AUTH-02. |
-| ADMIN-03 | P0 | Admin metrics page showing the Phase gate numbers: accounts, CH/wk, 48h response rate, median post-form time, DISC-01 answers. | Numbers match section 10 definitions on seed data (tested). |
+| SAFE-05 | P0 | **CORS (M8):** the API answers cross-origin requests with credentials **only** for the app's own origin (`APP_BASE_URL`; plus the Vite dev origin when not in production). It never reflects an arbitrary `Origin`. | A request with `Origin: https://evil.example` gets no `Access-Control-Allow-Origin` header. A request from `APP_BASE_URL` gets it, with credentials allowed. Tested. |
 
-### 8.8 Legal (LEGAL)
+### 8.8 Admin (ADMIN)
+
+*Phase 0 (as built):* the admin screen is `/admin` in the end-user app, backed by `/api/admin/*` in the same Worker. *From M10 (before Phase 1):* it becomes the **admin portal**, a separate app (Worker `barrio-admin`) on its **own URL**, built from the same repo and sharing the same database. See section 11.4 for hostnames and DEC-21 and DEC-22 for why and when. ADMIN-01 to ADMIN-03 are built; ADMIN-04 to ADMIN-06 are M10.
+
+| ID | Pri | Requirement | Acceptance criteria |
+|---|---|---|---|
+| ADMIN-01 | P0 | Admin home (Phase 0: `/admin`; from M10: the admin portal's **own URL**, section 11.4). Home shows **open reports** (with the reported post, reason, text, reporter's display name, date) and a **posts list** (filter by status) with a `Quitar publicación` action. An admin can mark a report `resolved`. | Removing a post sets it to `removed` (SAFE-03) and marks its open reports `resolved`. **No WhatsApp number or email of any user is shown** (see OQ-10). |
+| ADMIN-02 | P0 | Admin can create, activate and deactivate invite codes. | A deactivated code is rejected at AUTH-02 in the end-user app. |
+| ADMIN-03 | P0 | Admin metrics page showing the Phase gate numbers: accounts, CH/wk, 48h response rate, median post-form time, inflation check, DISC-01 answers. | Numbers match section 10 definitions on seed data (tested). Metric queries live in `worker/lib/metrics.ts`, shared code, not in the admin UI. |
+| ADMIN-04 | P0 (M10) | **Access control, two layers, fail closed.** (1) The `barrio-admin` Worker is protected by **Cloudflare Access** (Zero Trust free plan) at the Worker level, so its `workers.dev`, preview and custom-domain URLs are all covered. The Access policy allows only the admin emails. (2) The admin Worker **also** verifies identity on every request: it validates the `Cf-Access-Jwt-Assertion` JWT (signature against the team's public keys, `aud` = `ACCESS_AUD`, not expired) and checks the email against `ADMIN_EMAILS`. `ctx.access` may be used only where it is confirmed to be present (it is not passed in some setups, e.g. behind static assets). | **Given** no Access token **Then** 403. **Given** a valid token whose email is not in `ADMIN_EMAILS` **Then** 403. **Given** a token with the wrong `aud`, a bad signature, or an expired time **Then** 403. **Given** a valid token for a listed email **Then** 200. Tested with a locally signed test key; checked once on the deployed URL from a private window. |
+| ADMIN-05 | P0 (M10) | **Isolation from the end-user app.** The admin URL is never linked from the end-user app (the Profile link to `/admin` is removed). The admin portal sends `X-Robots-Tag: noindex` and serves a `robots.txt` that disallows everything. The end-user session cookie is **host-only** (no `Domain` attribute), so it is never sent to the admin host, and the admin portal never accepts it. | Response headers and `robots.txt` checked in tests. The end-user `Set-Cookie` has no `Domain` attribute. A request to the admin API with a valid end-user session cookie and no Access token gets 403. |
+| ADMIN-06 | P0 (M10) | **Audit trail.** Every admin write (remove post, resolve report, invite code change) records one `admin_action` event with the admin email, the action and the target id. | Each admin write creates exactly one event. A failed write creates none. |
+
+### 8.9 Legal (LEGAL)
 
 | ID | Pri | Requirement | Acceptance criteria |
 |---|---|---|---|
@@ -285,17 +301,19 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 | Devices | Mobile-first at **375px**. Android Chrome (last 2 versions) and iOS Safari 16.4+. Works on slow 4G. |
 | Performance | Feed loads usable content in under **3s on 4G** on a mid-range Android. Photos resized client-side before upload; images served in web-appropriate sizes. |
 | Accessibility | Body text at least 16px, tap targets at least 44px, WCAG AA color contrast, plain-language Spanish. Designed so staff with limited tech comfort can complete a post and a response. |
-| Security | Authorization checked server-side on **every** write and on every read of private data. Secrets in Cloudflare environment variables only. No personal data in URLs or logs. Upload validation: image types only, size limit. Tests required (section 12.3). |
+| Security | Authorization checked server-side on **every** write and on every read of private data. Secrets in Cloudflare environment variables only, set per Worker (the end-user app never holds admin secrets and the reverse). No personal data in URLs or logs. Upload validation: image types only, size limit. Tests required (section 12.3). |
+| Admin isolation | From M10: admin portal on its own URL, behind Cloudflare Access plus an in-Worker identity check (ADMIN-04, ADMIN-05). A bug in the end-user app must not expose admin actions, and the reverse. Until then: AUTH-04 (M8 version) and SAFE-05. |
+| Public repo | The repo is public. Nothing personal or secret goes in any committed file, including `wrangler.toml` (emails, IDs of real people, keys). |
 | Privacy | Collect only: Google name and email, WhatsApp number, district, photos the user uploads. Numbers revealed per HAND-02 only. Account deletion per PROF-04. |
 | Cost | Run on **Cloudflare free plans**. Confirm free-plan limits for Workers, D1, R2 and Cron Triggers during setup (OQ-03). Must work within them for the pilot. |
 | Reliability | Scheduled jobs (expiry, nudge) are idempotent. |
-| Language | All UI copy in `es-PE`, kept in one copy file, never hard-coded in components. |
+| Language | All UI copy in `es-PE`, kept in one copy file per app (`src/copy/es-PE.ts`; from M10 also `admin/src/copy/es-PE.ts`), never hard-coded in components. |
 
 ---
 
 ## 10. Analytics and metric definitions (ANLY-01)
 
-Record these events (table `events`): `user_signed_up` (with `via_invite`), `post_form_opened` (type), `post_created` (type), `response_created`, `response_withdrawn`, `response_chosen`, `handoff_delivered`, `handoff_received_confirmed`, `post_expired`, `nudge_sent`, `share_clicked`, `public_page_viewed`, `report_created`, `disc_answered`.
+Record these events (table `events`): `user_signed_up` (with `via_invite`), `post_form_opened` (type), `post_created` (type), `response_created`, `response_withdrawn`, `response_chosen`, `handoff_delivered`, `handoff_received_confirmed`, `post_expired`, `nudge_sent`, `share_clicked`, `public_page_viewed`, `report_created`, `disc_answered`, and from the admin portal `admin_action` (ADMIN-06; excluded from all user metrics).
 
 **Definitions (ADMIN-03 computes these):**
 - **Signed-up accounts:** count of users with `deleted_at` null.
@@ -308,23 +326,94 @@ Record these events (table `events`): `user_signed_up` (with `via_invite`), `pos
 
 ## 11. Technical architecture
 
-Recommended defaults. A coding agent may propose a different option within Cloudflare, but must record it as an ADR (see `AGENTS.md`) and get Mica's approval first.
+Defaults, matching the code as built. A coding agent may propose a different option within Cloudflare, but must record it as an ADR (see `AGENTS.md`) and get Mica's approval first.
+
+### 11.1 Stack
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Hosting and API | **Cloudflare Workers** with **Hono** (TypeScript) | One Worker serves the API, the server-rendered public pages and the static app |
-| Frontend | React + Vite PWA, mobile-first | Installable, service worker used for push |
-| Database | **Cloudflare D1** (SQLite) | Migrations as SQL files, committed |
-| Photos | **Cloudflare R2** | Client-side resize before upload |
-| Auth | Google OIDC implemented in the Worker, signed cookie sessions | No password storage. No SMS, no Twilio |
+| End-user app | Worker **`barrio`** (`wrangler.toml`, entry `worker/index.ts`): **Hono** API, server-rendered public pages (`/p/*`), static React PWA from `dist/`, Cron Triggers | As built |
+| Admin portal (M10) | Worker **`barrio-admin`** (`wrangler.admin.toml`, entry `worker/admin/index.ts`): Hono admin API + a small React app built from `admin/` into `dist-admin/` | Separate URL, behind **Cloudflare Access** (ADMIN-04). Same repo, same `package.json` |
+| Frontend | React + Vite, mobile-first. Only the end-user app is a PWA | Service worker in the end-user app only |
+| Database | **One D1 database** (`barrio`, binding `DB`), bound to both Workers from M10 | Migrations only in `migrations/`, applied once, before deploying either Worker. Local dev: both Workers share one local state (`--persist-to`) |
+| Photos | **Cloudflare R2** (`barrio-photos`), bound to `barrio` | Client-side resize before upload |
+| End-user auth | Google OIDC in `worker/auth/google.ts`, signed host-only cookie sessions in `worker/session.ts` | No password storage. No SMS, no Twilio |
+| Admin auth | Phase 0: AUTH-04 (M8 version). From M10: **Cloudflare Access** (Zero Trust free plan, up to 50 users) + JWT and allowlist check in `barrio-admin` | No admin login screen to build |
 | Notifications | **Web Push (VAPID)** + in-app inbox | iOS needs the PWA installed |
-| Jobs | **Cron Triggers** | Expiry and nudge, idempotent |
-| Source control and CI | **GitHub** + GitHub Actions | Playwright e2e on every PR |
-| Dev environment | **Cursor** | Agent-agnostic rules in `AGENTS.md` |
+| Jobs | **Cron Triggers** on `barrio` only | Expiry and nudge, idempotent |
+| Source control and CI | **GitHub** (public repo) + GitHub Actions (`.github/workflows/ci.yml`: type-check, unit tests, build, Playwright e2e) | M10 adds the admin build and tests to CI. Deploys stay manual (`npm run deploy`, and `npm run deploy:admin` from M10) |
+| Dev environment | **Cursor** | Rules in `AGENTS.md`; prompts in `docs/cursor-prompts.md` |
 
-**Design tokens:** all colors, spacing and type sizes are CSS variables in `src/styles/tokens.css`. No hard-coded hex values in components. (A full Barrio design system is out of scope for V1; keep the UI simple and consistent.)
+### 11.2 Repository layout
 
-**Domain:** a custom domain is likely needed for the Google consent screen and a clean share link (OQ-04).
+```
+SPEC.md  AGENTS.md  README.md
+design/parkside.tokens.json   Parkside source (DEC-17)
+docs/                         setup, launch checklist, ADRs, Cursor prompts
+migrations/                   D1 migrations: the only place, used by both Workers
+scripts/                      seed.sql; build-tokens.mjs (M9)
+worker/                       end-user Worker "barrio": index.ts, routes/, auth/, session.ts
+worker/domain/ db/ lib/       shared code: state machines, queries, metrics, rules
+worker/admin/                 M10: admin Worker "barrio-admin" (entry, admin routes, Access check)
+src/                          end-user React PWA (pages, components, copy, styles/tokens.css)
+admin/                        M10: admin React app (own index.html, own copy file)
+wrangler.toml                 Worker "barrio"
+wrangler.admin.toml           M10: Worker "barrio-admin"
+```
+
+**Boundary rules (from M10, checked in CI by a test that scans imports):**
+- `worker/admin/**` may import `worker/domain`, `worker/db` and `worker/lib`. Never `worker/index.ts`, `worker/routes`, `worker/auth` or `worker/session.ts`.
+- End-user Worker code never imports `worker/admin/**`.
+- `admin/**` may import `src/styles/**` (tokens) and nothing else from `src/`. `src/**` never imports `admin/**`.
+- All status changes, including admin removal, go through `postStateMachine` in `worker/domain`.
+
+### 11.3 Visual identity (M9)
+
+**DEC-17:** Barrio uses the **Parkside design system** for color, type, spacing and radius, in both apps. The source is `design/parkside.tokens.json`. **Light theme only** in V1 (DEC-23).
+
+M9 does three things in one PR:
+1. Write `scripts/build-tokens.mjs`, which generates the Parkside block of `src/styles/tokens.css` from the JSON (light values only). Barrio-only layout tokens (`--tap-min`, `--shell-max`, `--line-tight`, `--line-normal`, `--space-3`, `--space-5`, `--space-8`) stay in a hand-kept block of the same file.
+2. Rename the variables used in components and `src/styles/shell.css` to Parkside names, using the table below. Components already use tokens everywhere (no hard-coded hex), so this is a rename, not a redesign.
+3. Self-host the fonts and apply EB Garamond to headings.
+
+| Current variable | Parkside variable | Notes |
+|---|---|---|
+| `--color-surface` | `--color-surface` | New value |
+| `--color-surface-elevated` | `--color-surface-raised` | Cards, sheets, inputs |
+| `--color-ink`, `--color-ink-muted` | same names | New values |
+| `--color-brand` | `--color-primary` | Primary buttons, links, active tab |
+| `--color-on-brand` | `--color-on-primary` | |
+| `--color-brand-soft` | `--color-moss` | Background only, `ink` text on it |
+| `--color-border` | `--color-line` | Inputs and controls use `--color-line-strong` |
+| `--color-danger` | `--color-danger` | |
+| `--color-focus` | `--color-primary` | Focus ring |
+| `--font-sans` | `--font-sans` (Work Sans) | Add `--font-display` (EB Garamond) for headings |
+| `--text-xs`, `-sm`, `-md`, `-lg` | `label` 12px, `body-small` 14px, `body` 16px, `heading-3` 18px | Same sizes |
+| `--text-xl` (20px) | `heading-3` (18px) | Small change |
+| `--text-2xl`, `--text-3xl` | `heading-2` 24px, `heading-1` 32px | 30 to 32px |
+| `--radius-sm`, `-md`, `-lg`, `-full` | `--radius-sm` 6px, `-md` 12px, `-lg` 24px, `-pill` | 8 to 6px, 16 to 24px |
+| `--space-1`, `-2`, `-4`, `-6`, `-10` | same names | Same values |
+
+Parkside rules that apply to Barrio:
+- **Fonts:** EB Garamond for display and headings (`display`, `heading-1`, `heading-2`), Work Sans for UI and body. Self-host WOFF2 subsets (Latin, with Spanish accents and `¿ ¡ ñ`), weights 400 and 600 only, `font-display: swap`, system fallbacks as in the tokens. Fonts must not break the 3s-on-4G budget (section 9).
+- **One primary action per view**, as a filled `primary` button with `on-primary` text. Secondary actions use `bark`; destructive actions use `danger`.
+- **Contrast:** `leaf`, `clay` and `olive` are under 4.5:1 on light surfaces, so use them only for text of 24px or more, icons, or decoration. Body and small text use `ink`, `ink-muted`, `primary`, `bark` or `robin-deep`. `moss` and `robin` are backgrounds only, with `ink` text.
+- **Status colors:** `warning` and `danger` are for text or icons, never fills with white text unless contrast is verified.
+- **Gaps in Parkside:** it has no logo, icons or components. Keep Barrio's existing components and icons and restyle them through tokens; do not add new ones. The wordmark stays plain text until OQ-08 (name validation).
+- **M9 exit:** before and after screenshots at 375px of Entrar, feed, post detail, create post, profile and admin in the PR; contrast spot-checked; no hard-coded hex or pixel sizes added.
+
+### 11.4 Hostnames and URLs
+
+| App | Now (`workers.dev`) | With a custom domain (OQ-04) |
+|---|---|---|
+| End-user app | `barrio.<account>.workers.dev` | `<domain>` (to be decided) |
+| Admin portal (M10) | `barrio-admin.<account>.workers.dev` | `admin.<domain>` |
+
+- Only the end-user URL is shared with neighbors and used in `Compartir en WhatsApp` links and Open Graph tags. It comes from `APP_BASE_URL`, never hard-coded.
+- Google sign-in callback (as built): `<APP_BASE_URL>/api/auth/google/callback`.
+- Local ports: `barrio` 8787, `barrio-admin` 8788, Vite dev server default.
+- The admin URL is never published. Hiding it is **not** the security; Cloudflare Access and ADMIN-04 are.
+- Moving to a custom domain needs no code change: add a Custom Domain to each Worker, update `APP_BASE_URL`, and add the new redirect URI in Google. Worker-level Access follows the admin Worker to its new hostname.
 
 ---
 
@@ -340,11 +429,15 @@ Recommended defaults. A coding agent may propose a different option within Cloud
 ### 12.2 E2E tests (Playwright, run in GitHub Actions)
 The **core loop** must have e2e coverage: (1) sign in with a test user, (2) create Regalo with photo, (3) another user responds, (4) owner chooses, (5) both see the WhatsApp link, (6) giver marks `Entregado`. Plus the same for Pido, and these rule tests: cap of 7 and slot reopening, withdraw, expiry, 48h nudge fires once, public page shows no number.
 
+**Admin smoke test (M10):** with a simulated Access identity (a locally signed test JWT, or Wrangler's local Access simulation), an admin removes a post in the admin portal and the post disappears from the end-user feed and public page; an `admin_action` event exists.
+
 ### 12.3 Authorization tests (required)
 - A signed-out user cannot write anything.
 - User A cannot edit, withdraw or choose on user B's post.
 - A user who is not a party to a handoff cannot get the other person's number.
-- Non-admins get 403 on admin routes.
+- *M8:* an admin removed from `ADMIN_EMAILS` gets 403 on `/api/admin/*` with their existing session (AUTH-04). A foreign `Origin` gets no CORS allow header (SAFE-05).
+- *M10:* end-user host: `/admin` and `/api/admin/*` return 404 (AUTH-04). Admin host: no token, wrong `aud`, bad signature, expired token, or an email not in `ADMIN_EMAILS` all get 403; a valid end-user session cookie alone gets 403 (ADMIN-04, ADMIN-05).
+- Admin API responses never include a WhatsApp number or email of a user (ADMIN-01).
 - Public pages and open-post APIs never include a number or email.
 
 ### 12.4 Test data
@@ -354,18 +447,22 @@ A **seed script** creates a test district, test users, posts in every status and
 
 ## 13. Build plan (vertical slices for agents)
 
-Each slice ends in something Mica can open and use. Do them in order.
+Each slice ends in something Mica can open and use. Do them in order. One slice = one branch = one PR. Ready-to-paste prompts for M8 to M10 are in `docs/cursor-prompts.md`.
 
-| Slice | Requirement IDs | Exit criteria |
-|---|---|---|
-| M0 Foundation | (none) | Repo, Cloudflare project, CI, seed script, tokens file, copy file, empty authenticated app shell deployed |
-| M1 Identity | AUTH-01 to AUTH-04, PROF-01 to PROF-04, LEGAL-01 | Sign in with Google, invite gate, profile, deletion |
-| M2 Posts and feed | POST-01 to POST-08 | Create Regalo and Pido, feed, detail, withdraw, expiry job |
-| M3 Responses and handoff | RESP-01 to RESP-07, HAND-01 to HAND-05 | Full loop works end to end; core e2e green |
-| M4 Notifications | NOTIF-01 to NOTIF-04 | Inbox, push, nudge job |
-| M5 Public and sharing | PUB-01 to PUB-04 | Public pages with working WhatsApp preview; share button |
-| M6 Safety and admin | SAFE-01 to SAFE-04, ADMIN-01 to ADMIN-03, ANLY-01, DISC-01 | Reports, removal, rate limits, metrics page |
-| M7 Phase 0 launch | | Launch checklist (section 16) done |
+| Slice | Requirement IDs | Exit criteria | Status |
+|---|---|---|---|
+| M0 Foundation | (none) | Repo, Cloudflare project, CI, seed script, tokens file, copy file, app shell | Done (PR #3) |
+| M1 Identity | AUTH-01 to AUTH-04, PROF-01 to PROF-04, LEGAL-01 | Sign in with Google, invite gate, profile, deletion | Done (PR #4) |
+| M2 Posts and feed | POST-01 to POST-08 | Create Regalo and Pido, feed, detail, withdraw, expiry job | Done (PR #5) |
+| M3 Responses and handoff | RESP-01 to RESP-07, HAND-01 to HAND-05 | Full loop works end to end; core e2e green | Done (PR #6) |
+| M4 Notifications | NOTIF-01 to NOTIF-04 | Inbox, push, nudge job | Done (PR #7) |
+| M5 Public and sharing | PUB-01 to PUB-04 | Public pages with working WhatsApp preview; share button | Done (PR #8) |
+| M6 Safety and admin | SAFE-01 to SAFE-04, ADMIN-01 to ADMIN-03, ANLY-01, DISC-01 | Reports, removal, rate limits, metrics page at `/admin` | Done (PR #9) |
+| M7 Launch readiness | (none) | CI, authorization e2e, PWA install prompt | Done (PR #10) |
+| **M8 Pre-launch hardening** | AUTH-04 (M8 version), SAFE-05, sections 12.2 and 12.3 | Admin check reads the current allowlist on every request; `ADMIN_EMAILS` moved out of `wrangler.toml` into a secret; CORS limited to the app's own origin; **core-loop e2e for Regalo and Pido** (post, respond, choose, WhatsApp link, `Entregado`) plus the rule tests in 12.2; the 12.3 cases not yet covered (choose on someone else's post; non-party cannot get the number) | **Next** |
+| **M9 Parkside restyle** | DEC-17, DEC-23, section 11.3 | Tokens generated from `design/parkside.tokens.json`; variables renamed per 11.3; fonts self-hosted; screenshots before and after in the PR | **Next** |
+| Phase 0 launch | (none) | Launch checklist (section 16) done | After M9 |
+| **M10 Admin portal split** | AUTH-04 (M10 version), ADMIN-01 to ADMIN-06 | `barrio-admin` deployed on its own URL behind Access; ADMIN-04 tests green; `/admin` and `/api/admin/*` gone from `barrio` (404); admin link removed from Profile; audit events; `users.is_admin` dropped; admin smoke test green; boundary test in CI | Before Phase 1 (gate item) |
 
 ---
 
@@ -379,17 +476,20 @@ Each slice ends in something Mica can open and use. Do them in order.
 | R-04 | HIGH | **Verification options after Phase 0:** WhatsApp inbound verification needs a dedicated number (a prepaid SIM) and a Meta business setup; SMS costs money. | Decide at the Phase 1 gate (OQ-06). | Mica |
 | R-05 | MEDIUM | **Staff may not have a Google account** (or may not remember its password). | Ask staff before launch; help them sign in once at onboarding. If several cannot, revisit the identity design (DEC-09) before Phase 1. | Mica |
 | R-06 | MEDIUM | **iOS web push** works only for PWAs added to the home screen. | In-app inbox is the fallback; prompt `Añadir a inicio` after the first post. | Agent / Mica |
-| R-07 | MEDIUM | **Free-plan limits** on Cloudflare (requests, D1, R2, cron). | Verify in M0; design queries to be light. | Agent |
+| R-07 | MEDIUM | **Free-plan limits** on Cloudflare (requests, D1, R2, cron; Workers Free has a 10 ms CPU limit per request). | Limits recorded in `docs/cloudflare-free-limits.md`; keep queries light; a second Worker in M10 stays within the 100-Worker limit. | Agent |
 | R-08 | MEDIUM | **Peru data-protection obligations** when collecting phone numbers (Ley 29733) and Terms/Privacy adequacy. | Get legal advice before expanding beyond the pilot. | Mica |
-| OQ-01 | LOW | **Visual identity:** who defines the first Barrio palette, type and logo (values for `tokens.css`)? A simple, consistent default is acceptable for Phase 0. | Pick a minimal palette before M0 ends, or let the agent propose one for approval. | Mica |
-| OQ-02 | LOW | **Phase 0 start date** and who seeds the first 5 to 8 items and 2 to 3 Pidos. | Set the start date once M6 is done; add the gate review date to the calendar. | Mica |
-| OQ-03 | MEDIUM | Confirm the exact Cloudflare free-plan limits. | Check in M0. | Agent |
-| OQ-04 | MEDIUM | Is a custom domain required for the Google OAuth consent screen (privacy policy and homepage URLs)? Which domain? | Check Google's requirements; likely buy a domain through Cloudflare (small annual cost). | Mica |
-| OQ-05 | LOW | **Assumption:** a `chosen` post with no `Entregado` after 14 days auto-closes (not counted). | Confirm or change. | Mica |
+| R-09 | MEDIUM | **Two apps means more setup and more ways to drift** (M10): two Workers, two sets of secrets, Access, one shared database and its migrations; Access identity (`ctx.access`) is not passed in some Worker setups. | Same repo and package; migrations only in `migrations/`; shared code only in `worker/domain`, `worker/db`, `worker/lib`; boundary test in CI; `docs/m10-admin-portal-setup.md`; ADMIN-04 validates the JWT header itself and is proven on the deployed URL before the old `/admin` is removed. | Agent / Mica |
+| R-10 | MEDIUM | **Public repo**: anything committed stays in git history (today: the admin email in `wrangler.toml`). | M8 moves `ADMIN_EMAILS` to a secret. Never commit personal data, keys or real user data. Consider a secret scan in CI later. | Mica / Agent |
+| OQ-01 | ~~LOW~~ **RESOLVED** | Visual identity: Parkside design system (DEC-17). Logo is a text wordmark until OQ-08. | None. | Mica |
+| OQ-02 | LOW (part resolved) | Seeding is decided (Mica + 2 friendly neighbors, DEC-18). **Still open: the Phase 0 start date.** | Set the start date once M9 is merged; add the gate review date to the calendar. | Mica |
+| OQ-03 | MEDIUM | Confirm the exact Cloudflare free-plan limits, and whether enabling **R2** and **Zero Trust** requires a payment method on file (likely for R2) even when usage stays free. | Workers, D1 and R2 limits are in `docs/cloudflare-free-limits.md`. Payment-method question: check when creating the R2 bucket (before Phase 0 launch) and Zero Trust (M10). If Mica won't add a card, the agent proposes an alternative in an ADR. | Agent / Mica |
+| OQ-04 | MEDIUM | Is a custom domain required for the Google OAuth consent screen (privacy policy and homepage URLs)? Which domain? It will serve **two hostnames**: the end-user app on the root and the admin portal on `admin.` (section 11.4). | Check Google's requirements; likely buy a domain through Cloudflare (small annual cost). | Mica |
+| OQ-05 | ~~LOW~~ **RESOLVED** | A `chosen` post with no `Entregado` auto-closes after 14 days (DEC-19). | None. | Mica |
 | OQ-06 | MEDIUM | Which verification method at the Phase 1 gate: WhatsApp inbound (needs a number) or SMS (cost)? | Decide before opening Barranco. | Mica |
 | OQ-07 | LOW | Final prohibited-items list. | Mica reviews the draft in SAFE-02. | Mica |
 | OQ-08 | LOW | **Name validation:** Barrio is a working name (Indecopi, app stores, handles, tone test in Lima). | Do before any public launch. | Mica |
 | OQ-09 | LOW | Do you want to segment neighbors vs staff in metrics? Currently not tracked. | Add an optional profile field only if useful. | Mica |
+| OQ-10 | LOW | Should an admin see a **reported user's WhatsApp number or email** to follow up on a scam report? Default in V1: no (ADMIN-01). | Decide after the first real report. If yes, show it only on that report, record it as an `admin_action` event, and state it in the privacy policy. | Mica |
 
 ---
 
@@ -413,17 +513,35 @@ Each slice ends in something Mica can open and use. Do them in order.
 | DEC-14 | 2026-11-10 | Phase 0 sign-up bar is **10+ accounts including staff** (lowered from an earlier proposal of 15) | Building-scale realism | 15+ households |
 | DEC-15 | 2026-11-10 | Stack: **Cursor + GitHub + Cloudflare (Workers, D1, R2), free plans** | Tools Mica already uses; one platform | Vercel + Supabase; Firebase |
 | DEC-16 | 2026-11-10 | **One `SPEC.md` with stable IDs + `AGENTS.md`**; Given/When/Then criteria; e2e tests on the core loop | Precise for agents, traceable tests | Per-feature spec folder; narrative brief |
+| DEC-17 | 2026-11-10 | **Visual identity = Parkside design system** (EB Garamond + Work Sans, Parkside color, spacing and radius tokens); `tokens.css` generated from `design/parkside.tokens.json`; text wordmark until the name is validated | Mica already built it; saves a design cycle; tokens are agent-readable | Agent-proposed palette; Barrio-specific system for V1 |
+| DEC-18 | 2026-11-10 | **Phase 0 seeding: Mica + 2 friendly neighbors** post the first 5 to 8 Regalos and 2 to 3 Pidos before opening the invite | Real items from more than one person, so the feed does not look like a one-person demo | Mica alone; launch empty |
+| DEC-19 | 2026-11-10 | A `chosen` post with no `Entregado` **auto-closes 14 days after choice** and does not count as a handoff | Keeps the north star honest and the feed clean; long enough for a weekend pickup to slip | 7 days; never auto-close |
+| DEC-20 | 2026-11-10 | **Pido allows one optional reference photo** (Regalo still requires 1 to 3) | A photo helps responders match "I need this exact thing", but must not block a quick ask | No photos on Pido; required photo |
+| DEC-21 | 2026-11-16 | **Admin portal becomes a separate app on its own URL**: a second Worker (`barrio-admin`) built from the same repo and `package.json`, sharing `worker/domain`, `worker/db`, `worker/lib` and the same D1, protected by Cloudflare Access plus an in-Worker JWT and allowlist check. Replaces `/admin` in the end-user app. Details in `docs/adr/0001-separate-admin-portal.md` | Admin code and secrets never ship to neighbors; Access gives free, strong admin login without building one; the two apps deploy and fail independently; a second Worker fits the existing code without a restructure | `/admin` in the same app forever; a monorepo restructure (`apps/`, `packages/`); a separate repo; a separate database |
+| DEC-22 | 2026-11-16 | **Sequencing:** M8 hardening and M9 Parkside before the Phase 0 launch; M10 admin split **before Phase 1** (a Phase 1 gate item), not before Phase 0 | Phase 0 users are Mica's neighbors and Mica is the only admin, so M8 closes the real holes; the split's value grows when strangers join in Barranco; launching sooner means learning sooner | Split before Phase 0; launch with no changes |
+| DEC-23 | 2026-11-16 | **Light theme only in V1**, even though Parkside has a dark theme | Halves the visual QA for a 3-week pilot; photos and states only need checking once | Follow the device's dark mode |
 
 ---
 
 ## 16. Phase 0 launch checklist
 
-- [ ] M0 to M6 done; core e2e green; authorization tests green
+- [x] M0 to M7 merged; type-check and 43 unit tests pass (checked 2026-11-16)
+- [ ] **Core-loop e2e (12.2) and the missing 12.3 authorization cases exist and pass.** Today e2e covers only API smoke and 4 authorization checks; no test walks Regalo or Pido from post to `Entregado` (added in M8)
+- [ ] M8 hardening merged: `ADMIN_EMAILS` set as a secret on `barrio` (not in `wrangler.toml`); CORS limited (SAFE-05)
+- [ ] M9 Parkside restyle merged; screenshots reviewed by Mica
 - [ ] Google OAuth consent screen set to **In production** with basic scopes and a Privacy Policy URL (OQ-04)
 - [ ] Terms and Privacy pages live (LEGAL-01)
 - [ ] Invite code created and ready to post in the building WhatsApp group
-- [ ] Mica has 5 to 8 real items to seed (Regalo) and 2 to 3 Pidos
+- [ ] Mica + 2 friendly neighbors have 5 to 8 real Regalos and 2 to 3 Pidos ready to post before the invite goes out (DEC-18)
+- [ ] Fonts self-hosted and the feed checked on a mid-range Android over 4G (Parkside fonts must not break the 3s budget)
 - [ ] Asked building staff whether they have a Google account (R-05)
 - [ ] Admin metrics page checked against hand-counted seed data
+- [ ] Production secrets and vars set on `barrio` (`docs/phase0-launch.md`); real `database_id` in `wrangler.toml`; `APP_BASE_URL` set to the deployed URL
 - [ ] Plan for weekly check-ins and 5+ user conversations during the 3 weeks (discovery, not only dashboards)
 - [ ] Phase gate review date on the calendar (end of week 3)
+
+### Before opening Phase 1 (Barranco)
+- [ ] Phase 0 gate passed (section 6)
+- [ ] M10 admin portal split merged and deployed (`docs/m10-admin-portal-setup.md`)
+- [ ] Admin portal: Access policy lists only admin emails; opening the admin URL in a private window asks for login; the old `/admin` returns 404; the admin URL is not in any WhatsApp group, page or share link
+- [ ] Phone verification decided (OQ-06); `INVITE_REQUIRED=false`

@@ -1,0 +1,293 @@
+{
+  "name": "Parkside",
+  "version": 1,
+  "color": {
+    "themes": [
+      {
+        "id": "light",
+        "name": "Light"
+      },
+      {
+        "id": "dark",
+        "name": "Dark"
+      }
+    ],
+    "tokens": [
+      {
+        "name": "primary",
+        "value": {
+          "light": "#2F5D3A",
+          "dark": "#86B77C"
+        },
+        "usage": "Forest green, deep canopy leaves. Primary buttons, links, active states, key headings. Text on surface passes 4.5:1 in both themes."
+      },
+      {
+        "name": "primary-hover",
+        "value": {
+          "light": "#244A2E",
+          "dark": "#9CC791"
+        },
+        "usage": "Hover and pressed state for primary fills."
+      },
+      {
+        "name": "on-primary",
+        "value": {
+          "light": "#FFFFFF",
+          "dark": "#14231A"
+        },
+        "usage": "Text and icons placed on a primary fill."
+      },
+      {
+        "name": "leaf",
+        "value": {
+          "light": "#5E8C4A",
+          "dark": "#6E9A57"
+        },
+        "usage": "Sunlit leaf green. Illustrations, chips, map markers, large display accents. Under 4.5:1 on surface: use for text 24px+ or icons only."
+      },
+      {
+        "name": "moss",
+        "value": {
+          "light": "#C9D8B0",
+          "dark": "#34432B"
+        },
+        "usage": "Soft new-growth tint. Selected rows, tag backgrounds, highlight panels. Pair with ink text."
+      },
+      {
+        "name": "bark",
+        "value": {
+          "light": "#5A3E2B",
+          "dark": "#C9A27E"
+        },
+        "usage": "Tree-bark brown. Secondary buttons, section headers, footer, anything that grounds a layout. Passes 4.5:1 as text on surface."
+      },
+      {
+        "name": "clay",
+        "value": {
+          "light": "#A0714F",
+          "dark": "#C88E62"
+        },
+        "usage": "Trail and soil brown. Decorative accents, badges, illustration fills. Under 4.5:1 on light surface: large text and icons only."
+      },
+      {
+        "name": "robin",
+        "value": {
+          "light": "#B9D3D0",
+          "dark": "#2E4746"
+        },
+        "usage": "Robin's-egg blue. A quiet cool tint for info panels, tags, selected states and illustration. Background only; put ink on it."
+      },
+      {
+        "name": "robin-deep",
+        "value": {
+          "light": "#2F5655",
+          "dark": "#8DBDB9"
+        },
+        "usage": "Deeper egg blue. Info text and icons, links inside robin panels. ≥4.5:1 on surface and robin."
+      },
+      {
+        "name": "olive",
+        "value": {
+          "light": "#8A7A3A",
+          "dark": "#C2B26A"
+        },
+        "usage": "Olive-gold, like a speckled brown egg. Decorative accents, rules, illustration. Large text or icons only on light surface."
+      },
+      {
+        "name": "speckle",
+        "value": {
+          "light": "#6E5E4E",
+          "dark": "#A8987F"
+        },
+        "usage": "Speckle brown-gray. Dot textures and small decorative marks; also fine as secondary icon color."
+      },
+      {
+        "name": "surface",
+        "value": {
+          "light": "#F1EDDA",
+          "dark": "#1B1A15"
+        },
+        "usage": "Page background: pale sage-khaki paper, like an old naturalist's plate / dark soil."
+      },
+      {
+        "name": "surface-raised",
+        "value": {
+          "light": "#FBF9EF",
+          "dark": "#25241D"
+        },
+        "usage": "Cards, sheets, inputs: eggshell cream."
+      },
+      {
+        "name": "surface-sunken",
+        "value": {
+          "light": "#E5DFC3",
+          "dark": "#14130F"
+        },
+        "usage": "Wells, sidebars, grouped sections."
+      },
+      {
+        "name": "ink",
+        "value": {
+          "light": "#2A231B",
+          "dark": "#EFE8DA"
+        },
+        "usage": "Body text on surface, surface-raised and moss."
+      },
+      {
+        "name": "ink-muted",
+        "value": {
+          "light": "#5F5548",
+          "dark": "#B8AD9B"
+        },
+        "usage": "Secondary text, captions, placeholders on surface (≥4.5:1)."
+      },
+      {
+        "name": "line",
+        "value": {
+          "light": "#D5CDAE",
+          "dark": "#3A372B"
+        },
+        "usage": "Dividers and card borders."
+      },
+      {
+        "name": "line-strong",
+        "value": {
+          "light": "#8F8371",
+          "dark": "#7D735F"
+        },
+        "usage": "Input and control borders (≥3:1 on surface)."
+      },
+      {
+        "name": "warning",
+        "value": {
+          "light": "#85590C",
+          "dark": "#E0B252"
+        },
+        "usage": "Ochre, autumn leaves. Warnings and pending states, text or icon."
+      },
+      {
+        "name": "danger",
+        "value": {
+          "light": "#A6402E",
+          "dark": "#E58A75"
+        },
+        "usage": "Rust red. Errors and destructive actions only, text or icon."
+      }
+    ]
+  },
+  "type": {
+    "families": {
+      "display": "\"EB Garamond\", Garamond, Georgia, serif",
+      "sans": "\"Work Sans\", system-ui, sans-serif"
+    },
+    "groups": [
+      {
+        "name": "Display",
+        "family": "display",
+        "styles": [
+          {
+            "name": "display",
+            "fontSize": "48px",
+            "lineHeight": "54px",
+            "fontWeight": 600
+          },
+          {
+            "name": "heading-1",
+            "fontSize": "32px",
+            "lineHeight": "40px",
+            "fontWeight": 600
+          },
+          {
+            "name": "heading-2",
+            "fontSize": "24px",
+            "lineHeight": "32px",
+            "fontWeight": 600
+          }
+        ]
+      },
+      {
+        "name": "Text",
+        "family": "sans",
+        "styles": [
+          {
+            "name": "heading-3",
+            "fontSize": "18px",
+            "lineHeight": "26px",
+            "fontWeight": 600
+          },
+          {
+            "name": "body",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": 400
+          },
+          {
+            "name": "body-small",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": 400
+          },
+          {
+            "name": "label",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": 600
+          }
+        ]
+      }
+    ]
+  },
+  "spacing": {
+    "tokens": [
+      {
+        "name": "space-1",
+        "value": "4px",
+        "usage": "Icon-to-label gaps."
+      },
+      {
+        "name": "space-2",
+        "value": "8px",
+        "usage": "Tight stacks, chip padding."
+      },
+      {
+        "name": "space-4",
+        "value": "16px",
+        "usage": "Card padding, form field gaps."
+      },
+      {
+        "name": "space-6",
+        "value": "24px",
+        "usage": "Gaps between cards and groups."
+      },
+      {
+        "name": "space-10",
+        "value": "40px",
+        "usage": "Section spacing."
+      }
+    ]
+  },
+  "radius": {
+    "tokens": [
+      {
+        "name": "radius-sm",
+        "value": "6px",
+        "usage": "Inputs, chips, small controls."
+      },
+      {
+        "name": "radius-md",
+        "value": "12px",
+        "usage": "Buttons, cards."
+      },
+      {
+        "name": "radius-lg",
+        "value": "24px",
+        "usage": "Hero panels, sheets, image frames, a soft canopy edge."
+      },
+      {
+        "name": "radius-pill",
+        "value": "999px",
+        "usage": "Tags, toggles, avatar frames."
+      }
+    ]
+  }
+}
