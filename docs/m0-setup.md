@@ -32,7 +32,7 @@ CI lives at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) (typecheck
 
 ## Tokens (OQ-01)
 
-`src/styles/tokens.css` proposes a Phase 0 green palette. Approve or send replacements before heavy UI work in M1+.
+Resolved: Barrio uses the **Parkside** design system (DEC-17). Source: `design/parkside.tokens.json`. Slice M9 generates `src/styles/tokens.css` from it and renames variables (mapping in `SPEC.md` 11.3).
 
 ## Stub auth
 
