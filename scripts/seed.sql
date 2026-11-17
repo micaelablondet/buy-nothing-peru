@@ -14,11 +14,13 @@ DELETE FROM invite_codes;
 DELETE FROM neighborhoods;
 DELETE FROM districts;
 
+-- DEC-30: same Barranco + Torres Paz rows as migration 0008 (OR IGNORE).
+INSERT OR IGNORE INTO districts (id, name, created_at) VALUES
+  ('dist-barranco', 'Barranco', '2026-11-01T00:00:00.000Z');
 INSERT INTO districts (id, name, created_at) VALUES
-  ('dist-barranco', 'Barranco', '2026-11-01T00:00:00.000Z'),
   ('dist-miraflores', 'Miraflores', '2026-11-01T00:00:00.000Z');
 
-INSERT INTO neighborhoods (id, district_id, name, created_at) VALUES
+INSERT OR IGNORE INTO neighborhoods (id, district_id, name, created_at) VALUES
   ('nbh-torres-paz', 'dist-barranco', 'Torres Paz', '2026-11-01T00:00:00.000Z');
 
 INSERT INTO invite_codes (id, code, active, created_at, deactivated_at) VALUES

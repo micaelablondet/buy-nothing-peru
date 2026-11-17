@@ -14,8 +14,13 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 - `phase0-launch.md`: migrate → deploy → admin sign-in → create invite → share.
 - **OQ-14:** districts beyond Barranco (brief said OQ-13; that ID is barrios).
 
-### Next
-Implement + tests + PR; then Mica runs migrate/deploy and creates the invite.
+### Done in this stage
+- Migration `0008_reference_districts.sql`; seed `INSERT OR IGNORE` for Barranco + Torres Paz.
+- `mustEnterInviteCode` + unit tests; Google callback uses it.
+- Launch checklist updated for admin → create invite → share.
+
+### Next owner
+Mica: `db:migrate:remote`, deploy, sign in as ADMIN_EMAILS, create invite in `/admin`, then share.
 
 ---
 

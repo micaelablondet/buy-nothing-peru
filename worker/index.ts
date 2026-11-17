@@ -15,6 +15,7 @@ import {
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
 import { resolveCorsOrigin } from "./lib/cors";
+import { mustEnterInviteCode } from "./lib/inviteGate";
 import {
   assertAuthIpLimit,
   clientIp,
@@ -171,7 +172,14 @@ app.get("/api/auth/google/callback", async (c) => {
       return c.redirect(finishAuthRedirect(c, session, cookie), 302);
     }
 
-    if (c.env.INVITE_REQUIRED !== "true") {
+    // AUTH-02 / DEC-30: invite off, or ADMIN_EMAILS bootstrap — create without code.
+    if (
+      !mustEnterInviteCode(
+        c.env.INVITE_REQUIRED === "true",
+        identity.email,
+        c.env.ADMIN_EMAILS ?? "",
+      )
+    ) {
       const nowIso = new Date().toISOString();
       const user = await createUser(c.env.DB, {
         id: crypto.randomUUID(),
