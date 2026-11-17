@@ -1,0 +1,32 @@
+# Decisions
+
+Product and architecture decisions for Barrio. IDs (`DEC-*`) are stable. Newest decisions are at the bottom of the table (chronological). For the Valere docs map, see [`README.md`](./README.md).
+
+| ID | Date | Decision | Why | Alternatives rejected |
+|---|---|---|---|---|
+| DEC-01 | 2026-11-10 | V1 is a **thin working PWA**, not a clickable prototype | The riskiest assumptions are behavioral (do people post and respond?) | Clickable prototype only; full multi-district app |
+| DEC-02 | 2026-11-10 | **Phase 0 = Mica's building (32 apts + staff), Phase 1 = Barranco** | Density: one community Mica can seed | Lima-wide; campus; skip the building |
+| DEC-03 | 2026-11-10 | Spec lives in **repo markdown** (`SPEC.md` + `AGENTS.md`) | Agents read it directly; avoids Doc/local drift | Claude Doc as canonical |
+| DEC-04 | 2026-11-10 | **Regalo + Pido only**, Presto deferred | Lending adds states and trust problems before the loop is proven | Add Presto; Regalo only |
+| DEC-05 | 2026-11-10 | Open signup with self-declared district, feed defaults to Barranco, no geofencing | Cheapest; shows who actually shows up | Lock to district; no filtering |
+| DEC-06 | 2026-11-10 | **No AI in the product in V1** | Measure post time first; add photo-to-listing only if median post time exceeds ~90s | Photo-to-listing; AI moderation |
+| DEC-07 | 2026-11-10 | North star is **completed handoffs/week**; handoff = giver taps `Entregado` alone; receiver's `Lo recibí` optional and tracked | Simple single state; inflation measurable | Both sides confirm; count choices |
+| DEC-08 | 2026-11-10 | Regalo uses the **same rules as Pido**: cap 7, expiry 7 days, poster chooses, 48h nudge | One state machine | Different rules for Regalo |
+| DEC-09 | 2026-11-10 | **Identity: Google sign-in + self-declared WhatsApp number + building invite code.** Phone verification deferred to the Phase 1 gate. Overrides the earlier "phone verification required to offer" | Free and simplest; Twilio, Firebase phone and Meta WhatsApp verification all cost money or need a dedicated number | Phone + SMS (Twilio); WhatsApp inbound verification (needs a number); email magic link (needs a domain and vendor) |
+| DEC-10 | 2026-11-10 | **Notifications: web push + in-app inbox** | Free; works on Android; no SMS cost | In-app only; SMS |
+| DEC-11 | 2026-11-10 | Safety minimum: report button, prohibited-items list, public-pickup tip, manual admin view | Enough to hear about incidents and remove posts | Nothing; blocking and reputation |
+| DEC-12 | 2026-11-10 | Growth loop: **public read-only post pages + `Compartir en WhatsApp`** | Reaches people already in WhatsApp groups | Login wall; invite codes only |
+| DEC-13 | 2026-11-10 | Success bars pre-committed (section 6) | Prevents rationalizing results | Set after a baseline; no bar |
+| DEC-14 | 2026-11-10 | Phase 0 sign-up bar is **10+ accounts including staff** (lowered from an earlier proposal of 15) | Building-scale realism | 15+ households |
+| DEC-15 | 2026-11-10 | Stack: **Cursor + GitHub + Cloudflare (Workers, D1, R2), free plans** | Tools Mica already uses; one platform | Vercel + Supabase; Firebase |
+| DEC-16 | 2026-11-10 | **One `SPEC.md` with stable IDs + `AGENTS.md`**; Given/When/Then criteria; e2e tests on the core loop | Precise for agents, traceable tests | Per-feature spec folder; narrative brief |
+| DEC-17 | 2026-11-10 | **Visual identity = Parkside design system** (EB Garamond + Work Sans, Parkside color, spacing and radius tokens); `tokens.css` generated from `design/parkside.tokens.json`; text wordmark until the name is validated | Mica already built it; saves a design cycle; tokens are agent-readable | Agent-proposed palette; Barrio-specific system for V1 |
+| DEC-18 | 2026-11-10 | **Phase 0 seeding: Mica + 2 friendly neighbors** post the first 5 to 8 Regalos and 2 to 3 Pidos before opening the invite | Real items from more than one person, so the feed does not look like a one-person demo | Mica alone; launch empty |
+| DEC-19 | 2026-11-10 | A `chosen` post with no `Entregado` **auto-closes 14 days after choice** and does not count as a handoff | Keeps the north star honest and the feed clean; long enough for a weekend pickup to slip | 7 days; never auto-close |
+| DEC-20 | 2026-11-10 | **Pido allows one optional reference photo** (Regalo still requires 1 to 3) | A photo helps responders match "I need this exact thing", but must not block a quick ask | No photos on Pido; required photo |
+| DEC-21 | 2026-11-16 | **Admin portal becomes a separate app on its own URL**: a second Worker (`barrio-admin`) built from the same repo and `package.json`, sharing `worker/domain`, `worker/db`, `worker/lib` and the same D1, protected by Cloudflare Access plus an in-Worker JWT and allowlist check. Replaces `/admin` in the end-user app. Details in `docs/adr/0001-separate-admin-portal.md` | Admin code and secrets never ship to neighbors; Access gives free, strong admin login without building one; the two apps deploy and fail independently; a second Worker fits the existing code without a restructure | `/admin` in the same app forever; a monorepo restructure (`apps/`, `packages/`); a separate repo; a separate database |
+| DEC-22 | 2026-11-16 | **Sequencing:** M8 hardening and M9 Parkside before the Phase 0 launch; M10 admin split **before Phase 1** (a Phase 1 gate item), not before Phase 0 | Phase 0 users are Mica's neighbors and Mica is the only admin, so M8 closes the real holes; the split's value grows when strangers join in Barranco; launching sooner means learning sooner | Split before Phase 0; launch with no changes |
+| DEC-23 | 2026-11-16 | **Light theme only in V1**, even though Parkside has a dark theme | Halves the visual QA for a 3-week pilot; photos and states only need checking once | Follow the device's dark mode |
+| DEC-24 | 2026-11-17 | **Adopt the Valere docs convention:** `SPEC.md` moved to `docs/SRD.md`; decision log, risks/open questions, handoff and feature plan split into `docs/decisions.md`, `docs/assumptions-and-questions.md`, `docs/handoff.md` and `docs/feature-prioritization.csv` (map in `docs/README.md`) | Matches Valere project docs; keeps DEC-/OQ-/R- IDs stable; clearer handoffs between stages | Keep a single root `SPEC.md`; invent a Barrio-only docs layout |
+
+---

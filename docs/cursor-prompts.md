@@ -1,11 +1,11 @@
 # Cursor prompts for the next slices
 
-Paste one prompt per slice, in order, each on a fresh branch. Review the PR (and ask a second model to review it) before starting the next one. Source of truth: `SPEC.md` v0.3.
+Paste one prompt per slice, in order, each on a fresh branch. Review the PR (and ask a second model to review it) before starting the next one. Source of truth: `docs/SRD.md` v0.4.
 
 ## M8: Pre-launch hardening (before Phase 0)
 
 ```
-Read SPEC.md (sections 0, 8.1 AUTH-04, 8.7 SAFE-05, 12.2, 12.3, 13) and AGENTS.md.
+Read docs/SRD.md (sections 0, 8.1 AUTH-04, 8.7 SAFE-05, 12.2, 12.3, 13) and AGENTS.md.
 Implement slice M8 only, on branch m8-prelaunch-hardening.
 
 1. AUTH-04 (M8 version): admin routes must check the current user from the DB
@@ -29,7 +29,7 @@ anything you were unsure about.
 ## M9: Parkside restyle (before Phase 0)
 
 ```
-Read SPEC.md (sections 5.2, 11.3, DEC-17, DEC-23) and AGENTS.md section 5.
+Read docs/SRD.md (sections 5.2, 11.3, DEC-17, DEC-23) and AGENTS.md section 5.
 Implement slice M9 only, on branch m9-parkside.
 
 1. Write scripts/build-tokens.mjs: it reads design/parkside.tokens.json and
@@ -37,7 +37,7 @@ Implement slice M9 only, on branch m9-parkside.
    Keep the Barrio-only tokens listed in 11.3 in a hand-kept block. Add an
    npm script "tokens".
 2. Rename CSS variables across src/ (components, pages, shell.css) using the
-   mapping table in SPEC.md 11.3. No hard-coded hex or pixel sizes.
+   mapping table in docs/SRD.md 11.3. No hard-coded hex or pixel sizes.
 3. Self-host EB Garamond and Work Sans as WOFF2 subsets (Latin + Spanish
    characters), weights 400 and 600, font-display: swap. Headings use
    --font-display; everything else Work Sans.
@@ -52,7 +52,7 @@ Run typecheck, test, build, test:e2e.
 ## M10: Admin portal split (before Phase 1)
 
 ```
-Read SPEC.md (sections 8.1 AUTH-04, 8.8 ADMIN-01 to ADMIN-06, 11, 12.2, 12.3,
+Read docs/SRD.md (sections 8.1 AUTH-04, 8.8 ADMIN-01 to ADMIN-06, 11, 12.2, 12.3,
 13 M10), docs/adr/0001-separate-admin-portal.md, docs/m10-admin-portal-setup.md
 and AGENTS.md. Implement slice M10 only, on branch m10-admin-portal.
 
@@ -69,7 +69,7 @@ Phase A (do not remove anything yet):
 4. Admin React app in admin/ (own index.html, own copy file, imports only
    src/styles from src/), built to dist-admin/. Scripts: dev:admin (port 8788,
    shared local D1 state), build:admin, deploy:admin.
-5. A CI test that fails if the boundary rules in SPEC.md 11.2 are broken; add
+5. A CI test that fails if the boundary rules in docs/SRD.md 11.2 are broken; add
    the admin build and tests to .github/workflows/ci.yml.
 Then stop and ask me to do docs/m10-admin-portal-setup.md steps 2 to 5.
 
@@ -77,7 +77,7 @@ Phase B (after I confirm step 5 passed):
 6. Remove /admin, /api/admin/*, the Profile admin link and ADMIN_EMAILS from
    the end-user Worker; they must return 404 (AUTH-04 M10 version).
 7. Migration that drops users.is_admin.
-8. Admin smoke e2e (SPEC.md 12.2).
+8. Admin smoke e2e (docs/SRD.md 12.2).
 
 Open a PR for each phase.
 ```

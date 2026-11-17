@@ -1,4 +1,4 @@
-/** Post status transitions — SPEC.md §7.3. Only this module decides legality. */
+/** Post status transitions — docs/SRD.md §7.3. Only this module decides legality. */
 
 export type PostStatus =
   | "open"

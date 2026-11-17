@@ -1,5 +1,5 @@
 /**
- * SPEC §12.3 authorization contracts — pure rules that gate private data.
+ * docs/SRD.md §12.3 authorization contracts — pure rules that gate private data.
  * Route handlers must call these; UI hiding is not enough (AGENTS.md §3).
  */
 import { describe, expect, it } from "vitest";
@@ -35,7 +35,7 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
   };
 }
 
-describe("authorization contracts (SPEC §12.3)", () => {
+describe("authorization contracts (docs/SRD.md §12.3)", () => {
   it("non-admins are rejected by allowlist (admin routes)", () => {
     expect(isAdminEmail("vecino@example.test", "mica@example.test")).toBe(
       false,

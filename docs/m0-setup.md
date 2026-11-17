@@ -1,6 +1,6 @@
 # M0 setup — Cloudflare project and local shell
 
-Exit criteria (SPEC §13): repo, Cloudflare project, CI, seed script, `tokens.css`, copy file, empty authenticated app shell.
+Exit criteria (docs/SRD.md §13): repo, Cloudflare project, CI, seed script, `tokens.css`, copy file, empty authenticated app shell.
 
 ## Local development
 
@@ -35,7 +35,7 @@ CI lives at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) (typecheck
 
 ## Tokens (OQ-01)
 
-Resolved: Barrio uses the **Parkside** design system (DEC-17). Source: `design/parkside.tokens.json`. Slice M9 generates `src/styles/tokens.css` from it and renames variables (mapping in `SPEC.md` 11.3).
+Resolved: Barrio uses the **Parkside** design system (DEC-17). Source: `design/parkside.tokens.json`. Slice M9 generates `src/styles/tokens.css` from it and renames variables (mapping in `docs/SRD.md` 11.3).
 
 ## Stub auth
 

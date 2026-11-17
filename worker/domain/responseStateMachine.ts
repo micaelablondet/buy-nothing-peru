@@ -1,4 +1,4 @@
-/** Response status transitions — SPEC.md §7.4. */
+/** Response status transitions — docs/SRD.md §7.4. */
 
 export type ResponseStatus = "active" | "chosen" | "not_chosen" | "withdrawn";
 

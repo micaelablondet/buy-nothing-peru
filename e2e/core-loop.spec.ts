@@ -8,7 +8,7 @@ import {
 
 const BASE = "http://127.0.0.1:8787";
 
-/** SPEC §12.2 — core loop Regalo and Pido (API e2e with stub auth). */
+/** docs/SRD.md §12.2 — core loop Regalo and Pido (API e2e with stub auth). */
 test.describe("core loop", () => {
   test("Regalo: post → respond → choose → WhatsApp both parties → Entregado", async ({
     playwright,

@@ -3,7 +3,7 @@ import { createRegalo, respondToPost, stubSession } from "./helpers";
 
 const BASE = "http://127.0.0.1:8787";
 
-/** SPEC §12.3 — authorization via real Worker API (stub auth). */
+/** docs/SRD.md §12.3 — authorization via real Worker API (stub auth). */
 test.describe("authorization API", () => {
   test("signed-out user cannot write", async ({ request }) => {
     const res = await request.post("/api/posts");
