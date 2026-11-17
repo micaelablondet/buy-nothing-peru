@@ -29,8 +29,8 @@ APP_NAME = "Barrio"
 INVITE_REQUIRED = "true"
 ENVIRONMENT = "development"
 APP_BASE_URL = "http://127.0.0.1:8787"
-ADMIN_EMAILS = "mica@valere.io"
-# Secrets (wrangler secret / .dev.vars): SESSION_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+# Secrets (wrangler secret / .dev.vars): SESSION_SECRET, GOOGLE_CLIENT_ID,
+# GOOGLE_CLIENT_SECRET, ADMIN_EMAILS (AUTH-04 — never commit emails here)
 # Optional local: DEV_STUB_AUTH=true
 
 # POST-06: expire open posts past expires_at (idempotent)
