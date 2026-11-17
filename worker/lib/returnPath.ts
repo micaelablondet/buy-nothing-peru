@@ -21,7 +21,13 @@ export function sanitizeReturnPath(
       return null;
     }
   }
-  if (!path.startsWith("/") || path.startsWith("//")) {
+  // Reject protocol-relative ("//"), backslash open-redirects ("\", "/\"), and non-paths.
+  if (
+    !path.startsWith("/") ||
+    path.startsWith("//") ||
+    path.includes("\\") ||
+    /%5c/i.test(path)
+  ) {
     return null;
   }
   const qIndex = path.indexOf("?");

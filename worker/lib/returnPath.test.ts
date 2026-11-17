@@ -17,6 +17,13 @@ describe("sanitizeReturnPath (PUB-04)", () => {
   it("rejects open redirects and unknown paths", () => {
     expect(sanitizeReturnPath("https://evil.example/phish")).toBe(null);
     expect(sanitizeReturnPath("//evil.example")).toBe(null);
+    expect(sanitizeReturnPath("//evil.example/p/post-1")).toBe(null);
+    expect(sanitizeReturnPath("\\\\evil.example")).toBe(null);
+    expect(sanitizeReturnPath("/\\evil.example")).toBe(null);
+    expect(sanitizeReturnPath("/app\\evil")).toBe(null);
+    expect(sanitizeReturnPath("/p/post-1%5cevil")).toBe(null);
+    expect(sanitizeReturnPath("/p/post-1%5Cevil")).toBe(null);
+    expect(sanitizeReturnPath("https://evil.example")).toBe(null);
     expect(sanitizeReturnPath("/entrar")).toBe(null);
     expect(sanitizeReturnPath("/admin")).toBe(null);
     expect(sanitizeReturnPath(null)).toBe(null);
