@@ -15,7 +15,8 @@
     "db:seed": "wrangler d1 execute barrio --local --file=./scripts/seed.sql",
     "db:reset:local": "npm run db:migrate:local && npm run db:seed",
     "deploy": "npm run build && wrangler deploy",
-    "cf:typegen": "wrangler types"
+    "cf:typegen": "wrangler types",
+    "tokens": "node scripts/build-tokens.mjs"
   },
   "dependencies": {
     "hono": "4.6.14",
