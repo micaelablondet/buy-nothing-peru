@@ -11,7 +11,7 @@ import {
   SearchIcon,
 } from "@/components/NavIcons";
 import { copy } from "@/copy/es-PE";
-import { fetchUnreadCount, logout } from "@/lib/api";
+import { fetchInviteShare, fetchUnreadCount, logout } from "@/lib/api";
 import { isInstallPromptArmed } from "@/lib/install";
 
 export function AppShell() {
@@ -21,6 +21,9 @@ export function AppShell() {
   const [unread, setUnread] = useState(0);
   const [installArmed, setInstallArmed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [inviteWhatsAppUrl, setInviteWhatsAppUrl] = useState<string | null>(
+    null,
+  );
   const menuId = useId();
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -30,6 +33,11 @@ export function AppShell() {
     fetchUnreadCount()
       .then(setUnread)
       .catch(() => setUnread(0));
+    fetchInviteShare()
+      .then((share) => {
+        setInviteWhatsAppUrl(share.show ? share.whatsappUrl : null);
+      })
+      .catch(() => setInviteWhatsAppUrl(null));
     const timer = window.setInterval(() => {
       fetchUnreadCount()
         .then(setUnread)
@@ -159,6 +167,17 @@ export function AppShell() {
               role="navigation"
               aria-label={copy.shell.menuAria}
             >
+              {inviteWhatsAppUrl ? (
+                <a
+                  href={inviteWhatsAppUrl}
+                  className="app-shell__menu-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {copy.shell.inviteSomeone}
+                </a>
+              ) : null}
               <Link
                 to="/legal/terminos"
                 className="app-shell__menu-link"

@@ -3,6 +3,7 @@ AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only)
 AUTH-02,Auth,Invite code gate,New accounts enter invite when INVITE_REQUIRED=true; verified ADMIN_EMAILS skip so first admin can bootstrap codes,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,DEC-30; email_verified required
 AUTH-03,Auth,Session cookie,Signed HttpOnly Secure SameSite=Lax cookie; 30-day lifetime; logout clears it,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
 AUTH-04,Auth,Admin allowlist check,Admin = current Google email in ADMIN_EMAILS and email_verified; checked on every admin request (M8); M10 removes admin from end-user app,Admin,Must,Phase 0,M,SRD,AUTH-03,8.1,built,email_verified required; M10 version (404 on end-user admin) is next
+AUTH-05,Auth,Invite share menu,Signed-in ☰ Invitar a alguien opens wa.me with entrar?codigo= active code; hide if invites required and no code; entrar?codigo prefills,Neighbor,Must,Phase 0,S,SRD,AUTH-02; NAV-01,8.1,built,v0.7; no per-person codes or tracking
 PROF-01,Profile,Onboarding profile,After first sign-in: display name WhatsApp district required before post/respond; no barrio,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,DEC-31
 PROF-02,Profile,WhatsApp number format,Peruvian mobile +51 and 9 digits starting with 9; stored E.164; not verified in V1,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,built,Self-declared (DEC-09)
 PROF-03,Profile,Edit profile,User can edit name number district anytime; no barrio,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,built,DEC-31
@@ -49,7 +50,7 @@ ADMIN-05,Admin,Admin isolation,Perfil has no /admin link now; M10 adds noindex h
 ADMIN-06,Admin,Admin audit trail,Every admin write records one admin_action event with email action target,Admin,Must,Before Phase 1,S,SRD,ADMIN-01,8.8,next,M10
 LEGAL-01,Legal,Terms and Privacy,Spanish Términos and Política de privacidad linked from sign-in footer and Google consent,Anyone,Must,Phase 0,S,SRD,,8.9,built,
 ANLY-01,Analytics,Event + metric definitions,Record product events; ADMIN-03 computes CH/wk 48h rate median post time inflation,System,Must,Phase 0,M,SRD,,10,built,
-NAV-01,Shell,Header menu,Hamburger menu: Términos Privacidad Salir (signed out: Terms+Privacy only); Escape/outside close; Menú label; 44px targets,Neighbor,Must,Phase 0,S,SRD,LEGAL-01,8.10,built,DEC-27 adjacent; UI recover; recover/ui-nov16
+NAV-01,Shell,Header menu,Hamburger menu: Términos Privacidad Salir (+ Invitar a alguien when AUTH-05); Escape/outside close; Menú label; 44px targets,Neighbor,Must,Phase 0,S,SRD,LEGAL-01,8.10,built,AUTH-05; recover/ui-nov16
 NAV-02,Shell,Responsive nav,Bottom tabs below 768px; left sidebar from 768px; content centred; no horizontal scroll,Neighbor,Must,Phase 0,M,SRD,NAV-01,8.10,built,DEC-27; recover/ui-nov16
 SRCH-01,Search,Keyword Busca,GET /api/search?q= signed-in; title+description; own district; max 50; no WhatsApp numbers,Neighbor,Must,Phase 0,M,SRD,AUTH-03,8.10,built,DEC-26; recover/ui-nov16
 LAND-01,Landing,Entrar hero,/entrar hero; headline casa o depa; comunidad lede; no WhatsApp note on landing,Anyone,Must,Phase 0,M,SRD,AUTH-01,8.10,built,v0.6 copy

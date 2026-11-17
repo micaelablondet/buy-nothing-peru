@@ -5,7 +5,6 @@ export type MeResponse = {
   displayName: string;
   email: string | null;
   districtId: string | null;
-  neighborhoodId: string | null;
   whatsapp: string | null;
   inviteAcceptedAt: string | null;
   isAdmin: boolean;
@@ -126,6 +125,30 @@ export async function fetchDistricts(): Promise<{ id: string; name: string }[]> 
   return data.districts;
 }
 
+/** AUTH-05: wa.me invite share for signed-in users. */
+export type InviteShare = {
+  inviteRequired: boolean;
+  code: string | null;
+  whatsappUrl: string | null;
+  show: boolean;
+};
+
+export async function fetchInviteShare(): Promise<InviteShare> {
+  const res = await fetch("/api/invite/share", { credentials: "include" });
+  if (res.status === 401) {
+    return {
+      inviteRequired: true,
+      code: null,
+      whatsappUrl: null,
+      show: false,
+    };
+  }
+  if (!res.ok) {
+    throw new Error("invite_share_failed");
+  }
+  return parseJson<InviteShare>(res);
+}
+
 export async function fetchHealth(): Promise<{
   ok: boolean;
   slice: string;
@@ -193,8 +216,6 @@ export type PostSummary = {
   description: string;
   districtId: string;
   districtName: string;
-  neighborhoodId: string | null;
-  neighborhoodName: string | null;
   placeLabel: string;
   authorName: string;
   createdAt: string;

@@ -4,6 +4,23 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Invite share (SRD v0.7 / AUTH-05)
+
+**Stage:** Branch `invite-share` — neighbors can share the building invite via WhatsApp from the ☰ menu.
+
+### Spec
+- AUTH-05: `Invitar a alguien` → `wa.me` with fixed copy + `/entrar?codigo={CODE}` (or `/entrar` if invites off).
+- Active code only for signed-in users; hide item if invites required and no active code.
+- `/entrar?codigo=` pre-fills `/invitar`; no per-person codes, no tracking.
+
+### Done
+- Docs v0.7; share API + menu link; Enterar stash + InvitePage prefill; browser e2e.
+
+### Next owner
+Phase 0 launch ops (`phase0-launch.md`), then M10.
+
+---
+
 ## 2026-11-17 — Prod bootstrap + district-only (SRD v0.6.2 / DEC-30 / DEC-31)
 
 **Stage:** Branch `prod-bootstrap` — reference data, admin invite bootstrap, drop barrio, `email_verified` for admin.

@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { buildGoogleAuthUrl, exchangeGoogleCode, googleConfigured } from "./auth/google";
 import { recordEvent } from "./db/events";
+import { findLatestActiveInviteCode } from "./db/invites";
 import { expireOpenPosts } from "./db/posts";
 import { runNudgeJob } from "./jobs/nudge";
 import {
@@ -17,6 +18,10 @@ import {
 import type { SessionUser, WorkerEnv } from "./env";
 import { resolveCorsOrigin } from "./lib/cors";
 import { mustEnterInviteCode } from "./lib/inviteGate";
+import {
+  inviteShareWhatsAppUrl,
+  shouldShowInviteShare,
+} from "./lib/inviteShare";
 import {
   assertAuthIpLimit,
   clientIp,
@@ -326,6 +331,37 @@ app.get("/api/me", async (c) => {
   }
   // AUTH-04: isAdmin is a UI hint only, computed fresh from DB + ADMIN_EMAILS.
   return c.json(publicMe(rowToSession(fresh, c.env.ADMIN_EMAILS ?? "")));
+});
+
+/** AUTH-05: active invite share payload for signed-in users only. */
+app.get("/api/invite/share", async (c) => {
+  const session = await readSession(
+    c.req.header("Cookie") ?? null,
+    c.env.SESSION_SECRET,
+  );
+  if (!session) {
+    return c.json({ error: "unauthorized" }, 401);
+  }
+  const inviteRequired = c.env.INVITE_REQUIRED === "true";
+  const code = inviteRequired
+    ? await findLatestActiveInviteCode(c.env.DB)
+    : null;
+  const show = shouldShowInviteShare(inviteRequired, code);
+  if (!show) {
+    return c.json({
+      inviteRequired,
+      code: null,
+      whatsappUrl: null,
+      show: false,
+    });
+  }
+  const shareCode = inviteRequired ? code : null;
+  return c.json({
+    inviteRequired,
+    code: shareCode,
+    whatsappUrl: inviteShareWhatsAppUrl(c.env.APP_BASE_URL, shareCode),
+    show: true,
+  });
 });
 
 app.patch("/api/me/profile", async (c) => {

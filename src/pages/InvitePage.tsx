@@ -1,9 +1,20 @@
 import { useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { copy } from "@/copy/es-PE";
 import { goAfterAuth, submitInviteCode } from "@/lib/api";
+import { readStashedInviteCodigo } from "@/lib/inviteCodigo";
+
+function initialInviteCode(paramCode: string | null): string {
+  const fromQuery = paramCode?.trim() ?? "";
+  if (fromQuery) {
+    return fromQuery;
+  }
+  return readStashedInviteCodigo();
+}
 
 export function InvitePage() {
-  const [code, setCode] = useState("");
+  const [params] = useSearchParams();
+  const [code, setCode] = useState(() => initialInviteCode(params.get("codigo")));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

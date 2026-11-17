@@ -17,6 +17,21 @@ export async function listInvites(db: D1Database): Promise<InviteRow[]> {
   return rows.results ?? [];
 }
 
+/** AUTH-05: newest active invite code (shared building code, not per-person). */
+export async function findLatestActiveInviteCode(
+  db: D1Database,
+): Promise<string | null> {
+  const row = await db
+    .prepare(
+      `SELECT code FROM invite_codes
+       WHERE active = 1 AND deactivated_at IS NULL
+       ORDER BY created_at DESC
+       LIMIT 1`,
+    )
+    .first<{ code: string }>();
+  return row?.code ?? null;
+}
+
 export async function createInvite(
   db: D1Database,
   input: { id: string; code: string; nowIso: string },

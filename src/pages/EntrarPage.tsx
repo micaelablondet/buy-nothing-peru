@@ -10,6 +10,7 @@ import {
   startStubSession,
   type AuthConfig,
 } from "@/lib/api";
+import { stashInviteCodigo } from "@/lib/inviteCodigo";
 import { sanitizeReturnPath } from "@/lib/returnPath";
 import "@/styles/landing.css";
 
@@ -23,6 +24,8 @@ export function EntrarPage() {
   const [returnReady, setReturnReady] = useState(!next);
 
   useEffect(() => {
+    // AUTH-05: /entrar?codigo=… → pre-fill invite step later.
+    stashInviteCodigo(params.get("codigo"));
     const oauthError = params.get("error");
     if (oauthError) {
       setError(copy.entrar.oauthError);
