@@ -30,8 +30,7 @@ preview_bucket_name = "barrio-photos-preview"
 APP_NAME = "Barrio"
 INVITE_REQUIRED = "true"
 ENVIRONMENT = "production"
-# REPLACE: your account workers.dev subdomain, e.g. https://barrio.abc123.workers.dev
-APP_BASE_URL = "https://barrio.REPLACE_ME.workers.dev"
+APP_BASE_URL = "https://barrio.mica-ea3.workers.dev"
 # Secrets (wrangler secret / .dev.vars): SESSION_SECRET, GOOGLE_CLIENT_ID,
 # GOOGLE_CLIENT_SECRET, ADMIN_EMAILS (AUTH-04 — never commit emails here)
 # Never set DEV_STUB_AUTH in production secrets. Stub auth is gated off when
