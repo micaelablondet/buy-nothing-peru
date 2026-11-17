@@ -15,7 +15,6 @@ import {
   type PostRow,
 } from "../db/posts";
 import { findResponseById } from "../db/responses";
-import { findUserById } from "../db/users";
 import type { SessionUser, WorkerEnv } from "../env";
 import { isDiscAnswer } from "../lib/disc";
 import { isGiver } from "../lib/handoff";
@@ -209,9 +208,6 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
     }
     const type = typeRaw as "regalo" | "pido";
 
-    const author = await findUserById(c.env.DB, session.id);
-    const neighborhoodId = author?.neighborhood_id ?? session.neighborhoodId ?? null;
-
     const postId = crypto.randomUUID();
     const photos: { id: string; r2Key: string; position: number }[] = [];
 
@@ -245,7 +241,7 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       title,
       description,
       districtId: session.districtId,
-      neighborhoodId,
+      neighborhoodId: null,
       photos,
       nowIso,
     });
@@ -372,9 +368,9 @@ async function serializePost(
     description: post.description,
     districtId: post.district_id,
     districtName: post.district_name,
-    neighborhoodId: post.neighborhood_id,
-    neighborhoodName: post.neighborhood_name,
-    placeLabel: post.neighborhood_name || post.district_name,
+    neighborhoodId: null,
+    neighborhoodName: null,
+    placeLabel: post.district_name,
     authorName: publicAuthorName(post),
     createdAt: post.created_at,
     expiresAt: post.expires_at,

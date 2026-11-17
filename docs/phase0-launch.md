@@ -43,7 +43,7 @@ npm run deploy
 
 ## After migrate + deploy (first admin / invite — DEC-30)
 
-Migrations insert Barranco + Torres Paz. Invite codes are **not** in migrations; create them in the app:
+Migrations insert Barranco (district only; DEC-31). Invite codes are **not** in migrations; create them in the app:
 
 1. **Sign in as admin** with a Google account whose email is in the `ADMIN_EMAILS` secret (that email skips the invite gate).
 2. Complete profile if needed, then open **`/admin`** and **create the invite code**.

@@ -15,7 +15,7 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     description: "Buena para el balcón. Sin manchas.",
     category: "Otros",
     district_id: "dist-barranco",
-    neighborhood_id: "nbh-torres-paz",
+    neighborhood_id: null,
     created_at: "2026-01-01T00:00:00.000Z",
     expires_at: null,
     chosen_response_id: null,
@@ -27,7 +27,7 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     author_display_name: "Micaela Blondet",
     author_first_name: "Micaela",
     district_name: "Barranco",
-    neighborhood_name: "Torres Paz",
+    neighborhood_name: null,
     ...overrides,
   };
 }

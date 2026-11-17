@@ -90,7 +90,6 @@ export async function updateProfile(input: {
   displayName: string;
   whatsapp: string;
   districtId: string;
-  neighborhoodId?: string | null;
 }): Promise<MeResponse & { next?: string }> {
   const res = await fetch("/api/me/profile", {
     method: "PATCH",
@@ -125,22 +124,6 @@ export async function fetchDistricts(): Promise<{ id: string; name: string }[]> 
   }
   const data = await parseJson<{ districts: { id: string; name: string }[] }>(res);
   return data.districts;
-}
-
-export async function fetchNeighborhoods(
-  districtId: string,
-): Promise<{ id: string; districtId: string; name: string }[]> {
-  const params = new URLSearchParams({ districtId });
-  const res = await fetch(`/api/neighborhoods?${params}`, {
-    credentials: "include",
-  });
-  if (!res.ok) {
-    throw new Error("neighborhoods_failed");
-  }
-  const data = await parseJson<{
-    neighborhoods: { id: string; districtId: string; name: string }[];
-  }>(res);
-  return data.neighborhoods;
 }
 
 export async function fetchHealth(): Promise<{

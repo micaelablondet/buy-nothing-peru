@@ -19,7 +19,7 @@ export const copy = {
       whatLabel: "01 — Qué es",
       whatTitle: "Un tablón de regalos de tu comunidad",
       whatBody:
-        "Ves lo que ofrecen tus vecinos y lo que buscan. Fotos, barrio, un botón. Nada de marketplace ni precios.",
+        "Ves lo que ofrecen tus vecinos y lo que buscan. Fotos, distrito, un botón. Nada de marketplace ni precios.",
       howLabel: "02 — Cómo funciona",
       howTitle: "Eliges a quién le toca, luego WhatsApp",
       howBody:
@@ -48,9 +48,6 @@ export const copy = {
     whatsappHint: "Celular peruano, 9 dígitos (ej. 987654321)",
     whatsappPlaceholder: "987654321",
     district: "Distrito",
-    neighborhood: "Barrio",
-    neighborhoodOptional: "Opcional",
-    neighborhoodNone: "Sin barrio",
     cta: "Guardar y continuar",
   },
 
@@ -253,7 +250,7 @@ export const copy = {
     privacyWhatItems: [
       "Nombre y correo vía Google (inicio de sesión).",
       "Número de WhatsApp que tú declaras (para coordinar entregas).",
-      "Distrito, barrio (opcional) y publicaciones (texto y fotos que subas).",
+      "Distrito y publicaciones (texto y fotos que subas).",
     ],
     privacyWhyTitle: "Para qué",
     privacyWhyBody:

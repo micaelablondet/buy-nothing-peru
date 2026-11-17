@@ -337,7 +337,6 @@ app.patch("/api/me/profile", async (c) => {
     displayName?: string;
     whatsapp?: string;
     districtId?: string;
-    neighborhoodId?: string | null;
   };
   const displayName = body.displayName?.trim() ?? "";
   if (!displayName) {
@@ -357,28 +356,12 @@ app.patch("/api/me/profile", async (c) => {
     return c.json({ error: "validation", message: "Elige un distrito válido." }, 400);
   }
 
-  let neighborhoodId: string | null = null;
-  const rawNeighborhood = body.neighborhoodId?.trim() || "";
-  if (rawNeighborhood) {
-    const neighborhood = await c.env.DB.prepare(
-      `SELECT id FROM neighborhoods WHERE id = ? AND district_id = ?`,
-    )
-      .bind(rawNeighborhood, districtId)
-      .first<{ id: string }>();
-    if (!neighborhood) {
-      return c.json(
-        { error: "validation", message: "Elige un barrio válido." },
-        400,
-      );
-    }
-    neighborhoodId = neighborhood.id;
-  }
-
+  // DEC-31: barrio unused — always clear neighborhood_id on profile save.
   const updated = await updateProfile(c.env.DB, session.id, {
     displayName,
     whatsapp: phone.e164,
     districtId,
-    neighborhoodId,
+    neighborhoodId: null,
   });
   if (!updated) {
     return c.json({ error: "not_found" }, 404);
@@ -405,20 +388,6 @@ app.get("/api/districts", async (c) => {
     `SELECT id, name FROM districts ORDER BY name`,
   ).all<{ id: string; name: string }>();
   return c.json({ districts: rows.results ?? [] });
-});
-
-/** DEC-29: barrios for a district (optional profile field). */
-app.get("/api/neighborhoods", async (c) => {
-  const districtId =
-    c.req.query("districtId")?.trim() || DEFAULT_DISTRICT;
-  const rows = await c.env.DB.prepare(
-    `SELECT id, district_id AS districtId, name FROM neighborhoods
-     WHERE district_id = ?
-     ORDER BY name`,
-  )
-    .bind(districtId)
-    .all<{ id: string; districtId: string; name: string }>();
-  return c.json({ neighborhoods: rows.results ?? [] });
 });
 
 registerPostRoutes(app);

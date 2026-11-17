@@ -4,25 +4,28 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
-## 2026-11-17 — Prod bootstrap (SRD v0.6.1 / DEC-30)
+## 2026-11-17 — Prod bootstrap + district-only (SRD v0.6.2 / DEC-30 / DEC-31)
 
-**Stage:** Branch `prod-bootstrap` — fix empty production reference data + admin invite chicken-and-egg.
+**Stage:** Branch `prod-bootstrap` — reference data, admin invite bootstrap, drop barrio, `email_verified` for admin.
 
 ### Spec
-- Migration `INSERT OR IGNORE` Barranco + Torres Paz; seed.sql same for those rows.
-- AUTH-02: `ADMIN_EMAILS` skip invite when `INVITE_REQUIRED=true`.
-- `phase0-launch.md`: migrate → deploy → admin sign-in → create invite → share.
-- **OQ-14:** districts beyond Barranco (brief said OQ-13; that ID is barrios).
-- Google `email_verified`: admin / invite bypass only when verified.
+- Migration `0008` inserts **Barranco only** (`INSERT OR IGNORE`); no Torres Paz seed.
+- AUTH-02 / AUTH-04: `ADMIN_EMAILS` + Google `email_verified` for invite bypass and admin.
+- **DEC-31** replaces DEC-29: V1 district only; cards show district name; no barrio picker.
+- Keep `neighborhoods` table/columns unused; do not delete migrations.
+- **OQ-13 closed** (barrios; brief sometimes called this OQ-12 — CI pin remains OQ-12).
+- **OQ-14:** districts beyond Barranco.
 
 ### Done in this stage
-- Migration `0008_reference_districts.sql`; seed `INSERT OR IGNORE` for Barranco + Torres Paz.
+- Migration `0008_reference_districts.sql` (Barranco only); seed without neighborhoods.
 - `mustEnterInviteCode` + unit tests; Google callback uses it.
-- Launch checklist updated for admin → create invite → share.
-- Migration `0009_email_verified.sql`; `identityFromGoogleUserinfo` + `isAdminEmail(..., emailVerified)`; persist on create/sign-in; seed verified; unit tests for verified vs unverified.
+- Launch checklist: admin → create invite → share.
+- Migration `0009_email_verified.sql`; `identityFromGoogleUserinfo` + `isAdminEmail(..., emailVerified)`.
+- Removed barrio from onboarding, Perfil, cards, seed; `placeLabel` = district name.
+- Docs: SRD v0.6.2, DEC-31, CSV, OQ-13 resolved.
 
 ### Next owner
-Mica: `db:migrate:remote`, deploy, sign in as ADMIN_EMAILS (verified Google email), create invite in `/admin`, then share.
+Mica: `db:migrate:remote`, deploy, sign in as verified ADMIN_EMAILS, create invite in `/admin`, then share.
 
 ---
 
@@ -37,7 +40,7 @@ Mica: `db:migrate:remote`, deploy, sign in as ADMIN_EMAILS (verified Google emai
 - Screenshots: `captures/ui-feed-cards/{375,1280}/` (entrar, feed, perfil).
 
 ### Open
-- **OQ-13:** which Barranco barrios before Phase 1.
+- ~~OQ-13 barrios~~ → closed by DEC-31 on `prod-bootstrap`.
 - Phase 0 launch ops; then M10.
 
 ---
