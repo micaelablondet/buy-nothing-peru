@@ -3,18 +3,18 @@ AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only)
 AUTH-02,Auth,Invite code gate,New accounts enter a building invite code when INVITE_REQUIRED=true,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,Skipped when INVITE_REQUIRED=false (Phase 1)
 AUTH-03,Auth,Session cookie,Signed HttpOnly Secure SameSite=Lax cookie; 30-day lifetime; logout clears it,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
 AUTH-04,Auth,Admin allowlist check,Admin = current Google email in ADMIN_EMAILS secret checked on every admin request (M8); M10 removes admin from end-user app,Admin,Must,Phase 0,M,SRD,AUTH-03,8.1,built,M8 version built; M10 version (404 on end-user admin) is next
-PROF-01,Profile,Onboarding profile,After first sign-in: display name WhatsApp number district required before post/respond,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
+PROF-01,Profile,Onboarding profile,After first sign-in: display name WhatsApp district required; optional barrio (neighborhood) before post/respond,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,next,DEC-29; was built — update for barrio
 PROF-02,Profile,WhatsApp number format,Peruvian mobile +51 and 9 digits starting with 9; stored E.164; not verified in V1,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,built,Self-declared (DEC-09)
-PROF-03,Profile,Edit profile,User can edit name number and district anytime,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,built,
+PROF-03,Profile,Edit profile,User can edit name number district and optional barrio anytime,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,next,DEC-29
 PROF-04,Profile,Account deletion,Deletes personal data withdraws open posts renames on completed handoffs to Ex vecino,Neighbor,Must,Phase 0,M,SRD,PROF-01,8.1,built,
-POST-01,Posts,Create Regalo,Regalo with title description category and 1–3 required photos,Giver,Must,Phase 0,M,SRD,PROF-01,8.2,built,
-POST-02,Posts,Create Pido,Pido with title description category and optional single photo,Asker,Must,Phase 0,S,SRD,PROF-01,8.2,built,DEC-20
-POST-03,Posts,Post detail,Detail screen with photos status age and viewer-specific actions,Neighbor,Must,Phase 0,M,SRD,POST-01,8.2,built,
-POST-04,Posts,Feed tabs and filters,Regalos/Pidos tabs newest first district default category chips open only,Neighbor,Must,Phase 0,M,SRD,POST-01,8.2,built,
+POST-01,Posts,Create Regalo,Regalo with title description and 1–3 required photos; no category; district+barrio from profile,Giver,Must,Phase 0,M,SRD,PROF-01,8.2,next,DEC-28; category default Otros in DB
+POST-02,Posts,Create Pido,Pido with title description and optional single photo; no category,Asker,Must,Phase 0,S,SRD,PROF-01,8.2,next,DEC-20; DEC-28
+POST-03,Posts,Post detail,Detail screen with photos status age; no category,Neighbor,Must,Phase 0,M,SRD,POST-01,8.2,next,DEC-28
+POST-04,Posts,Feed cards,Regalos/Pidos tabs; card = photo title barrio/district first name hace…; no category chips,Neighbor,Must,Phase 0,M,SRD,POST-01,8.2,next,DEC-28; DEC-29
 POST-05,Posts,Withdraw post,Owner withdraws while open or chosen,Giver / Asker,Must,Phase 0,S,SRD,POST-01,8.2,built,
 POST-06,Posts,Post expiry job,Open posts expire 7 days after creation (scheduled job),System,Must,Phase 0,S,SRD,POST-01,8.2,built,Idempotent cron
 POST-07,Posts,Mis publicaciones,List of the user's posts across all statuses,Neighbor,Should,Phase 0,S,SRD,POST-01,8.2,built,P1 in SRD; shipped in M2
-POST-08,Posts,Categories,Fixed category list required on create,Neighbor,Must,Phase 0,S,SRD,POST-01,8.2,built,
+POST-08,Posts,Categories (retired),Retired DEC-28 — ID kept; no UI; DB column default Otros,Neighbor,—,Phase 0,—,SRD,POST-01,8.2,retired,DEC-28
 RESP-01,Responses,Response bottom sheet,Filled primary Me interesa / Yo tengo sheet with note name district; optional photo on Pido,Neighbor,Must,Phase 0,M,SRD,POST-03,8.3,built,
 RESP-02,Responses,Create response,Confirm adds response notifies poster; one active response per user per post,Neighbor,Must,Phase 0,M,SRD,RESP-01; NOTIF-03,8.3,built,
 RESP-03,Responses,Withdraw response,Responder withdraws; slot reopens,Neighbor,Must,Phase 0,S,SRD,RESP-02,8.3,built,
@@ -32,7 +32,7 @@ NOTIF-01,Notifications,In-app inbox,Bell with unread count; open marks read; lin
 NOTIF-02,Notifications,Web push,Offer push after first post or response; inbox works if denied,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,built,iOS needs PWA on home screen
 NOTIF-03,Notifications,Notification types,Nueva oferta/interesado; Te eligieron; 48h Recordatorio nudge,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,built,
 NOTIF-04,Notifications,Nudge job,Scheduled; at most one nudge per post; idempotent,System,Must,Phase 0,S,SRD,NOTIF-03,8.5,built,
-PUB-01,Public,Public post page,/p/{id} read-only without sign-in; first name only; no numbers,Anyone,Must,Phase 0,M,SRD,POST-01,8.6,built,
+PUB-01,Public,Public post page,/p/{id} read-only; district not barrio; first name; no category no numbers,Anyone,Must,Phase 0,M,SRD,POST-01,8.6,next,DEC-28; DEC-29
 PUB-02,Public,OG tags SSR,Server-rendered Open Graph for WhatsApp previews,Anyone,Must,Phase 0,M,SRD,PUB-01,8.6,built,
 PUB-03,Public,Compartir en WhatsApp,Share button opens wa.me with title and link; records share_clicked,Neighbor,Must,Phase 0,S,SRD,PUB-01,8.6,built,
 PUB-04,Public,Sign-in return to public,Acting on public page requires sign-in and returns to /p/{id},Neighbor,Must,Phase 0,S,SRD,PUB-01; AUTH-01,8.6,built,
@@ -45,11 +45,12 @@ ADMIN-01,Admin,Admin home reports,Open reports and posts list with Quitar public
 ADMIN-02,Admin,Invite codes,Create activate deactivate invite codes,Admin,Must,Phase 0,S,SRD,AUTH-02,8.8,built,
 ADMIN-03,Admin,Admin metrics,Phase gate metrics page from shared worker/lib/metrics.ts,Admin,Must,Phase 0,M,SRD,ANLY-01,8.8,built,
 ADMIN-04,Admin,Access + JWT check,Cloudflare Access plus Cf-Access-Jwt-Assertion validation and ADMIN_EMAILS; fail closed,Admin,Must,Before Phase 1,L,SRD,AUTH-04,8.8,next,M10
-ADMIN-05,Admin,Admin isolation,No link from end-user app; noindex; host-only cookies; end-user session never accepted,Admin,Must,Before Phase 1,M,SRD,ADMIN-04,8.8,next,M10
+ADMIN-05,Admin,Admin isolation,Perfil has no /admin link now; M10 adds noindex host-only cookie isolation,Admin,Must,Before Phase 1,M,SRD,ADMIN-04,8.8,next,Partial now (no Profile link); rest M10
 ADMIN-06,Admin,Admin audit trail,Every admin write records one admin_action event with email action target,Admin,Must,Before Phase 1,S,SRD,ADMIN-01,8.8,next,M10
 LEGAL-01,Legal,Terms and Privacy,Spanish Términos and Política de privacidad linked from sign-in footer and Google consent,Anyone,Must,Phase 0,S,SRD,,8.9,built,
 ANLY-01,Analytics,Event + metric definitions,Record product events; ADMIN-03 computes CH/wk 48h rate median post time inflation,System,Must,Phase 0,M,SRD,,10,built,
 NAV-01,Shell,Header menu,Hamburger menu: Términos Privacidad Salir (signed out: Terms+Privacy only); Escape/outside close; Menú label; 44px targets,Neighbor,Must,Phase 0,S,SRD,LEGAL-01,8.10,built,DEC-27 adjacent; UI recover; recover/ui-nov16
 NAV-02,Shell,Responsive nav,Bottom tabs below 768px; left sidebar from 768px; content centred; no horizontal scroll,Neighbor,Must,Phase 0,M,SRD,NAV-01,8.10,built,DEC-27; recover/ui-nov16
 SRCH-01,Search,Keyword Busca,GET /api/search?q= signed-in; title+description; own district; max 50; no WhatsApp numbers,Neighbor,Must,Phase 0,M,SRD,AUTH-03,8.10,built,DEC-26; recover/ui-nov16
-LAND-01,Landing,Entrar hero,/entrar landing with hero image and sign-in CTA,Anyone,Must,Phase 0,M,SRD,AUTH-01,8.10,built,
+LAND-01,Landing,Entrar hero,/entrar hero; headline casa o depa; comunidad lede; no WhatsApp note on landing,Anyone,Must,Phase 0,M,SRD,AUTH-01,8.10,next,v0.6 copy
+NEIGH-01,Profile,Neighborhoods list,neighborhoods table; Torres Paz seed; optional barrio on profile; copy to posts,Neighbor,Must,Phase 0,M,SRD,PROF-01,7.2,next,DEC-29; OQ-13 for more barrios

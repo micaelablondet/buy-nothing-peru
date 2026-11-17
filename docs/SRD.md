@@ -1,6 +1,6 @@
 # Barrio: Solution Requirements Document (SRD)
 
-**Version:** v0.5.1 | **Date:** November 17, 2026 | **Status:** M0 to M9 built; UI recover (nav, search, landing, Source Serif 4) merged. Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
+**Version:** v0.6 | **Date:** November 17, 2026 | **Status:** M0 to M9 built; feed cards / no categories / barrio (DEC-28, DEC-29) in progress. Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
 **Owner:** Micaela (Mica) Blondet, product | **Builders:** Mica + coding agents (Cursor)
 **Source of truth:** this file (`docs/SRD.md`) in the repo. Any hosted copy (Claude Doc, Google Doc) is an export. Companion docs: `docs/README.md`.
 **Adapted from:** the Valere SRD template, trimmed for a solo, agent-built side project.
@@ -26,6 +26,7 @@
 | v0.4 | 2026-11-17 | **Valere docs convention (DEC-24).** `SPEC.md` moved to `docs/SRD.md`; decision log → `docs/decisions.md`; risks and open questions → `docs/assumptions-and-questions.md`; added `docs/handoff.md`, `docs/feature-prioritization.csv` and `docs/README.md`. M8 and M9 marked Done in section 13. |
 | v0.5 | 2026-11-17 | **App shell, search, landing, fonts (DEC-25 to DEC-27).** New §8.10: NAV-01 header menu, NAV-02 responsive shell, SRCH-01 keyword search, LAND-01 `/entrar` hero. Non-goal search wording narrowed; Devices adds desktop; §11.3 fonts → Source Serif 4 for all text (Parkside color/spacing/radius unchanged). |
 | v0.5.1 | 2026-11-17 | **Evidence E-01** (building WhatsApp group baseline): new §2.4; R-01/R-05 updated; OQ-11 added. |
+| v0.6 | 2026-11-17 | **Feed cards, no categories, barrio, landing copy (DEC-28, DEC-29).** Retire POST-08 (ID kept). POST-01–04 and PUB-01: no category in UI; feed card = photo, title, barrio (else district), first name, `hace…` age. New `neighborhoods` table; optional barrio on profile; posts copy it at create. PUB-01 keeps district only. ADMIN-05: Perfil has no `/admin` link (portal is M10). LAND-01 headline + lede + section title updated; WhatsApp note removed from landing. OQ-13: which Barranco barrios before Phase 1. |
 
 ---
 
@@ -104,7 +105,7 @@ Neighbors and staff are the same account type in the product. Nothing in the dat
 ## 5. Scope
 
 ### 5.1 In scope (V1)
-Google sign-in; building invite code (Phase 0); profile with a self-declared WhatsApp number; Regalo and Pido posts with photos; feed with category filter; **keyword search** (SRCH-01); responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages; **app shell** with header menu and responsive nav (NAV-01, NAV-02); **`/entrar` landing** with hero (LAND-01).
+Google sign-in; building invite code (Phase 0); profile with a self-declared WhatsApp number and optional **barrio** (neighborhood); Regalo and Pido posts with photos; feed (Regalos / Pidos, no category chips); **keyword search** (SRCH-01); responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0 with **no Profile link**, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages; **app shell** with header menu and responsive nav (NAV-01, NAV-02); **`/entrar` landing** with hero (LAND-01).
 
 ### 5.2 Non-goals (do NOT build in V1)
 - **Presto (lending)** and any lending states (due dates, returns, overdue).
@@ -168,8 +169,10 @@ Terminology (use consistently in code and UI):
 ### 7.2 Entities (logical; exact columns may vary, names must not)
 | Entity | Key fields |
 |---|---|
-| `users` | id, google_sub (unique), display_name, whatsapp_e164, district, created_at, deleted_at. **Admin status is never stored** on the user or in the session (AUTH-04). The unused `users.is_admin` column from M0 is dropped in M10 |
-| `posts` | id, type (`regalo`\|`pido`), owner_id, title (max 60), description (max 500), category, district, status, chosen_response_id, created_at, expires_at, chosen_at, delivered_at, received_confirmed_at (nullable, HAND-04), disc_answer (nullable, DISC-01) |
+| `users` | id, google_sub (unique), display_name, whatsapp_e164, district_id, neighborhood_id (nullable, DEC-29), created_at, deleted_at. **Admin status is never stored** on the user or in the session (AUTH-04). The unused `users.is_admin` column from M0 is dropped in M10 |
+| `districts` | id, name |
+| `neighborhoods` | id, district_id, name (DEC-29; Phase 0 seed: `Torres Paz` in Barranco; more barrios = OQ-13) |
+| `posts` | id, type (`regalo`\|`pido`), owner_id, title (max 60), description (max 500), category (DB column kept; UI retired — store fixed default `Otros`, DEC-28), district_id, neighborhood_id (nullable, copied from profile at create), status, chosen_response_id, created_at, expires_at, chosen_at, delivered_at, received_confirmed_at (nullable, HAND-04), disc_answer (nullable, DISC-01) |
 | `post_photos` | id, post_id, r2_key, position (Regalo: 1 to 3 required; Pido: 0 to 1 optional) |
 | `responses` | id, post_id, user_id, note (max 140), photo_r2_key (optional, Pido only), status, created_at |
 | `notifications` | id, user_id, type, post_id, read_at, created_at |
@@ -211,23 +214,23 @@ A response is `not_chosen` when another response is chosen on the same post. A u
 | AUTH-02 | P0 | **Invite code gate** for new accounts when `INVITE_REQUIRED=true`. Existing accounts are not asked again. | **Given** a new Google user and an active code **When** they enter the correct code **Then** the account is created. A wrong or inactive code shows `Código inválido` and creates nothing. With `INVITE_REQUIRED=false` the step is skipped. |
 | AUTH-03 | P0 | Sessions via signed, HttpOnly, Secure, SameSite=Lax cookie, 30-day lifetime. Logout clears it. | A request without a valid session to any write endpoint returns 401. |
 | AUTH-04 | P0 | **Admin check.** *Phase 0 (M8):* admin = signed-in user whose **current** Google email is in `ADMIN_EMAILS`, checked against the database user and the allowlist **on every admin request**. Admin status is never read from the session token. `ADMIN_EMAILS` is a Worker **secret**, not a value in `wrangler.toml`. *From M10:* the end-user app has **no admin role and no admin routes**; all admin work happens in the admin portal (ADMIN-04). | *M8:* **Given** an admin whose email is removed from `ADMIN_EMAILS` **When** they call any `/api/admin/*` route with their existing session **Then** 403, with no re-login needed. `wrangler.toml` contains no email. *M10:* `/admin` and `/api/admin/*` on the end-user host return **404**; end-user code imports nothing from the admin code (checked in CI). |
-| PROF-01 | P0 | Onboarding after first sign-in: display name (prefilled from Google, editable), **WhatsApp number (required)**, district (default `Barranco`). | **Given** an incomplete profile **When** the user tries to post or respond **Then** they are sent to complete the profile and returned to the same screen. |
+| PROF-01 | P0 | Onboarding after first sign-in: display name (prefilled from Google, editable), **WhatsApp number (required)**, district (default `Barranco`), optional **barrio** from the district's neighborhood list (DEC-29). | **Given** an incomplete profile **When** the user tries to post or respond **Then** they are sent to complete the profile and returned to the same screen. Barrio may be left empty. |
 | PROF-02 | P0 | WhatsApp number validated as a Peruvian mobile: `+51` followed by 9 digits starting with 9. Stored as E.164. **Not verified in V1.** | `987654321` and `+51987654321` are accepted and stored as `+51987654321`. `12345` is rejected with a clear message. |
-| PROF-03 | P0 | User can edit name, number and district at any time. | Changes appear on the user's future posts and responses. |
+| PROF-03 | P0 | User can edit name, number, district and optional barrio at any time. | Changes appear on the user's future posts and responses (district and barrio are copied onto new posts at creation). |
 | PROF-04 | P0 | **Account deletion** from the profile. Deletes name, number, push subscriptions and the Google link; withdraws open posts; renames the user on completed handoffs to `Ex vecino`. | After deletion the user cannot sign in with the old account and no personal data remains in `users`. |
 
 ### 8.2 Posts and feed (POST)
 
 | ID | Pri | Requirement | Acceptance criteria |
 |---|---|---|---|
-| POST-01 | P0 | Create a **Regalo**: title, description, category, **1 to 3 photos (required)**. District comes from the profile. | A submission without a photo is rejected. Photos are resized on the device before upload (max 1600px longest side). A valid submission appears in the feed immediately. |
-| POST-02 | P0 | Create a **Pido**: title, description, category, optional single reference photo. | A Pido can be created with no photo. |
-| POST-03 | P0 | Post detail screen: photos, title, description, category, district, poster's name, status, age, and the actions allowed to this viewer. | Own posts show `Ver ofertas` / `Ver interesados`. Posts of others show the response button (RESP-01). Closed states show a status label instead. |
-| POST-04 | P0 | Feed with two tabs: `Regalos` and `Pidos`. Newest first. Default filter: the viewer's district. Category filter chip row. Only `open` posts are listed. | A `chosen`, `delivered`, `expired`, `withdrawn` or `removed` post is not in the feed. |
+| POST-01 | P0 | Create a **Regalo**: title, description, **1 to 3 photos (required)**. No category field (DEC-28). District and barrio come from the profile at creation. | A submission without a photo is rejected. Photos are resized on the device before upload (max 1600px longest side). A valid submission appears in the feed immediately. DB `posts.category` is set to the fixed default `Otros`. |
+| POST-02 | P0 | Create a **Pido**: title, description, optional single reference photo. No category field (DEC-28). | A Pido can be created with no photo. |
+| POST-03 | P0 | Post detail screen: photos, title, description, district, poster's name, status, age, and the actions allowed to this viewer. **No category** (DEC-28). | Own posts show `Ver ofertas` / `Ver interesados`. Posts of others show the response button (RESP-01). Closed states show a status label instead. |
+| POST-04 | P0 | Feed with two tabs: `Regalos` and `Pidos`. Newest first. Default filter: the viewer's district. **No category chips** (DEC-28). Only `open` posts are listed. Each **card shows only:** first photo (placeholder if a Pido has none), title, **barrio** (fall back to district if empty), poster's **first name**, and age as `hace X min` / `hace X h` / `hace 1 día` / `hace X días`. | A `chosen`, `delivered`, `expired`, `withdrawn` or `removed` post is not in the feed. Card has no category. |
 | POST-05 | P0 | Owner can **withdraw** a post while `open` or `chosen`. | The status becomes `withdrawn`, the post leaves the feed, and active responses become `not_chosen`. |
 | POST-06 | P0 | Posts **expire 7 days after creation** if still `open` (scheduled job). | A post created 7 days ago with no choice becomes `expired` within one job cycle. A `chosen` post is not expired. |
 | POST-07 | P1 | `Mis publicaciones` list (all statuses). | Shows the user's posts with status. |
-| POST-08 | P0 | Categories (fixed list, admin-editable only via code): `Ropa`, `Calzado`, `Muebles`, `Electrodomésticos`, `Electrónica`, `Libros y útiles`, `Juguetes y bebé`, `Hogar y cocina`, `Plantas y jardín`, `Otros`. | Post creation requires one category. |
+| POST-08 | — | **Retired (DEC-28).** Was: fixed category list required on create. ID kept for traceability. Categories are removed from the product UI; the DB column remains with a fixed default. | N/A — do not build category chips, form fields, card labels, detail labels, public-page category, or search hints that mention category. |
 
 ### 8.3 Responses and choosing (RESP)
 
@@ -267,7 +270,7 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 
 | ID | Pri | Requirement | Acceptance criteria |
 |---|---|---|---|
-| PUB-01 | P0 | Each post has a **public read-only page** at `/p/{id}`, viewable without sign-in. Shows title, photos, description, category, district, **poster's first name**, and status. | Shows no WhatsApp number, no email, no responder list. Closed posts show their status. |
+| PUB-01 | P0 | Each post has a **public read-only page** at `/p/{id}`, viewable without sign-in. Shows title, photos, description, **district** (not barrio), **poster's first name**, and status. **No category** (DEC-28). | Shows no WhatsApp number, no email, no responder list, no barrio. Closed posts show their status. |
 | PUB-02 | P0 | Public pages are **server-rendered** with Open Graph tags (title, first photo, short description) so WhatsApp previews work. | The HTML response contains correct `og:title`, `og:image`, `og:description` without running JavaScript. |
 | PUB-03 | P0 | `Compartir en WhatsApp` button on post detail opens `https://wa.me/?text=<title + link>`. | Event `share_clicked` recorded. |
 | PUB-04 | P0 | Acting on a public page (responding, posting) requires sign-in and returns the user to that page. | After Google sign-in and any needed invite/profile steps, the user returns to `/p/{id}`. |
@@ -292,7 +295,7 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 | ADMIN-02 | P0 | Admin can create, activate and deactivate invite codes. | A deactivated code is rejected at AUTH-02 in the end-user app. |
 | ADMIN-03 | P0 | Admin metrics page showing the Phase gate numbers: accounts, CH/wk, 48h response rate, median post-form time, inflation check, DISC-01 answers. | Numbers match section 10 definitions on seed data (tested). Metric queries live in `worker/lib/metrics.ts`, shared code, not in the admin UI. |
 | ADMIN-04 | P0 (M10) | **Access control, two layers, fail closed.** (1) The `barrio-admin` Worker is protected by **Cloudflare Access** (Zero Trust free plan) at the Worker level, so its `workers.dev`, preview and custom-domain URLs are all covered. The Access policy allows only the admin emails. (2) The admin Worker **also** verifies identity on every request: it validates the `Cf-Access-Jwt-Assertion` JWT (signature against the team's public keys, `aud` = `ACCESS_AUD`, not expired) and checks the email against `ADMIN_EMAILS`. `ctx.access` may be used only where it is confirmed to be present (it is not passed in some setups, e.g. behind static assets). | **Given** no Access token **Then** 403. **Given** a valid token whose email is not in `ADMIN_EMAILS` **Then** 403. **Given** a token with the wrong `aud`, a bad signature, or an expired time **Then** 403. **Given** a valid token for a listed email **Then** 200. Tested with a locally signed test key; checked once on the deployed URL from a private window. |
-| ADMIN-05 | P0 (M10) | **Isolation from the end-user app.** The admin URL is never linked from the end-user app (the Profile link to `/admin` is removed). The admin portal sends `X-Robots-Tag: noindex` and serves a `robots.txt` that disallows everything. The end-user session cookie is **host-only** (no `Domain` attribute), so it is never sent to the admin host, and the admin portal never accepts it. | Response headers and `robots.txt` checked in tests. The end-user `Set-Cookie` has no `Domain` attribute. A request to the admin API with a valid end-user session cookie and no Access token gets 403. |
+| ADMIN-05 | P0 (M10) | **Isolation from the end-user app.** **Now (before M10):** Perfil has **no link** to `/admin` (admins open the URL directly; the separate portal is M10). **From M10:** the admin portal sends `X-Robots-Tag: noindex` and serves a `robots.txt` that disallows everything. The end-user session cookie is **host-only** (no `Domain` attribute), so it is never sent to the admin host, and the admin portal never accepts it. | **Now:** Perfil UI has no `Ir a admin` / `/admin` link (tested). **M10:** Response headers and `robots.txt` checked in tests. The end-user `Set-Cookie` has no `Domain` attribute. A request to the admin API with a valid end-user session cookie and no Access token gets 403. |
 | ADMIN-06 | P0 (M10) | **Audit trail.** Every admin write (remove post, resolve report, invite code change) records one `admin_action` event with the admin email, the action and the target id. | Each admin write creates exactly one event. A failed write creates none. |
 
 ### 8.9 Legal (LEGAL)
@@ -308,7 +311,7 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 | NAV-01 | P0 | **Header menu (☰).** A menu button in the app header opens a panel with `Términos`, `Privacidad` and `Salir` when signed in; when signed out, only `Términos` and `Privacidad`. | The panel closes on **Escape** or a tap outside. The control is labelled `Menú` for screen readers. Menu items and the button meet the **44px** tap-target minimum. |
 | NAV-02 | P0 | **Responsive shell.** Below **768px**: the four primary destinations (`Inicio`, `Busca`, `Publica`, `Perfil`) are a **bottom tab bar**. From **768px**: the same four items appear in a **left sidebar**; main content stays centred. | No horizontal scroll at 375px, 768px or 1280px. The four destinations match on mobile and desktop. |
 | SRCH-01 | P0 | **Busca:** `GET /api/search?q=` returns open posts whose **title or description** contains the query (case-insensitive), in the viewer's **own district** by default, **max 50** results. Signed-in only. | Signed-out → **401**. Results never include WhatsApp numbers (or emails). Empty or whitespace `q` returns an empty list (200). |
-| LAND-01 | P0 | **`/entrar` landing** with a hero image and the sign-in call to action (stub `Continuar` when stub auth is on; Google when configured). | The first viewport shows the brand, hero, headline and primary sign-in action. Terms and Privacy remain linked. |
+| LAND-01 | P0 | **`/entrar` landing** with a hero image and the sign-in call to action (stub `Continuar` when stub auth is on; Google when configured). Headline: `Lo que sobra en una casa o depa le falta a otro`. Lede: `Barrio es una app para tu comunidad: publicas lo que ya no usas, o pides lo que necesitas. Sin precio.` Section title: `Un tablón de regalos de tu comunidad`. No WhatsApp explanation note on the landing (that stays on the onboarding profile screen). | The first viewport shows the brand, hero, headline and primary sign-in action. Terms and Privacy remain linked. |
 
 ---
 
@@ -322,7 +325,7 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 | Security | Authorization checked server-side on **every** write and on every read of private data. Secrets in Cloudflare environment variables only, set per Worker (the end-user app never holds admin secrets and the reverse). No personal data in URLs or logs. Upload validation: image types only, size limit. Tests required (section 12.3). |
 | Admin isolation | From M10: admin portal on its own URL, behind Cloudflare Access plus an in-Worker identity check (ADMIN-04, ADMIN-05). A bug in the end-user app must not expose admin actions, and the reverse. Until then: AUTH-04 (M8 version) and SAFE-05. |
 | Public repo | The repo is public. Nothing personal or secret goes in any committed file, including `wrangler.toml` (emails, IDs of real people, keys). |
-| Privacy | Collect only: Google name and email, WhatsApp number, district, photos the user uploads. Numbers revealed per HAND-02 only. Account deletion per PROF-04. |
+| Privacy | Collect only: Google name and email, WhatsApp number, district, optional barrio (neighborhood), photos the user uploads. Numbers revealed per HAND-02 only. Account deletion per PROF-04. |
 | Cost | Run on **Cloudflare free plans**. Confirm free-plan limits for Workers, D1, R2 and Cron Triggers during setup (OQ-03). Must work within them for the pilot. |
 | Reliability | Scheduled jobs (expiry, nudge) are idempotent. |
 | Language | All UI copy in `es-PE`, kept in one copy file per app (`src/copy/es-PE.ts`; from M10 also `admin/src/copy/es-PE.ts`), never hard-coded in components. |

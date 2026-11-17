@@ -4,6 +4,23 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Feed cards / no categories / barrio (SRD v0.6)
+
+**Stage:** Branch `ui-feed-cards`. Spec first (this entry + DEC-28/29), then code.
+
+### Spec (v0.6)
+- **DEC-28:** Categories out of the product UI; keep DB column with default `Otros`; retire POST-08.
+- **DEC-29:** `neighborhoods` table; optional barrio on profile; posts copy at create; feed shows barrio (else district); PUB-01 district only.
+- **POST-04** card: photo, title, barrio/district, first name, `hace…` age — nothing else.
+- **ADMIN-05 (now):** Perfil has no `/admin` link.
+- **LAND-01** copy: new headline, lede, section title; no WhatsApp note on landing.
+- **OQ-13:** which Barranco barrios before Phase 1 (brief asked for OQ-12; that ID is the Playwright pin).
+
+### Next in this branch
+Implement migration + UI + tests + screenshots; open PR.
+
+---
+
 ## 2026-11-17 — E-01 WhatsApp-group baseline (evidence)
 
 **Evidence:** [`SRD.md`](./SRD.md) §2.4 **E-01** — building WhatsApp group answered 1 of 3 posts (~33%); one same-day doorstep handoff; staff not in the group. Risks/OQs updated: R-01, R-05, **OQ-11**.
