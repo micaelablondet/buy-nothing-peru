@@ -19,7 +19,6 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npm run db:reset:local
       - run: |
           printf '%s\n' \
             'ENVIRONMENT=development' \

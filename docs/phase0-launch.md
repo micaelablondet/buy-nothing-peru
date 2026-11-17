@@ -34,7 +34,6 @@ Code slices **M0–M9** are in `main` (or about to be). This doc tracks launch o
 ```bash
 # Local
 cp .dev.vars.example .dev.vars   # includes ENVIRONMENT=development + APP_BASE_URL for local
-npm run db:reset:local
 npm run build && npm run test:e2e
 
 # Production deploy (after secrets + real database_id + APP_BASE_URL)

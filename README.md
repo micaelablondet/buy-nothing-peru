@@ -28,7 +28,7 @@ Sign in with **Continuar** on `/entrar` when stub auth is on. Google OAuth for p
 | `npm run build` | Typecheck client + Vite build → `dist/` |
 | `npm run typecheck` | Client + Worker TypeScript |
 | `npm test` | Vitest unit tests |
-| `npm run test:e2e` | Playwright smoke + authz (needs build + local D1) |
+| `npm run test:e2e` | Reset local D1 + Playwright e2e (needs build) |
 | `npm run db:reset:local` | Local D1 migrate + seed |
 | `npm run db:migrate:remote` | Apply D1 migrations to production |
 | `npm run deploy` | Build + `wrangler deploy` (run `db:migrate:remote` first) |
