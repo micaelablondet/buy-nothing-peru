@@ -177,8 +177,8 @@
   },
   "type": {
     "families": {
-      "display": "\"EB Garamond\", Garamond, Georgia, serif",
-      "sans": "\"Work Sans\", system-ui, sans-serif"
+      "display": "\"Source Serif 4\", \"Iowan Old Style\", \"Palatino Linotype\", Palatino, Georgia, serif",
+      "sans": "\"Source Serif 4\", \"Iowan Old Style\", \"Palatino Linotype\", Palatino, Georgia, serif"
     },
     "groups": [
       {

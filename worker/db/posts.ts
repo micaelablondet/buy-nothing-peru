@@ -181,6 +181,37 @@ export async function listFeed(
   return rows.results ?? [];
 }
 
+/** SRCH-01: substring search over open posts in a district (title + description). */
+export async function searchPosts(
+  db: D1Database,
+  input: {
+    districtId: string;
+    query: string;
+    limit: number;
+  },
+): Promise<PostRow[]> {
+  const q = input.query.trim();
+  if (!q) {
+    return [];
+  }
+  const limit = Math.min(Math.max(input.limit, 1), 50);
+  const pattern = `%${q.replace(/[%_]/g, "")}%`;
+  const rows = await db
+    .prepare(
+      `${POST_SELECT}
+       WHERE p.status = 'open' AND p.district_id = ?
+         AND (
+           p.title LIKE ? COLLATE NOCASE
+           OR p.description LIKE ? COLLATE NOCASE
+         )
+       ORDER BY p.created_at DESC
+       LIMIT ?`,
+    )
+    .bind(input.districtId, pattern, pattern, limit)
+    .all<PostRow>();
+  return rows.results ?? [];
+}
+
 export async function listMyPosts(
   db: D1Database,
   authorId: string,

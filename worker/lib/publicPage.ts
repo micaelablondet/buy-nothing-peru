@@ -150,21 +150,21 @@ function documentShell(input: {
   <meta name="twitter:card" content="summary_large_image" />
   <style>
     :root {
-      --color-surface: #f7f6f2;
-      --color-ink: #1b4332;
-      --color-ink-muted: #52796f;
-      --color-brand: #2d6a4f;
-      --color-border: #e4e6e3;
-      --color-on-brand: #ffffff;
+      --color-surface: #F1EDDA;
+      --color-ink: #2A231B;
+      --color-ink-muted: #5F5548;
+      --color-brand: #2F5D3A;
+      --color-border: #D5CDAE;
+      --color-on-brand: #FFFFFF;
       --space-2: 0.5rem;
       --space-3: 0.75rem;
       --space-4: 1rem;
       --space-6: 1.5rem;
       --space-8: 2rem;
-      --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
       --text-md: 1rem;
       --text-sm: 0.875rem;
-      --text-xl: 1.25rem;
+      --text-xl: 1.125rem;
       --text-2xl: 1.5rem;
       --radius-md: 0.75rem;
       --touch-min: 2.75rem;
@@ -172,11 +172,12 @@ function documentShell(input: {
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: var(--font-sans);
+      font-family: var(--font-serif);
       background: var(--color-surface);
       color: var(--color-ink);
       font-size: var(--text-md);
       line-height: 1.5;
+      font-weight: 400;
     }
     .public {
       max-width: 28rem;

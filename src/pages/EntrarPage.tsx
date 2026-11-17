@@ -10,6 +10,7 @@ import {
   startStubSession,
   type AuthConfig,
 } from "@/lib/api";
+import "@/styles/landing.css";
 
 function safeNext(raw: string | null): string | null {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//")) {
@@ -84,38 +85,88 @@ export function EntrarPage() {
     }
   };
 
+  const { sections } = copy.entrar;
+
   return (
-    <div className="entrar">
-      <p className="entrar__eyebrow">{copy.appName}</p>
-      <h1 className="entrar__title">{copy.entrar.title}</h1>
-      <p className="entrar__body">{copy.entrar.body}</p>
+    <div className="landing">
+      <header className="landing__masthead">
+        <p className="landing__brand">{copy.appName}</p>
+      </header>
 
-      {config?.googleConfigured ? (
-        <a className="btn-primary" href={googleAuthHref(next)}>
-          {copy.entrar.ctaGoogle}
-        </a>
-      ) : (
-        <p className="entrar__note">{copy.entrar.googleMissing}</p>
-      )}
+      <div className="landing__hero">
+        <div className="landing__art">
+          <img
+            className="landing__art-img"
+            src="/images/landing-hero.jpg"
+            alt=""
+          />
+        </div>
 
-      {config?.stubAuth ? (
-        <button
-          type="button"
-          className="btn-secondary"
-          disabled={busy || !returnReady}
-          onClick={() => void onStub()}
-        >
-          {copy.entrar.ctaStub}
-        </button>
-      ) : null}
+        <div className="landing__copy">
+          <p className="landing__kicker">{copy.entrar.kicker}</p>
+          <h1 className="landing__title">{copy.entrar.title}</h1>
+          <p className="landing__lede">{copy.entrar.lede}</p>
 
-      <p className="entrar__note">{copy.entrar.note}</p>
-      <p className="entrar__legal">
-        <Link to="/legal/terminos">{copy.entrar.terms}</Link>
-        {" · "}
-        <Link to="/legal/privacidad">{copy.entrar.privacy}</Link>
-      </p>
-      {error ? <p className="entrar__error">{error}</p> : null}
+          <div className="landing__auth">
+            {config?.googleConfigured ? (
+              <a className="landing__cta" href={googleAuthHref(next)}>
+                {copy.entrar.ctaGoogle}
+              </a>
+            ) : null}
+
+            {config?.stubAuth ? (
+              <button
+                type="button"
+                className={
+                  config.googleConfigured
+                    ? "landing__cta landing__cta--ghost"
+                    : "landing__cta"
+                }
+                disabled={busy || !returnReady}
+                onClick={() => void onStub()}
+              >
+                {copy.entrar.ctaStub}
+              </button>
+            ) : null}
+
+            {!config?.googleConfigured && !config?.stubAuth ? (
+              <p className="landing__note">{copy.entrar.googleMissing}</p>
+            ) : null}
+
+            <p className="landing__note">{copy.entrar.note}</p>
+            {error ? <p className="landing__error">{error}</p> : null}
+          </div>
+        </div>
+      </div>
+
+      <hr className="landing__divider" />
+
+      <div className="landing__sections">
+        <section className="landing__section">
+          <p className="landing__section-label">{sections.whatLabel}</p>
+          <h2 className="landing__section-title">{sections.whatTitle}</h2>
+          <p className="landing__section-body">{sections.whatBody}</p>
+        </section>
+        <section className="landing__section">
+          <p className="landing__section-label">{sections.howLabel}</p>
+          <h2 className="landing__section-title">{sections.howTitle}</h2>
+          <p className="landing__section-body">{sections.howBody}</p>
+        </section>
+        <section className="landing__section">
+          <p className="landing__section-label">{sections.freeLabel}</p>
+          <h2 className="landing__section-title">{sections.freeTitle}</h2>
+          <p className="landing__section-body">{sections.freeBody}</p>
+        </section>
+      </div>
+
+      <footer className="landing__foot">
+        <p className="landing__foot-mark">{copy.appName}</p>
+        <p>
+          <Link to="/legal/terminos">{copy.entrar.terms}</Link>
+          {" · "}
+          <Link to="/legal/privacidad">{copy.entrar.privacy}</Link>
+        </p>
+      </footer>
     </div>
   );
 }

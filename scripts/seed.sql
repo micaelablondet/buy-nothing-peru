@@ -32,8 +32,14 @@ INSERT INTO users (id, google_sub, email, first_name, display_name, whatsapp, di
   ('user-cap-6', 'seed-google-cap-6', 'cap6@example.test', 'Cap6', 'Cap6', '+51900000016', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
   ('user-cap-7', 'seed-google-cap-7', 'cap7@example.test', 'Cap7', 'Cap7', '+51900000017', 'dist-barranco', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z');
 
--- One post per status (categories from POST-08). Open posts expire far in the future so e2e stays stable.
+-- Open posts for UI (photos in scripts/seed-photos) + M8 e2e fixtures (far-future expiry).
 INSERT INTO posts (id, author_id, type, status, title, description, category, district_id, created_at, expires_at, chosen_response_id, delivered_at, withdrawn_at, chosen_at, received_confirmed_at, nudge_sent_at) VALUES
+  ('post-regalo-pikachu', 'user-mica', 'regalo', 'open', 'Peluche Pikachu', 'Peluche en buen estado. Recojo en el edificio.', 'Juguetes y bebé', 'dist-barranco', '2026-11-13T18:00:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
+  ('post-regalo-lonchera', 'user-mica', 'regalo', 'open', 'Lonchera Avengers', 'Lonchera rígida Marvel, con asa y cierre.', 'Juguetes y bebé', 'dist-barranco', '2026-11-13T17:30:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
+  ('post-regalo-cuisinart', 'user-mica', 'regalo', 'open', 'Accesorios Cuisinart', 'Chopper, vaso, pie de mixer y batidor. Sin el motor.', 'Electrodomésticos', 'dist-barranco', '2026-11-13T17:00:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
+  ('post-regalo-peluches', 'user-mica', 'regalo', 'open', 'Dos peluches', 'Oso con corazón y peluche arcoíris. Los dos juntos.', 'Juguetes y bebé', 'dist-barranco', '2026-11-13T16:30:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
+  ('post-regalo-esqueleto', 'user-mica', 'regalo', 'open', 'Disfraz de esqueleto', 'Enterizo con huesos, máscara y guantes. Talla niño.', 'Ropa', 'dist-barranco', '2026-11-13T16:00:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
+  ('post-regalo-bici', 'user-mica', 'regalo', 'open', 'Bicicleta de montaña', 'Bici roja, cambios Shimano. Recojo en el edificio.', 'Otros', 'dist-barranco', '2026-11-13T15:30:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
   ('post-open-regalo', 'user-mica', 'regalo', 'open', 'Microondas seed', 'Solo para seed / e2e.', 'Electrodomésticos', 'dist-barranco', '2026-11-08T10:00:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
   ('post-open-pido', 'user-lucia', 'pido', 'open', 'Macetas seed', 'Solo para seed / e2e.', 'Plantas y jardín', 'dist-barranco', '2026-11-08T11:00:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
   ('post-at-cap', 'user-mica', 'regalo', 'open', 'Cap 7 seed', 'Ya tiene 7 interesados.', 'Otros', 'dist-barranco', '2026-11-08T09:00:00.000Z', '2099-01-01T00:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
@@ -44,15 +50,24 @@ INSERT INTO posts (id, author_id, type, status, title, description, category, di
   ('post-withdrawn', 'user-lucia', 'regalo', 'withdrawn', 'Chaqueta seed', 'Retirado.', 'Ropa', 'dist-barranco', '2026-11-02T10:00:00.000Z', NULL, NULL, NULL, '2026-11-04T12:00:00.000Z', NULL, NULL, NULL),
   ('post-expired', 'user-carlos', 'pido', 'expired', 'Sillas seed', 'Expiró sin elegir.', 'Muebles', 'dist-barranco', '2026-10-20T10:00:00.000Z', '2026-10-27T10:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL),
   ('post-removed', 'user-mica', 'regalo', 'removed', 'Item removido', 'Removido por admin.', 'Otros', 'dist-barranco', '2026-11-01T08:00:00.000Z', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-  ('post-closed', 'user-lucia', 'regalo', 'closed', 'Cerrado seed', 'Chosen sin Entregado (OQ-05).', 'Hogar y cocina', 'dist-barranco', '2026-10-01T10:00:00.000Z', NULL, 'resp-closed-1', NULL, NULL, '2026-10-02T12:00:00.000Z', NULL, NULL);
+  ('post-closed', 'user-lucia', 'regalo', 'closed', 'Cerrado', 'Elegido sin marcar entregado.', 'Hogar y cocina', 'dist-barranco', '2026-10-01T10:00:00.000Z', NULL, 'resp-closed-1', NULL, NULL, '2026-10-02T12:00:00.000Z', NULL, NULL);
+
+INSERT INTO post_photos (id, post_id, r2_key, position, created_at) VALUES
+  ('photo-open-regalo', 'post-open-regalo', 'seed/microondas.jpg', 1, '2026-11-08T10:00:00.000Z'),
+  ('photo-pikachu', 'post-regalo-pikachu', 'seed/pikachu.jpg', 1, '2026-11-13T18:00:00.000Z'),
+  ('photo-lonchera', 'post-regalo-lonchera', 'seed/lonchera-avengers.jpg', 1, '2026-11-13T17:30:00.000Z'),
+  ('photo-cuisinart', 'post-regalo-cuisinart', 'seed/cuisinart.jpg', 1, '2026-11-13T17:00:00.000Z'),
+  ('photo-peluches', 'post-regalo-peluches', 'seed/peluches.jpg', 1, '2026-11-13T16:30:00.000Z'),
+  ('photo-esqueleto', 'post-regalo-esqueleto', 'seed/disfraz-esqueleto.jpg', 1, '2026-11-13T16:00:00.000Z'),
+  ('photo-bici', 'post-regalo-bici', 'seed/bicicleta.jpg', 1, '2026-11-13T15:30:00.000Z');
 
 INSERT INTO notifications (id, user_id, type, post_id, read_at, created_at) VALUES
-  ('notif-seed-1', 'user-mica', 'nuevo_interesado', 'post-open-regalo', NULL, '2026-11-08T12:05:00.000Z'),
+  ('notif-seed-1', 'user-mica', 'nuevo_interesado', 'post-regalo-cuisinart', NULL, '2026-11-13T17:05:00.000Z'),
   ('notif-seed-2', 'user-lucia', 'te_eligieron', 'post-chosen', '2026-11-05T12:30:00.000Z', '2026-11-05T12:05:00.000Z');
 
 INSERT INTO responses (id, post_id, responder_id, status, note, photo_r2_key, created_at, withdrawn_at) VALUES
-  ('resp-active-1', 'post-open-regalo', 'user-lucia', 'active', 'Me interesa el microondas', NULL, '2026-11-08T12:00:00.000Z', NULL),
-  ('resp-active-2', 'post-open-regalo', 'user-carlos', 'active', 'Lo puedo pasar a buscar', NULL, '2026-11-08T12:30:00.000Z', NULL),
+  ('resp-active-1', 'post-regalo-cuisinart', 'user-lucia', 'active', 'Me interesan los accesorios', NULL, '2026-11-13T17:05:00.000Z', NULL),
+  ('resp-active-2', 'post-regalo-cuisinart', 'user-carlos', 'active', 'Lo puedo pasar a buscar', NULL, '2026-11-13T17:15:00.000Z', NULL),
   ('resp-chosen-1', 'post-chosen', 'user-lucia', 'chosen', 'Me encantan los libros', NULL, '2026-11-05T11:00:00.000Z', NULL),
   ('resp-not-chosen-1', 'post-chosen', 'user-carlos', 'not_chosen', 'También me interesan', NULL, '2026-11-05T11:05:00.000Z', NULL),
   ('resp-delivered-1', 'post-delivered', 'user-mica', 'chosen', 'Gracias', NULL, '2026-11-01T12:00:00.000Z', NULL),
