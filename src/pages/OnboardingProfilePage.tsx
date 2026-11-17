@@ -8,6 +8,7 @@ import {
   updateProfile,
   type MeResponse,
 } from "@/lib/api";
+import { sanitizeReturnPath } from "@/lib/returnPath";
 
 export function OnboardingProfilePage() {
   const navigate = useNavigate();
@@ -62,12 +63,13 @@ export function OnboardingProfilePage() {
         path && path !== "/onboarding/perfil" && !path.startsWith("/entrar")
           ? `${path}${from?.search ?? ""}`
           : null;
-      const next =
+      const candidate =
         fromPath ||
         (result.next && result.next !== "/onboarding/perfil"
           ? result.next
           : null) ||
         "/app";
+      const next = sanitizeReturnPath(candidate) ?? "/app";
       if (next.startsWith("/p/")) {
         goAfterAuth(next);
         return;

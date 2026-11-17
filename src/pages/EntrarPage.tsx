@@ -10,21 +10,12 @@ import {
   startStubSession,
   type AuthConfig,
 } from "@/lib/api";
+import { sanitizeReturnPath } from "@/lib/returnPath";
 import "@/styles/landing.css";
-
-function safeNext(raw: string | null): string | null {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) {
-    return null;
-  }
-  if (raw.startsWith("/p/") || raw === "/app" || raw.startsWith("/app/")) {
-    return raw;
-  }
-  return null;
-}
 
 export function EntrarPage() {
   const [params] = useSearchParams();
-  const next = safeNext(params.get("next"));
+  const next = sanitizeReturnPath(params.get("next"));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState<AuthConfig | null>(null);

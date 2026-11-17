@@ -1,3 +1,5 @@
+import { sanitizeReturnPath } from "@/lib/returnPath";
+
 export type MeResponse = {
   id: string;
   displayName: string;
@@ -160,7 +162,7 @@ export function googleAuthHref(next?: string | null): string {
 
 /** Prefer full document load so `/p/{id}` hits Worker SSR (PUB-02), not the SPA. */
 export function goAfterAuth(next: string): void {
-  window.location.assign(next);
+  window.location.assign(sanitizeReturnPath(next) ?? "/app");
 }
 
 export async function recordShareClick(
