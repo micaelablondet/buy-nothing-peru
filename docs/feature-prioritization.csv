@@ -1,6 +1,6 @@
 ID,Area,Feature,Description,User role,Priority,Phase,Complexity,Source,Depends on,SRD section,Status,Notes
 AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only); no passwords,Neighbor,Must,Phase 0,M,SRD,,8.1,built,Continuar con Google
-AUTH-02,Auth,Invite code gate,New accounts enter a building invite code when INVITE_REQUIRED=true,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,Skipped when INVITE_REQUIRED=false (Phase 1)
+AUTH-02,Auth,Invite code gate,New accounts enter invite when INVITE_REQUIRED=true; ADMIN_EMAILS skip so first admin can bootstrap codes,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,next,DEC-30; was built — admin skip pending
 AUTH-03,Auth,Session cookie,Signed HttpOnly Secure SameSite=Lax cookie; 30-day lifetime; logout clears it,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
 AUTH-04,Auth,Admin allowlist check,Admin = current Google email in ADMIN_EMAILS secret checked on every admin request (M8); M10 removes admin from end-user app,Admin,Must,Phase 0,M,SRD,AUTH-03,8.1,built,M8 version built; M10 version (404 on end-user admin) is next
 PROF-01,Profile,Onboarding profile,After first sign-in: display name WhatsApp district required; optional barrio (neighborhood) before post/respond,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,DEC-29

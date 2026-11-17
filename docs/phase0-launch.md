@@ -41,6 +41,16 @@ npm run db:migrate:remote
 npm run deploy
 ```
 
+## After migrate + deploy (first admin / invite — DEC-30)
+
+Migrations insert Barranco + Torres Paz. Invite codes are **not** in migrations; create them in the app:
+
+1. **Sign in as admin** with a Google account whose email is in the `ADMIN_EMAILS` secret (that email skips the invite gate).
+2. Complete profile if needed, then open **`/admin`** and **create the invite code**.
+3. **Only then** share the code in the building WhatsApp group (and seed real Regalos/Pidos).
+
+Do not share an invite before step 2 — there is no bootstrap code in production.
+
 ## Before Phase 1
 
 M10 admin portal split (`docs/m10-admin-portal-setup.md`). See `docs/SRD.md` section 16, "Before opening Phase 1".

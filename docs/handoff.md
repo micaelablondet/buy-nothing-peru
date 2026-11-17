@@ -4,6 +4,21 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Prod bootstrap (SRD v0.6.1 / DEC-30)
+
+**Stage:** Branch `prod-bootstrap` — fix empty production reference data + admin invite chicken-and-egg.
+
+### Spec
+- Migration `INSERT OR IGNORE` Barranco + Torres Paz; seed.sql same for those rows.
+- AUTH-02: `ADMIN_EMAILS` skip invite when `INVITE_REQUIRED=true`.
+- `phase0-launch.md`: migrate → deploy → admin sign-in → create invite → share.
+- **OQ-14:** districts beyond Barranco (brief said OQ-13; that ID is barrios).
+
+### Next
+Implement + tests + PR; then Mica runs migrate/deploy and creates the invite.
+
+---
+
 ## 2026-11-17 — Feed cards / no categories / barrio (SRD v0.6)
 
 **Stage:** Branch `ui-feed-cards` — docs + implementation.
