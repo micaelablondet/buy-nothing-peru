@@ -2,6 +2,7 @@ import type { Context, Hono } from "hono";
 import { createInvite, listInvites, setInviteActive } from "../db/invites";
 import { removePost } from "../db/posts";
 import { listOpenReports } from "../db/reports";
+import { findUserById, rowToSession } from "../db/users";
 import type { SessionUser, WorkerEnv } from "../env";
 import { computeMetrics } from "../lib/metrics";
 import { readSession } from "../session";
@@ -11,21 +12,39 @@ type AppEnv = {
   Variables: { user: SessionUser };
 };
 
+/**
+ * AUTH-04 (M8): load the user from the DB and check ADMIN_EMAILS on every request.
+ * Never trust isAdmin from the session token.
+ */
 async function requireAdmin(
   c: Context<AppEnv>,
-): Promise<SessionUser | null> {
+): Promise<
+  | { ok: true; admin: SessionUser }
+  | { ok: false; status: 401 | 403 }
+> {
   const session = await readSession(
     c.req.header("Cookie") ?? null,
     c.env.SESSION_SECRET,
   );
-  if (!session || !session.isAdmin) {
-    return null;
+  if (!session) {
+    return { ok: false, status: 401 };
   }
-  return session;
+  const row = await findUserById(c.env.DB, session.id);
+  if (!row) {
+    return { ok: false, status: 401 };
+  }
+  const fresh = rowToSession(row, c.env.ADMIN_EMAILS ?? "");
+  if (!fresh.isAdmin) {
+    return { ok: false, status: 403 };
+  }
+  return { ok: true, admin: fresh };
 }
 
-function deny(c: Context<AppEnv>, session: SessionUser | null) {
-  if (!session) {
+function deny(
+  c: Context<AppEnv>,
+  result: { ok: false; status: 401 | 403 },
+) {
+  if (result.status === 401) {
     return c.json({ error: "unauthorized" }, 401);
   }
   return c.json({ error: "forbidden" }, 403);
@@ -34,15 +53,9 @@ function deny(c: Context<AppEnv>, session: SessionUser | null) {
 /** ADMIN-01, ADMIN-02, ADMIN-03, SAFE-03 */
 export function registerAdminRoutes(app: Hono<AppEnv>) {
   app.get("/api/admin/reports", async (c) => {
-    const session = await readSession(
-      c.req.header("Cookie") ?? null,
-      c.env.SESSION_SECRET,
-    );
-    if (!session) {
-      return c.json({ error: "unauthorized" }, 401);
-    }
-    if (!session.isAdmin) {
-      return c.json({ error: "forbidden" }, 403);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const reports = await listOpenReports(c.env.DB);
     return c.json({
@@ -61,13 +74,9 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   });
 
   app.get("/api/admin/posts", async (c) => {
-    const admin = await requireAdmin(c);
-    if (!admin) {
-      const session = await readSession(
-        c.req.header("Cookie") ?? null,
-        c.env.SESSION_SECRET,
-      );
-      return deny(c, session);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const rows = await c.env.DB.prepare(
       `SELECT p.id, p.type, p.status, p.title, p.created_at,
@@ -102,13 +111,9 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   });
 
   app.post("/api/admin/posts/:id/remove", async (c) => {
-    const admin = await requireAdmin(c);
-    if (!admin) {
-      const session = await readSession(
-        c.req.header("Cookie") ?? null,
-        c.env.SESSION_SECRET,
-      );
-      return deny(c, session);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const result = await removePost(c.env.DB, c.req.param("id"));
     if (!result.ok) {
@@ -119,13 +124,9 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   });
 
   app.get("/api/admin/invites", async (c) => {
-    const admin = await requireAdmin(c);
-    if (!admin) {
-      const session = await readSession(
-        c.req.header("Cookie") ?? null,
-        c.env.SESSION_SECRET,
-      );
-      return deny(c, session);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const invites = await listInvites(c.env.DB);
     return c.json({
@@ -140,13 +141,9 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   });
 
   app.post("/api/admin/invites", async (c) => {
-    const admin = await requireAdmin(c);
-    if (!admin) {
-      const session = await readSession(
-        c.req.header("Cookie") ?? null,
-        c.env.SESSION_SECRET,
-      );
-      return deny(c, session);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const body = (await c.req.json().catch(() => ({}))) as { code?: string };
     const code = body.code?.trim() ?? "";
@@ -183,13 +180,9 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   });
 
   app.patch("/api/admin/invites/:id", async (c) => {
-    const admin = await requireAdmin(c);
-    if (!admin) {
-      const session = await readSession(
-        c.req.header("Cookie") ?? null,
-        c.env.SESSION_SECRET,
-      );
-      return deny(c, session);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const body = (await c.req.json().catch(() => ({}))) as { active?: boolean };
     if (typeof body.active !== "boolean") {
@@ -216,28 +209,18 @@ export function registerAdminRoutes(app: Hono<AppEnv>) {
   });
 
   app.get("/api/admin/metrics", async (c) => {
-    const admin = await requireAdmin(c);
-    if (!admin) {
-      const session = await readSession(
-        c.req.header("Cookie") ?? null,
-        c.env.SESSION_SECRET,
-      );
-      return deny(c, session);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     const metrics = await computeMetrics(c.env.DB, new Date().toISOString());
     return c.json(metrics);
   });
 
   app.all("/api/admin/*", async (c) => {
-    const session = await readSession(
-      c.req.header("Cookie") ?? null,
-      c.env.SESSION_SECRET,
-    );
-    if (!session) {
-      return c.json({ error: "unauthorized" }, 401);
-    }
-    if (!session.isAdmin) {
-      return c.json({ error: "forbidden" }, 403);
+    const auth = await requireAdmin(c);
+    if (!auth.ok) {
+      return deny(c, auth);
     }
     return c.json({ error: "not_found" }, 404);
   });

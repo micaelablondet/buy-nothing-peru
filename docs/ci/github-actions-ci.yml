@@ -24,6 +24,7 @@ jobs:
           printf '%s\n' \
             'SESSION_SECRET=ci-test-secret-min-16' \
             'DEV_STUB_AUTH=true' \
+            'ADMIN_EMAILS=mica@example.test' \
             'GOOGLE_CLIENT_ID=' \
             'GOOGLE_CLIENT_SECRET=' \
             > .dev.vars

@@ -2,6 +2,10 @@
 SESSION_SECRET=local-dev-session-secret-change-me
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+# AUTH-04: comma-separated Google emails allowed as admin. Worker secret — never
+# put real emails in wrangler.toml or other committed files. Example for local
+# seed user: match the email of user-mica in scripts/seed.sql.
+ADMIN_EMAILS=
 # Set true to enable stub sign-in without Google (local only)
 DEV_STUB_AUTH=true
 # Optional Web Push (NOTIF-02). Inbox works without these.
