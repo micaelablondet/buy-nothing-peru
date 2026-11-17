@@ -70,6 +70,7 @@ export const copy = {
     navAria: "Principal",
     greeting: "Hola, {name}",
     signOut: "Salir",
+    inviteSomeone: "Invitar a alguien",
     menuOpen: "Abrir menú",
     menuClose: "Cerrar menú",
     menuAria: "Menú",
