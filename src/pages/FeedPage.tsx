@@ -2,26 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
 import { copy } from "@/copy/es-PE";
-import {
-  fetchCategories,
-  fetchFeed,
-  type PostSummary,
-  type PostType,
-} from "@/lib/api";
+import { fetchFeed, type PostSummary, type PostType } from "@/lib/api";
+import { formatPostAge } from "@/lib/formatAge";
 
 export function FeedPage() {
   const { me } = useOutletContext<SessionOutletContext>();
   const [type, setType] = useState<PostType>("regalo");
-  const [category, setCategory] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
   const [posts, setPosts] = useState<PostSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchCategories()
-      .then(setCategories)
-      .catch(() => setCategories([]));
-  }, []);
 
   useEffect(() => {
     setPosts(null);
@@ -29,11 +17,10 @@ export function FeedPage() {
     fetchFeed({
       type,
       districtId: me.districtId,
-      category,
     })
       .then(setPosts)
       .catch(() => setError(copy.errors.network));
-  }, [type, category, me.districtId]);
+  }, [type, me.districtId]);
 
   return (
     <section className="feed">
@@ -43,10 +30,7 @@ export function FeedPage() {
           role="tab"
           aria-selected={type === "regalo"}
           className={`feed__tab${type === "regalo" ? " is-active" : ""}`}
-          onClick={() => {
-            setType("regalo");
-            setCategory(null);
-          }}
+          onClick={() => setType("regalo")}
         >
           {copy.feed.tabRegalos}
         </button>
@@ -55,33 +39,10 @@ export function FeedPage() {
           role="tab"
           aria-selected={type === "pido"}
           className={`feed__tab${type === "pido" ? " is-active" : ""}`}
-          onClick={() => {
-            setType("pido");
-            setCategory(null);
-          }}
+          onClick={() => setType("pido")}
         >
           {copy.feed.tabPidos}
         </button>
-      </div>
-
-      <div className="feed__chips" role="list">
-        <button
-          type="button"
-          className={`feed__chip${!category ? " is-active" : ""}`}
-          onClick={() => setCategory(null)}
-        >
-          {copy.feed.allCategories}
-        </button>
-        {categories.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className={`feed__chip${category === item ? " is-active" : ""}`}
-            onClick={() => setCategory(item)}
-          >
-            {item}
-          </button>
-        ))}
       </div>
 
       {error ? <p className="entrar__error">{error}</p> : null}
@@ -110,8 +71,9 @@ export function FeedPage() {
               <div className="feed-card__body">
                 <h2 className="feed-card__title">{post.title}</h2>
                 <p className="feed-card__meta">
-                  {post.category} ·{" "}
-                  {copy.feed.by.replace("{name}", post.authorName)}
+                  {post.placeLabel} ·{" "}
+                  {copy.feed.by.replace("{name}", post.authorName)} ·{" "}
+                  {formatPostAge(post.createdAt)}
                 </p>
               </div>
             </Link>

@@ -18,8 +18,9 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     status: "open",
     title: "Silla",
     description: "Buena",
-    category: "Muebles",
+    category: "Otros",
     district_id: "dist-barranco",
+    neighborhood_id: "nbh-torres-paz",
     created_at: "2026-01-01T00:00:00.000Z",
     expires_at: null,
     chosen_response_id: null,
@@ -31,6 +32,7 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     author_display_name: "Ana Pérez",
     author_first_name: "Ana",
     district_name: "Barranco",
+    neighborhood_name: "Torres Paz",
     ...overrides,
   };
 }

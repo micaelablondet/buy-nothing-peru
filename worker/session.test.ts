@@ -22,6 +22,7 @@ const user: SessionUser = {
   displayName: "Mica",
   email: "mica@example.test",
   districtId: "dist-barranco",
+  neighborhoodId: "nbh-torres-paz",
   whatsapp: "+51987654321",
   inviteAcceptedAt: "2026-11-10T00:00:00.000Z",
   isAdmin: true,

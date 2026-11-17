@@ -99,7 +99,7 @@ export function renderPublicPostHtml(input: PublicPageInput): string {
         <p class="public__eyebrow">${escapeHtml(typeLabel)} · ${escapeHtml(statusLabel)}</p>
         <h1 class="public__title">${escapeHtml(post.title)}</h1>
         <p class="public__meta">
-          ${escapeHtml(post.category ?? "")} · ${escapeHtml(post.district_name)}
+          ${escapeHtml(post.district_name)}
           <br />de ${escapeHtml(firstName)}
         </p>
         <p class="public__body">${escapeHtml(post.description)}</p>

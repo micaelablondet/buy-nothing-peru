@@ -1,5 +1,11 @@
-/** POST-08: fixed category list (code-only edits). */
+/**
+ * POST-08 retired (DEC-28): categories removed from the product UI.
+ * The DB column remains; new posts store this fixed default.
+ */
 
+export const DEFAULT_POST_CATEGORY = "Otros";
+
+/** Kept for legacy rows / seed data only — not exposed in UI. */
 export const POST_CATEGORIES = [
   "Ropa",
   "Calzado",

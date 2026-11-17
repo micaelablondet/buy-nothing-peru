@@ -139,14 +139,13 @@ export function PostDetailPage() {
       </p>
       <h1 className="post-detail__title">{post.title}</h1>
       <p className="post-detail__meta">
-        {post.category} · {post.districtName} · {formatPostAge(post.createdAt)}
+        {post.districtName} · {formatPostAge(post.createdAt)}
         <br />
         {copy.feed.by.replace("{name}", post.authorName)}
       </p>
       <p className="post-detail__body">{post.description}</p>
 
       <SharePostButton postId={post.id} />
-      <ReportButton postId={post.id} />
 
       {actions?.showOwnerResponses ? (
         <Link className="btn-primary" to={`/app/p/${post.id}/respuestas`}>
@@ -188,6 +187,8 @@ export function PostDetailPage() {
           {post.type === "pido" ? copy.post.capPido : copy.post.capRegalo}
         </p>
       ) : null}
+
+      <ReportButton postId={post.id} />
 
       {actions?.showHandoff ? (
         <Link className="btn-primary" to={`/app/p/${post.id}/recojo`}>

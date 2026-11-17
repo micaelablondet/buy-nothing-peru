@@ -4,6 +4,22 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Feed cards / no categories / barrio (SRD v0.6)
+
+**Stage:** Branch `ui-feed-cards` — docs + implementation.
+
+### Done
+- **DEC-28 / DEC-29 / LAND-01 / ADMIN-05 (partial):** categories removed from UI; `neighborhoods` + Torres Paz seed; optional barrio on onboarding/perfil; feed cards (photo, title, barrio/district, first name, `hace…`); no Perfil → `/admin`; landing copy updated.
+- Migration `0007_neighborhoods.sql`; posts store category default `Otros`.
+- Tests: `formatPostAge` unit; browser e2e feed cards + no admin link; full suite 54 unit + 27 e2e green.
+- Screenshots: `captures/ui-feed-cards/{375,1280}/` (entrar, feed, perfil).
+
+### Open
+- **OQ-13:** which Barranco barrios before Phase 1.
+- Phase 0 launch ops; then M10.
+
+---
+
 ## 2026-11-17 — E-01 WhatsApp-group baseline (evidence)
 
 **Evidence:** [`SRD.md`](./SRD.md) §2.4 **E-01** — building WhatsApp group answered 1 of 3 posts (~33%); one same-day doorstep handoff; staff not in the group. Risks/OQs updated: R-01, R-05, **OQ-11**.

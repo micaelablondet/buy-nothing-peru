@@ -42,7 +42,7 @@ docs/                    SRD, decisions, handoff, feature plan, setup, ADRs, Cur
 ## 4. Privacy and security rules (non-negotiable)
 
 - A user's **WhatsApp number must never appear** in a feed, an open-post API, a response list, a public page, a notification, an analytics event, a log, **or any admin screen or admin API**. It is revealed only to the two parties of a `chosen` or `delivered` post (HAND-02).
-- Public pages (`/p/{id}`) show only: title, photos, description, category, district, poster's **first name**, status.
+- Public pages (`/p/{id}`) show only: title, photos, description, district, poster's **first name**, status (no category, no barrio).
 - **Check authorization on the server for every write and every private read.** Do not rely on the UI hiding a button.
 - **Admin status is never trusted from the session token.** Check the current user and `ADMIN_EMAILS` on every admin request (AUTH-04).
 - CORS allows credentials only for the app's own origin (SAFE-05). Never reflect an arbitrary `Origin`.

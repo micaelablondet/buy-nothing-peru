@@ -28,7 +28,6 @@ export async function createRegalo(
       type: "regalo",
       title,
       description: "E2E regalo description",
-      category: "Otros",
       formSessionId: crypto.randomUUID(),
       photos: {
         name: "photo.jpg",
@@ -53,7 +52,6 @@ export async function createPido(
       type: "pido",
       title,
       description: "E2E pido description",
-      category: "Otros",
       formSessionId: crypto.randomUUID(),
     },
   });

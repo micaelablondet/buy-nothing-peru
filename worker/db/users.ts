@@ -10,10 +10,15 @@ export type UserRow = {
   display_name: string | null;
   whatsapp: string | null;
   district_id: string | null;
+  neighborhood_id: string | null;
   invite_accepted_at: string | null;
   created_at: string;
   deleted_at: string | null;
 };
+
+const USER_SELECT = `SELECT id, google_sub, email, first_name, display_name, whatsapp, district_id,
+              neighborhood_id, invite_accepted_at, created_at, deleted_at
+       FROM users`;
 
 export function rowToSession(row: UserRow, adminEmails: string): SessionUser {
   const displayName = row.display_name?.trim() || row.first_name;
@@ -23,6 +28,7 @@ export function rowToSession(row: UserRow, adminEmails: string): SessionUser {
     displayName,
     email: row.email,
     districtId: row.district_id,
+    neighborhoodId: row.neighborhood_id,
     whatsapp,
     inviteAcceptedAt: row.invite_accepted_at,
     isAdmin: isAdminEmail(row.email, adminEmails),
@@ -35,11 +41,7 @@ export async function findUserByGoogleSub(
   googleSub: string,
 ): Promise<UserRow | null> {
   return db
-    .prepare(
-      `SELECT id, google_sub, email, first_name, display_name, whatsapp, district_id,
-              invite_accepted_at, created_at, deleted_at
-       FROM users WHERE google_sub = ? AND deleted_at IS NULL`,
-    )
+    .prepare(`${USER_SELECT} WHERE google_sub = ? AND deleted_at IS NULL`)
     .bind(googleSub)
     .first<UserRow>();
 }
@@ -49,11 +51,7 @@ export async function findUserById(
   id: string,
 ): Promise<UserRow | null> {
   return db
-    .prepare(
-      `SELECT id, google_sub, email, first_name, display_name, whatsapp, district_id,
-              invite_accepted_at, created_at, deleted_at
-       FROM users WHERE id = ? AND deleted_at IS NULL`,
-    )
+    .prepare(`${USER_SELECT} WHERE id = ? AND deleted_at IS NULL`)
     .bind(id)
     .first<UserRow>();
 }
@@ -74,8 +72,8 @@ export async function createUser(
     .prepare(
       `INSERT INTO users (
          id, google_sub, email, first_name, display_name, whatsapp, district_id,
-         is_admin, created_at, deleted_at, invite_accepted_at
-       ) VALUES (?, ?, ?, ?, ?, NULL, ?, 0, ?, NULL, ?)`,
+         neighborhood_id, is_admin, created_at, deleted_at, invite_accepted_at
+       ) VALUES (?, ?, ?, ?, ?, NULL, ?, NULL, 0, ?, NULL, ?)`,
     )
     .bind(
       input.id,
@@ -98,12 +96,18 @@ export async function createUser(
 export async function updateProfile(
   db: D1Database,
   userId: string,
-  input: { displayName: string; whatsapp: string; districtId: string },
+  input: {
+    displayName: string;
+    whatsapp: string;
+    districtId: string;
+    neighborhoodId: string | null;
+  },
 ): Promise<UserRow | null> {
   await db
     .prepare(
       `UPDATE users
-       SET display_name = ?, first_name = ?, whatsapp = ?, district_id = ?
+       SET display_name = ?, first_name = ?, whatsapp = ?, district_id = ?,
+           neighborhood_id = ?
        WHERE id = ? AND deleted_at IS NULL`,
     )
     .bind(
@@ -111,6 +115,7 @@ export async function updateProfile(
       input.displayName,
       input.whatsapp,
       input.districtId,
+      input.neighborhoodId,
       userId,
     )
     .run();
@@ -137,6 +142,7 @@ export async function deleteAccount(db: D1Database, userId: string): Promise<voi
          first_name = 'Ex vecino',
          display_name = 'Ex vecino',
          whatsapp = NULL,
+         neighborhood_id = NULL,
          deleted_at = ?
        WHERE id = ?`,
     )

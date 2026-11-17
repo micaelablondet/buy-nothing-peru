@@ -13,8 +13,9 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     status: "open",
     title: "Silla de madera",
     description: "Buena para el balcón. Sin manchas.",
-    category: "Muebles",
+    category: "Otros",
     district_id: "dist-barranco",
+    neighborhood_id: "nbh-torres-paz",
     created_at: "2026-01-01T00:00:00.000Z",
     expires_at: null,
     chosen_response_id: null,
@@ -26,6 +27,7 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
     author_display_name: "Micaela Blondet",
     author_first_name: "Micaela",
     district_name: "Barranco",
+    neighborhood_name: "Torres Paz",
     ...overrides,
   };
 }
@@ -45,8 +47,11 @@ describe("renderPublicPostHtml (PUB-01/02)", () => {
     );
     expect(html).toContain('property="og:description"');
     expect(html).toContain("de Micaela");
+    expect(html).toContain("Barranco");
     expect(html).toContain("Compartir en WhatsApp");
     expect(html).toContain("/entrar?next=");
+    expect(html).not.toContain("Torres Paz");
+    expect(html).not.toContain("Otros");
     expect(html).not.toContain("@");
     expect(html).not.toContain("+51");
     expect(html).not.toContain("wa.me");

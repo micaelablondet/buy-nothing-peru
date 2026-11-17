@@ -1,12 +1,7 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { copy } from "@/copy/es-PE";
-import {
-  createPost,
-  fetchCategories,
-  recordPostFormOpened,
-  type PostType,
-} from "@/lib/api";
+import { createPost, recordPostFormOpened, type PostType } from "@/lib/api";
 import { maybeOfferPushAfterAction } from "@/lib/offerPush";
 import { resizeImageFile } from "@/lib/resizeImage";
 
@@ -16,21 +11,10 @@ export function CreatePostPage() {
   const [type, setType] = useState<PostType>("regalo");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
   const [photos, setPhotos] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formSessionId, setFormSessionId] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchCategories()
-      .then((list) => {
-        setCategories(list);
-        setCategory(list[0] ?? "");
-      })
-      .catch(() => setCategories([]));
-  }, []);
 
   const onFiles = async (list: FileList | null) => {
     if (!list) {
@@ -53,7 +37,6 @@ export function CreatePostPage() {
         type,
         title,
         description,
-        category,
         photos,
         formSessionId: formSessionId ?? undefined,
       });
@@ -132,21 +115,6 @@ export function CreatePostPage() {
             onChange={(e) => setDescription(e.target.value)}
             required
           />
-        </label>
-        <label className="field">
-          <span className="field__label">{copy.publish.categoryLabel}</span>
-          <select
-            className="field__input"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          >
-            {categories.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
         </label>
         <label className="field">
           <span className="field__label">{copy.publish.photosLabel}</span>

@@ -124,7 +124,6 @@ export function EntrarPage() {
               <p className="landing__note">{copy.entrar.googleMissing}</p>
             ) : null}
 
-            <p className="landing__note">{copy.entrar.note}</p>
             {error ? <p className="landing__error">{error}</p> : null}
           </div>
         </div>

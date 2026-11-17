@@ -1,4 +1,4 @@
-import { isPostCategory } from "../domain/categories";
+import { DEFAULT_POST_CATEGORY } from "../domain/categories";
 import {
   applyPostTransition,
   shouldExpire,
@@ -14,6 +14,7 @@ export type PostRow = {
   description: string;
   category: string | null;
   district_id: string;
+  neighborhood_id: string | null;
   created_at: string;
   expires_at: string | null;
   chosen_response_id: string | null;
@@ -25,16 +26,19 @@ export type PostRow = {
   author_display_name: string | null;
   author_first_name: string;
   district_name: string;
+  neighborhood_name: string | null;
 };
 
 const POST_SELECT = `SELECT p.id, p.author_id, p.type, p.status, p.title, p.description, p.category,
-              p.district_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
+              p.district_id, p.neighborhood_id, p.created_at, p.expires_at, p.chosen_response_id, p.chosen_at,
               p.delivered_at, p.withdrawn_at, p.received_confirmed_at, p.disc_answer,
               u.display_name AS author_display_name, u.first_name AS author_first_name,
-              d.name AS district_name
+              d.name AS district_name,
+              n.name AS neighborhood_name
        FROM posts p
        JOIN users u ON u.id = p.author_id
-       JOIN districts d ON d.id = p.district_id`;
+       JOIN districts d ON d.id = p.district_id
+       LEFT JOIN neighborhoods n ON n.id = p.neighborhood_id`;
 
 export type PhotoRow = {
   id: string;
@@ -51,7 +55,6 @@ export function validatePostInput(input: {
   type: string;
   title: string;
   description: string;
-  category: string;
   photoCount: number;
 }): { ok: true } | { ok: false; message: string } {
   if (input.type !== "regalo" && input.type !== "pido") {
@@ -71,9 +74,6 @@ export function validatePostInput(input: {
       message: `La descripción es obligatoria (máx. ${DESCRIPTION_MAX} caracteres).`,
     };
   }
-  if (!isPostCategory(input.category)) {
-    return { ok: false, message: "Elige una categoría válida." };
-  }
   if (input.type === "regalo" && (input.photoCount < 1 || input.photoCount > 3)) {
     return { ok: false, message: "Un Regalo necesita de 1 a 3 fotos." };
   }
@@ -91,8 +91,8 @@ export async function createPost(
     type: "regalo" | "pido";
     title: string;
     description: string;
-    category: string;
     districtId: string;
+    neighborhoodId: string | null;
     photos: { id: string; r2Key: string; position: number }[];
     nowIso: string;
   },
@@ -106,8 +106,9 @@ export async function createPost(
       .prepare(
         `INSERT INTO posts (
            id, author_id, type, status, title, description, category, district_id,
-           created_at, expires_at, chosen_response_id, delivered_at, withdrawn_at, chosen_at
-         ) VALUES (?, ?, ?, 'open', ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)`,
+           neighborhood_id, created_at, expires_at, chosen_response_id, delivered_at,
+           withdrawn_at, chosen_at
+         ) VALUES (?, ?, ?, 'open', ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)`,
       )
       .bind(
         input.id,
@@ -115,8 +116,9 @@ export async function createPost(
         input.type,
         input.title.trim(),
         input.description.trim(),
-        input.category,
+        DEFAULT_POST_CATEGORY,
         input.districtId,
+        input.neighborhoodId,
         input.nowIso,
         expiresAt,
       ),
@@ -152,23 +154,10 @@ export async function listFeed(
   input: {
     type: "regalo" | "pido";
     districtId: string;
-    category?: string | null;
     limit: number;
   },
 ): Promise<PostRow[]> {
   const limit = Math.min(Math.max(input.limit, 1), 100);
-  if (input.category) {
-    const rows = await db
-      .prepare(
-        `${POST_SELECT}
-         WHERE p.status = 'open' AND p.type = ? AND p.district_id = ? AND p.category = ?
-         ORDER BY p.created_at DESC
-         LIMIT ?`,
-      )
-      .bind(input.type, input.districtId, input.category, limit)
-      .all<PostRow>();
-    return rows.results ?? [];
-  }
   const rows = await db
     .prepare(
       `${POST_SELECT}
