@@ -1,51 +1,51 @@
 ID,Area,Feature,Description,User role,Priority,Phase,Complexity,Source,Depends on,SRD section,Status,Notes
-AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only); no passwords,Neighbor,Must,First pass,M,SRD,,8.1,built,Continuar con Google
-AUTH-02,Auth,Invite code gate,New accounts enter a building invite code when INVITE_REQUIRED=true,Neighbor,Must,First pass,S,SRD,AUTH-01,8.1,built,Skipped when INVITE_REQUIRED=false (Phase 1)
-AUTH-03,Auth,Session cookie,Signed HttpOnly Secure SameSite=Lax cookie; 30-day lifetime; logout clears it,Neighbor,Must,First pass,S,SRD,AUTH-01,8.1,built,
-AUTH-04,Auth,Admin allowlist check,Admin = current Google email in ADMIN_EMAILS secret checked on every admin request (M8); M10 removes admin from end-user app,Admin,Must,First pass,M,SRD,AUTH-03,8.1,built,M8 version built; M10 version (404 on end-user admin) is next
-PROF-01,Profile,Onboarding profile,After first sign-in: display name WhatsApp number district required before post/respond,Neighbor,Must,First pass,S,SRD,AUTH-01,8.1,built,
-PROF-02,Profile,WhatsApp number format,Peruvian mobile +51 and 9 digits starting with 9; stored E.164; not verified in V1,Neighbor,Must,First pass,S,SRD,PROF-01,8.1,built,Self-declared (DEC-09)
-PROF-03,Profile,Edit profile,User can edit name number and district anytime,Neighbor,Must,First pass,S,SRD,PROF-01,8.1,built,
-PROF-04,Profile,Account deletion,Deletes personal data withdraws open posts renames on completed handoffs to Ex vecino,Neighbor,Must,First pass,M,SRD,PROF-01,8.1,built,
-POST-01,Posts,Create Regalo,Regalo with title description category and 1–3 required photos,Giver,Must,First pass,M,SRD,PROF-01,8.2,built,
-POST-02,Posts,Create Pido,Pido with title description category and optional single photo,Asker,Must,First pass,S,SRD,PROF-01,8.2,built,DEC-20
-POST-03,Posts,Post detail,Detail screen with photos status age and viewer-specific actions,Neighbor,Must,First pass,M,SRD,POST-01,8.2,built,
-POST-04,Posts,Feed tabs and filters,Regalos/Pidos tabs newest first district default category chips open only,Neighbor,Must,First pass,M,SRD,POST-01,8.2,built,
-POST-05,Posts,Withdraw post,Owner withdraws while open or chosen,Giver / Asker,Must,First pass,S,SRD,POST-01,8.2,built,
-POST-06,Posts,Post expiry job,Open posts expire 7 days after creation (scheduled job),System,Must,First pass,S,SRD,POST-01,8.2,built,Idempotent cron
-POST-07,Posts,Mis publicaciones,List of the user's posts across all statuses,Neighbor,Should,Phase 2,S,SRD,POST-01,8.2,built,P1 in SRD; shipped in M2
-POST-08,Posts,Categories,Fixed category list required on create,Neighbor,Must,First pass,S,SRD,POST-01,8.2,built,
-RESP-01,Responses,Response bottom sheet,Filled primary Me interesa / Yo tengo sheet with note name district; optional photo on Pido,Neighbor,Must,First pass,M,SRD,POST-03,8.3,built,
-RESP-02,Responses,Create response,Confirm adds response notifies poster; one active response per user per post,Neighbor,Must,First pass,M,SRD,RESP-01; NOTIF-03,8.3,built,
-RESP-03,Responses,Withdraw response,Responder withdraws; slot reopens,Neighbor,Must,First pass,S,SRD,RESP-02,8.3,built,
-RESP-04,Responses,WhatsApp gate on respond,Missing WhatsApp sends user through PROF-01 then back to the post,Neighbor,Must,First pass,S,SRD,RESP-01; PROF-01,8.3,built,
-RESP-05,Responses,Cap of 7,At 7 active responses others see Ya hay 7…; withdraw reopens,Neighbor,Must,First pass,S,SRD,RESP-02,8.3,built,
-RESP-06,Responses,Owner vs closed CTAs,Owner sees Ver ofertas/interesados; closed states show Ya resuelto or Venció,Neighbor,Must,First pass,S,SRD,RESP-01,8.3,built,
-RESP-07,Responses,Choose response,Owner taps Elegir; post and response become chosen; others not_chosen,Giver / Asker,Must,First pass,M,SRD,RESP-02,8.3,built,Choice immutable in V1
-HAND-01,Handoff,WhatsApp handoff screen,Both parties see name and Escribir por WhatsApp with prefilled wa.me link,Giver / Receiver,Must,First pass,M,SRD,RESP-07,8.4,built,
-HAND-02,Handoff,Number reveal rule,WhatsApp number only to the two parties of chosen or delivered; never elsewhere,Neighbor,Must,First pass,M,SRD,HAND-01,8.4,built,Authz-tested
-HAND-03,Handoff,Entregado,Giver marks delivered; records handoff_delivered,Giver,Must,First pass,S,SRD,HAND-01,8.4,built,North star event
-HAND-04,Handoff,Lo recibí,Receiver optional confirmation stored as received_confirmed_at,Receiver,Should,Phase 2,S,SRD,HAND-03,8.4,built,P1; inflation check
-HAND-05,Handoff,Public pickup tip,Safety tip on handoff screen to meet in public by day,Neighbor,Must,First pass,S,SRD,HAND-01,8.4,built,
-DISC-01,Discovery,Post-handoff survey,After Entregado ask how they would have done it without Barrio,Giver,Should,Phase 2,S,SRD,HAND-03,8.4,built,Tests H3
-NOTIF-01,Notifications,In-app inbox,Bell with unread count; open marks read; links to post,Neighbor,Must,First pass,M,SRD,,8.5,built,
-NOTIF-02,Notifications,Web push,Offer push after first post or response; inbox works if denied,Neighbor,Must,First pass,M,SRD,NOTIF-01,8.5,built,iOS needs PWA on home screen
-NOTIF-03,Notifications,Notification types,Nueva oferta/interesado; Te eligieron; 48h Recordatorio nudge,Neighbor,Must,First pass,M,SRD,NOTIF-01,8.5,built,
-NOTIF-04,Notifications,Nudge job,Scheduled; at most one nudge per post; idempotent,System,Must,First pass,S,SRD,NOTIF-03,8.5,built,
-PUB-01,Public,Public post page,/p/{id} read-only without sign-in; first name only; no numbers,Anyone,Must,First pass,M,SRD,POST-01,8.6,built,
-PUB-02,Public,OG tags SSR,Server-rendered Open Graph for WhatsApp previews,Anyone,Must,First pass,M,SRD,PUB-01,8.6,built,
-PUB-03,Public,Compartir en WhatsApp,Share button opens wa.me with title and link; records share_clicked,Neighbor,Must,First pass,S,SRD,PUB-01,8.6,built,
-PUB-04,Public,Sign-in return to public,Acting on public page requires sign-in and returns to /p/{id},Neighbor,Must,First pass,S,SRD,PUB-01; AUTH-01,8.6,built,
-SAFE-01,Safety,Reportar,Report post or response with reason and optional text,Neighbor,Must,First pass,S,SRD,,8.7,built,
-SAFE-02,Safety,Prohibited items list,Shown at post creation and in Terms,Neighbor,Must,First pass,S,SRD,,8.7,built,Final list OQ-07
-SAFE-03,Safety,Admin remove post,Admin sets post removed via postStateMachine,Admin,Must,First pass,S,SRD,ADMIN-01,8.7,built,
-SAFE-04,Safety,Rate limits,Max 10 posts/day and 30 responses/day per user; IP limits on auth,Neighbor,Must,First pass,S,SRD,,8.7,built,
-SAFE-05,Safety,CORS origin lock,Credentials CORS only for APP_BASE_URL (and Vite in non-prod); never reflect Origin,System,Must,First pass,S,SRD,,8.7,built,M8
-ADMIN-01,Admin,Admin home reports,Open reports and posts list with Quitar publicación; no WhatsApp or email shown,Admin,Must,First pass,M,SRD,AUTH-04,8.8,built,Phase 0 at /admin; M10 moves portal
-ADMIN-02,Admin,Invite codes,Create activate deactivate invite codes,Admin,Must,First pass,S,SRD,AUTH-02,8.8,built,
-ADMIN-03,Admin,Admin metrics,Phase gate metrics page from shared worker/lib/metrics.ts,Admin,Must,First pass,M,SRD,ANLY-01,8.8,built,
-ADMIN-04,Admin,Access + JWT check,Cloudflare Access plus Cf-Access-Jwt-Assertion validation and ADMIN_EMAILS; fail closed,Admin,Must,First pass,L,SRD,AUTH-04,8.8,next,M10
-ADMIN-05,Admin,Admin isolation,No link from end-user app; noindex; host-only cookies; end-user session never accepted,Admin,Must,First pass,M,SRD,ADMIN-04,8.8,next,M10
-ADMIN-06,Admin,Admin audit trail,Every admin write records one admin_action event with email action target,Admin,Must,First pass,S,SRD,ADMIN-01,8.8,next,M10
-LEGAL-01,Legal,Terms and Privacy,Spanish Términos and Política de privacidad linked from sign-in footer and Google consent,Anyone,Must,First pass,S,SRD,,8.9,built,
-ANLY-01,Analytics,Event + metric definitions,Record product events; ADMIN-03 computes CH/wk 48h rate median post time inflation,System,Must,First pass,M,SRD,,10,built,
+AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only); no passwords,Neighbor,Must,Phase 0,M,SRD,,8.1,built,Continuar con Google
+AUTH-02,Auth,Invite code gate,New accounts enter a building invite code when INVITE_REQUIRED=true,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,Skipped when INVITE_REQUIRED=false (Phase 1)
+AUTH-03,Auth,Session cookie,Signed HttpOnly Secure SameSite=Lax cookie; 30-day lifetime; logout clears it,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
+AUTH-04,Auth,Admin allowlist check,Admin = current Google email in ADMIN_EMAILS secret checked on every admin request (M8); M10 removes admin from end-user app,Admin,Must,Phase 0,M,SRD,AUTH-03,8.1,built,M8 version built; M10 version (404 on end-user admin) is next
+PROF-01,Profile,Onboarding profile,After first sign-in: display name WhatsApp number district required before post/respond,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
+PROF-02,Profile,WhatsApp number format,Peruvian mobile +51 and 9 digits starting with 9; stored E.164; not verified in V1,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,built,Self-declared (DEC-09)
+PROF-03,Profile,Edit profile,User can edit name number and district anytime,Neighbor,Must,Phase 0,S,SRD,PROF-01,8.1,built,
+PROF-04,Profile,Account deletion,Deletes personal data withdraws open posts renames on completed handoffs to Ex vecino,Neighbor,Must,Phase 0,M,SRD,PROF-01,8.1,built,
+POST-01,Posts,Create Regalo,Regalo with title description category and 1–3 required photos,Giver,Must,Phase 0,M,SRD,PROF-01,8.2,built,
+POST-02,Posts,Create Pido,Pido with title description category and optional single photo,Asker,Must,Phase 0,S,SRD,PROF-01,8.2,built,DEC-20
+POST-03,Posts,Post detail,Detail screen with photos status age and viewer-specific actions,Neighbor,Must,Phase 0,M,SRD,POST-01,8.2,built,
+POST-04,Posts,Feed tabs and filters,Regalos/Pidos tabs newest first district default category chips open only,Neighbor,Must,Phase 0,M,SRD,POST-01,8.2,built,
+POST-05,Posts,Withdraw post,Owner withdraws while open or chosen,Giver / Asker,Must,Phase 0,S,SRD,POST-01,8.2,built,
+POST-06,Posts,Post expiry job,Open posts expire 7 days after creation (scheduled job),System,Must,Phase 0,S,SRD,POST-01,8.2,built,Idempotent cron
+POST-07,Posts,Mis publicaciones,List of the user's posts across all statuses,Neighbor,Should,Phase 0,S,SRD,POST-01,8.2,built,P1 in SRD; shipped in M2
+POST-08,Posts,Categories,Fixed category list required on create,Neighbor,Must,Phase 0,S,SRD,POST-01,8.2,built,
+RESP-01,Responses,Response bottom sheet,Filled primary Me interesa / Yo tengo sheet with note name district; optional photo on Pido,Neighbor,Must,Phase 0,M,SRD,POST-03,8.3,built,
+RESP-02,Responses,Create response,Confirm adds response notifies poster; one active response per user per post,Neighbor,Must,Phase 0,M,SRD,RESP-01; NOTIF-03,8.3,built,
+RESP-03,Responses,Withdraw response,Responder withdraws; slot reopens,Neighbor,Must,Phase 0,S,SRD,RESP-02,8.3,built,
+RESP-04,Responses,WhatsApp gate on respond,Missing WhatsApp sends user through PROF-01 then back to the post,Neighbor,Must,Phase 0,S,SRD,RESP-01; PROF-01,8.3,built,
+RESP-05,Responses,Cap of 7,At 7 active responses others see Ya hay 7…; withdraw reopens,Neighbor,Must,Phase 0,S,SRD,RESP-02,8.3,built,
+RESP-06,Responses,Owner vs closed CTAs,Owner sees Ver ofertas/interesados; closed states show Ya resuelto or Venció,Neighbor,Must,Phase 0,S,SRD,RESP-01,8.3,built,
+RESP-07,Responses,Choose response,Owner taps Elegir; post and response become chosen; others not_chosen,Giver / Asker,Must,Phase 0,M,SRD,RESP-02,8.3,built,Choice immutable in V1
+HAND-01,Handoff,WhatsApp handoff screen,Both parties see name and Escribir por WhatsApp with prefilled wa.me link,Giver / Receiver,Must,Phase 0,M,SRD,RESP-07,8.4,built,
+HAND-02,Handoff,Number reveal rule,WhatsApp number only to the two parties of chosen or delivered; never elsewhere,Neighbor,Must,Phase 0,M,SRD,HAND-01,8.4,built,Authz-tested
+HAND-03,Handoff,Entregado,Giver marks delivered; records handoff_delivered,Giver,Must,Phase 0,S,SRD,HAND-01,8.4,built,North star event
+HAND-04,Handoff,Lo recibí,Receiver optional confirmation stored as received_confirmed_at,Receiver,Should,Phase 0,S,SRD,HAND-03,8.4,built,P1; inflation check
+HAND-05,Handoff,Public pickup tip,Safety tip on handoff screen to meet in public by day,Neighbor,Must,Phase 0,S,SRD,HAND-01,8.4,built,
+DISC-01,Discovery,Post-handoff survey,After Entregado ask how they would have done it without Barrio,Giver,Should,Phase 0,S,SRD,HAND-03,8.4,built,Tests H3
+NOTIF-01,Notifications,In-app inbox,Bell with unread count; open marks read; links to post,Neighbor,Must,Phase 0,M,SRD,,8.5,built,
+NOTIF-02,Notifications,Web push,Offer push after first post or response; inbox works if denied,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,built,iOS needs PWA on home screen
+NOTIF-03,Notifications,Notification types,Nueva oferta/interesado; Te eligieron; 48h Recordatorio nudge,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,built,
+NOTIF-04,Notifications,Nudge job,Scheduled; at most one nudge per post; idempotent,System,Must,Phase 0,S,SRD,NOTIF-03,8.5,built,
+PUB-01,Public,Public post page,/p/{id} read-only without sign-in; first name only; no numbers,Anyone,Must,Phase 0,M,SRD,POST-01,8.6,built,
+PUB-02,Public,OG tags SSR,Server-rendered Open Graph for WhatsApp previews,Anyone,Must,Phase 0,M,SRD,PUB-01,8.6,built,
+PUB-03,Public,Compartir en WhatsApp,Share button opens wa.me with title and link; records share_clicked,Neighbor,Must,Phase 0,S,SRD,PUB-01,8.6,built,
+PUB-04,Public,Sign-in return to public,Acting on public page requires sign-in and returns to /p/{id},Neighbor,Must,Phase 0,S,SRD,PUB-01; AUTH-01,8.6,built,
+SAFE-01,Safety,Reportar,Report post or response with reason and optional text,Neighbor,Must,Phase 0,S,SRD,,8.7,built,
+SAFE-02,Safety,Prohibited items list,Shown at post creation and in Terms,Neighbor,Must,Phase 0,S,SRD,,8.7,built,Final list OQ-07
+SAFE-03,Safety,Admin remove post,Admin sets post removed via postStateMachine,Admin,Must,Phase 0,S,SRD,ADMIN-01,8.7,built,
+SAFE-04,Safety,Rate limits,Max 10 posts/day and 30 responses/day per user; IP limits on auth,Neighbor,Must,Phase 0,S,SRD,,8.7,built,
+SAFE-05,Safety,CORS origin lock,Credentials CORS only for APP_BASE_URL (and Vite in non-prod); never reflect Origin,System,Must,Phase 0,S,SRD,,8.7,built,M8
+ADMIN-01,Admin,Admin home reports,Open reports and posts list with Quitar publicación; no WhatsApp or email shown,Admin,Must,Phase 0,M,SRD,AUTH-04,8.8,built,Phase 0 at /admin; M10 moves portal
+ADMIN-02,Admin,Invite codes,Create activate deactivate invite codes,Admin,Must,Phase 0,S,SRD,AUTH-02,8.8,built,
+ADMIN-03,Admin,Admin metrics,Phase gate metrics page from shared worker/lib/metrics.ts,Admin,Must,Phase 0,M,SRD,ANLY-01,8.8,built,
+ADMIN-04,Admin,Access + JWT check,Cloudflare Access plus Cf-Access-Jwt-Assertion validation and ADMIN_EMAILS; fail closed,Admin,Must,Before Phase 1,L,SRD,AUTH-04,8.8,next,M10
+ADMIN-05,Admin,Admin isolation,No link from end-user app; noindex; host-only cookies; end-user session never accepted,Admin,Must,Before Phase 1,M,SRD,ADMIN-04,8.8,next,M10
+ADMIN-06,Admin,Admin audit trail,Every admin write records one admin_action event with email action target,Admin,Must,Before Phase 1,S,SRD,ADMIN-01,8.8,next,M10
+LEGAL-01,Legal,Terms and Privacy,Spanish Términos and Política de privacidad linked from sign-in footer and Google consent,Anyone,Must,Phase 0,S,SRD,,8.9,built,
+ANLY-01,Analytics,Event + metric definitions,Record product events; ADMIN-03 computes CH/wk 48h rate median post time inflation,System,Must,Phase 0,M,SRD,,10,built,
