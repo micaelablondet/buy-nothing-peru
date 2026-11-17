@@ -4,6 +4,7 @@ import { copy } from "@/copy/es-PE";
 import {
   fetchDistricts,
   fetchMe,
+  fetchNeighborhoods,
   goAfterAuth,
   updateProfile,
   type MeResponse,
@@ -15,9 +16,13 @@ export function OnboardingProfilePage() {
   const location = useLocation();
   const [me, setMe] = useState<MeResponse | null | undefined>(undefined);
   const [districts, setDistricts] = useState<{ id: string; name: string }[]>([]);
+  const [neighborhoods, setNeighborhoods] = useState<
+    { id: string; name: string }[]
+  >([]);
   const [displayName, setDisplayName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [districtId, setDistrictId] = useState("dist-barranco");
+  const [neighborhoodId, setNeighborhoodId] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,6 +34,7 @@ export function OnboardingProfilePage() {
           setDisplayName(user.displayName);
           setWhatsapp(user.whatsapp?.replace(/^\+51/, "") ?? "");
           setDistrictId(user.districtId ?? "dist-barranco");
+          setNeighborhoodId(user.neighborhoodId ?? "");
         }
       })
       .catch(() => setMe(null));
@@ -36,6 +42,12 @@ export function OnboardingProfilePage() {
       .then(setDistricts)
       .catch(() => setDistricts([{ id: "dist-barranco", name: "Barranco" }]));
   }, []);
+
+  useEffect(() => {
+    fetchNeighborhoods(districtId)
+      .then(setNeighborhoods)
+      .catch(() => setNeighborhoods([]));
+  }, [districtId]);
 
   if (me === undefined) {
     return <div className="shell-loading">…</div>;
@@ -52,7 +64,12 @@ export function OnboardingProfilePage() {
     setBusy(true);
     setError(null);
     try {
-      const result = await updateProfile({ displayName, whatsapp, districtId });
+      const result = await updateProfile({
+        displayName,
+        whatsapp,
+        districtId,
+        neighborhoodId: neighborhoodId || null,
+      });
       const from = (
         location.state as {
           from?: { pathname?: string; search?: string };
@@ -119,11 +136,34 @@ export function OnboardingProfilePage() {
           <select
             className="field__input"
             value={districtId}
-            onChange={(e) => setDistrictId(e.target.value)}
+            onChange={(e) => {
+              setDistrictId(e.target.value);
+              setNeighborhoodId("");
+            }}
           >
             {districts.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span className="field__label">
+            {copy.onboarding.neighborhood}{" "}
+            <span className="field__hint">
+              ({copy.onboarding.neighborhoodOptional})
+            </span>
+          </span>
+          <select
+            className="field__input"
+            value={neighborhoodId}
+            onChange={(e) => setNeighborhoodId(e.target.value)}
+          >
+            <option value="">{copy.onboarding.neighborhoodNone}</option>
+            {neighborhoods.map((n) => (
+              <option key={n.id} value={n.id}>
+                {n.name}
               </option>
             ))}
           </select>

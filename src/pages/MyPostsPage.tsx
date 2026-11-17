@@ -40,7 +40,7 @@ export function MyPostsPage() {
                 <div className="feed-card__body">
                   <h2 className="feed-card__title">{post.title}</h2>
                   <p className="feed-card__meta">
-                    {status} · {post.category}
+                    {status} · {post.placeLabel}
                   </p>
                 </div>
               </Link>

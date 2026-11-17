@@ -25,6 +25,7 @@ export type SessionUser = {
   displayName: string;
   email: string | null;
   districtId: string | null;
+  neighborhoodId: string | null;
   whatsapp: string | null;
   inviteAcceptedAt: string | null;
   isAdmin: boolean;

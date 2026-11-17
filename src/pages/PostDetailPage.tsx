@@ -139,7 +139,7 @@ export function PostDetailPage() {
       </p>
       <h1 className="post-detail__title">{post.title}</h1>
       <p className="post-detail__meta">
-        {post.category} · {post.districtName} · {formatPostAge(post.createdAt)}
+        {post.districtName} · {formatPostAge(post.createdAt)}
         <br />
         {copy.feed.by.replace("{name}", post.authorName)}
       </p>

@@ -95,7 +95,7 @@ export function SearchPage() {
                 <div className="feed-card__body">
                   <h2 className="feed-card__title">{post.title}</h2>
                   <p className="feed-card__meta">
-                    {post.category} ·{" "}
+                    {post.placeLabel} ·{" "}
                     {copy.feed.by.replace("{name}", post.authorName)}
                   </p>
                 </div>

@@ -1,5 +1,4 @@
 import type { Hono } from "hono";
-import { POST_CATEGORIES } from "../domain/categories";
 import { recordEvent } from "../db/events";
 import {
   createPost,
@@ -16,6 +15,7 @@ import {
   type PostRow,
 } from "../db/posts";
 import { findResponseById } from "../db/responses";
+import { findUserById } from "../db/users";
 import type { SessionUser, WorkerEnv } from "../env";
 import { isDiscAnswer } from "../lib/disc";
 import { isGiver } from "../lib/handoff";
@@ -33,8 +33,6 @@ const MAX_UPLOAD_BYTES = 2_500_000;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export function registerPostRoutes(app: Hono<AppEnv>) {
-  app.get("/api/categories", (c) => c.json({ categories: POST_CATEGORIES }));
-
   app.get("/api/prohibited-items", (c) =>
     c.json({ items: PROHIBITED_ITEMS }),
   );
@@ -72,11 +70,9 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
     const type = c.req.query("type") === "pido" ? "pido" : "regalo";
     const districtId =
       c.req.query("districtId")?.trim() || session.districtId || "dist-barranco";
-    const category = c.req.query("category")?.trim() || null;
     const posts = await listFeed(c.env.DB, {
       type,
       districtId,
-      category,
       limit: 50,
     });
     const covers = await listCoverPhotos(
@@ -190,7 +186,6 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
     const typeRaw = String(form.get("type") ?? "");
     const title = String(form.get("title") ?? "");
     const description = String(form.get("description") ?? "");
-    const category = String(form.get("category") ?? "");
     const formSessionId = String(form.get("formSessionId") ?? "").trim() || null;
     const files: File[] = [];
     for (const item of form.getAll("photos")) {
@@ -207,13 +202,15 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       type: typeRaw,
       title,
       description,
-      category,
       photoCount: files.length,
     });
     if (!validated.ok) {
       return c.json({ error: "validation", message: validated.message }, 400);
     }
     const type = typeRaw as "regalo" | "pido";
+
+    const author = await findUserById(c.env.DB, session.id);
+    const neighborhoodId = author?.neighborhood_id ?? session.neighborhoodId ?? null;
 
     const postId = crypto.randomUUID();
     const photos: { id: string; r2Key: string; position: number }[] = [];
@@ -247,8 +244,8 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       type,
       title,
       description,
-      category,
       districtId: session.districtId,
+      neighborhoodId,
       photos,
       nowIso,
     });
@@ -373,9 +370,11 @@ async function serializePost(
     status: post.status,
     title: post.title,
     description: post.description,
-    category: post.category,
     districtId: post.district_id,
     districtName: post.district_name,
+    neighborhoodId: post.neighborhood_id,
+    neighborhoodName: post.neighborhood_name,
+    placeLabel: post.neighborhood_name || post.district_name,
     authorName: publicAuthorName(post),
     createdAt: post.created_at,
     expiresAt: post.expires_at,

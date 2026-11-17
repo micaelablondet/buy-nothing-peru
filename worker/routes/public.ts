@@ -64,7 +64,6 @@ export function registerPublicRoutes(app: Hono<AppEnv>) {
       status: post.status,
       title: post.title,
       description: post.description,
-      category: post.category,
       districtName: post.district_name,
       authorFirstName: publicFirstName(post),
       photos: photos.map((p) => ({

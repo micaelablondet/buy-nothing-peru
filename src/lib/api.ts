@@ -5,6 +5,7 @@ export type MeResponse = {
   displayName: string;
   email: string | null;
   districtId: string | null;
+  neighborhoodId: string | null;
   whatsapp: string | null;
   inviteAcceptedAt: string | null;
   isAdmin: boolean;
@@ -89,6 +90,7 @@ export async function updateProfile(input: {
   displayName: string;
   whatsapp: string;
   districtId: string;
+  neighborhoodId?: string | null;
 }): Promise<MeResponse & { next?: string }> {
   const res = await fetch("/api/me/profile", {
     method: "PATCH",
@@ -123,6 +125,22 @@ export async function fetchDistricts(): Promise<{ id: string; name: string }[]> 
   }
   const data = await parseJson<{ districts: { id: string; name: string }[] }>(res);
   return data.districts;
+}
+
+export async function fetchNeighborhoods(
+  districtId: string,
+): Promise<{ id: string; districtId: string; name: string }[]> {
+  const params = new URLSearchParams({ districtId });
+  const res = await fetch(`/api/neighborhoods?${params}`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("neighborhoods_failed");
+  }
+  const data = await parseJson<{
+    neighborhoods: { id: string; districtId: string; name: string }[];
+  }>(res);
+  return data.neighborhoods;
 }
 
 export async function fetchHealth(): Promise<{
@@ -190,9 +208,11 @@ export type PostSummary = {
   status: string;
   title: string;
   description: string;
-  category: string | null;
   districtId: string;
   districtName: string;
+  neighborhoodId: string | null;
+  neighborhoodName: string | null;
+  placeLabel: string;
   authorName: string;
   createdAt: string;
   expiresAt: string | null;
@@ -211,26 +231,13 @@ export type PostSummary = {
   } | null;
 };
 
-export async function fetchCategories(): Promise<string[]> {
-  const res = await fetch("/api/categories", { credentials: "include" });
-  if (!res.ok) {
-    throw new Error("categories_failed");
-  }
-  const data = await parseJson<{ categories: string[] }>(res);
-  return data.categories;
-}
-
 export async function fetchFeed(input: {
   type: PostType;
   districtId?: string | null;
-  category?: string | null;
 }): Promise<PostSummary[]> {
   const params = new URLSearchParams({ type: input.type });
   if (input.districtId) {
     params.set("districtId", input.districtId);
-  }
-  if (input.category) {
-    params.set("category", input.category);
   }
   const res = await fetch(`/api/feed?${params}`, { credentials: "include" });
   if (!res.ok) {
@@ -292,7 +299,6 @@ export async function createPost(input: {
   type: PostType;
   title: string;
   description: string;
-  category: string;
   photos: File[];
   formSessionId?: string;
 }): Promise<PostSummary> {
@@ -300,7 +306,6 @@ export async function createPost(input: {
   form.set("type", input.type);
   form.set("title", input.title);
   form.set("description", input.description);
-  form.set("category", input.category);
   if (input.formSessionId) {
     form.set("formSessionId", input.formSessionId);
   }

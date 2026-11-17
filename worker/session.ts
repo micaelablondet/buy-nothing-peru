@@ -38,6 +38,7 @@ export async function signSessionToken(
     displayName: user.displayName,
     email: user.email,
     districtId: user.districtId,
+    neighborhoodId: user.neighborhoodId,
     whatsapp: user.whatsapp,
     inviteAcceptedAt: user.inviteAcceptedAt,
     profileComplete: user.profileComplete,
@@ -66,6 +67,8 @@ export async function readSession(
       displayName: payload.displayName,
       email: typeof payload.email === "string" ? payload.email : null,
       districtId: typeof payload.districtId === "string" ? payload.districtId : null,
+      neighborhoodId:
+        typeof payload.neighborhoodId === "string" ? payload.neighborhoodId : null,
       whatsapp: typeof payload.whatsapp === "string" ? payload.whatsapp : null,
       inviteAcceptedAt:
         typeof payload.inviteAcceptedAt === "string" ? payload.inviteAcceptedAt : null,

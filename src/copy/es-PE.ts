@@ -6,11 +6,10 @@ export const copy = {
 
   entrar: {
     kicker: "Regalar y pedir entre vecinos",
-    title: "Lo que sobra en un piso le falta a otro",
-    lede: "Barrio es una app para tu edificio: publicas lo que ya no usas, o pides lo que necesitas — sin precio, sin chat dentro de la app.",
+    title: "Lo que sobra en una casa o depa le falta a otro",
+    lede: "Barrio es una app para tu comunidad: publicas lo que ya no usas, o pides lo que necesitas. Sin precio.",
     ctaGoogle: "Continuar con Google",
     ctaStub: "Continuar",
-    note: "Entras con Google. Luego nos das tu WhatsApp solo para coordinar la entrega; no aparece en el feed.",
     terms: "Términos",
     privacy: "Privacidad",
     oauthError: "No pudimos completar el ingreso con Google. Intenta de nuevo.",
@@ -18,9 +17,9 @@ export const copy = {
       "Google no está configurado aún. Pide a Mica las credenciales o entra en local con Continuar.",
     sections: {
       whatLabel: "01 — Qué es",
-      whatTitle: "Un tablón de regalos del edificio",
+      whatTitle: "Un tablón de regalos de tu comunidad",
       whatBody:
-        "Ves lo que ofrecen tus vecinos y lo que buscan. Fotos, distrito, un botón. Nada de marketplace ni precios.",
+        "Ves lo que ofrecen tus vecinos y lo que buscan. Fotos, barrio, un botón. Nada de marketplace ni precios.",
       howLabel: "02 — Cómo funciona",
       howTitle: "Eliges a quién le toca, luego WhatsApp",
       howBody:
@@ -49,6 +48,9 @@ export const copy = {
     whatsappHint: "Celular peruano, 9 dígitos (ej. 987654321)",
     whatsappPlaceholder: "987654321",
     district: "Distrito",
+    neighborhood: "Barrio",
+    neighborhoodOptional: "Opcional",
+    neighborhoodNone: "Sin barrio",
     cta: "Guardar y continuar",
   },
 
@@ -82,7 +84,7 @@ export const copy = {
     title: "Busca",
     placeholder: "Ej. disfraz, bici, peluche…",
     submit: "Buscar",
-    hint: "Busca por título, descripción o categoría en tu distrito.",
+    hint: "Busca por título o descripción en tu distrito.",
     emptyQuery: "Escribe algo para buscar entre los regalos y pidos abiertos.",
     noResults: "No encontramos nada con «{query}». Prueba con otra palabra.",
   },
@@ -98,7 +100,6 @@ export const copy = {
     tabPidos: "Pedidos",
     emptyRegalos: "Aún no hay regalos abiertos en tu distrito.",
     emptyPidos: "Aún no hay pedidos abiertos en tu distrito.",
-    allCategories: "Todas",
     by: "de {name}",
   },
 
@@ -111,7 +112,6 @@ export const copy = {
     pidoHint: "Algo que necesitas; un vecino puede ofrecerlo.",
     titleLabel: "Título",
     descriptionLabel: "Descripción",
-    categoryLabel: "Categoría",
     photosLabel: "Fotos",
     photosHintRegalo: "1 a 3 fotos (obligatorio).",
     photosHintPido: "Foto de referencia opcional (máx. 1).",
@@ -253,7 +253,7 @@ export const copy = {
     privacyWhatItems: [
       "Nombre y correo vía Google (inicio de sesión).",
       "Número de WhatsApp que tú declaras (para coordinar entregas).",
-      "Distrito y publicaciones (texto y fotos que subas).",
+      "Distrito, barrio (opcional) y publicaciones (texto y fotos que subas).",
     ],
     privacyWhyTitle: "Para qué",
     privacyWhyBody:

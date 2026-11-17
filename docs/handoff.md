@@ -6,18 +6,17 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ## 2026-11-17 — Feed cards / no categories / barrio (SRD v0.6)
 
-**Stage:** Branch `ui-feed-cards`. Spec first (this entry + DEC-28/29), then code.
+**Stage:** Branch `ui-feed-cards` — docs + implementation.
 
-### Spec (v0.6)
-- **DEC-28:** Categories out of the product UI; keep DB column with default `Otros`; retire POST-08.
-- **DEC-29:** `neighborhoods` table; optional barrio on profile; posts copy at create; feed shows barrio (else district); PUB-01 district only.
-- **POST-04** card: photo, title, barrio/district, first name, `hace…` age — nothing else.
-- **ADMIN-05 (now):** Perfil has no `/admin` link.
-- **LAND-01** copy: new headline, lede, section title; no WhatsApp note on landing.
-- **OQ-13:** which Barranco barrios before Phase 1 (brief asked for OQ-12; that ID is the Playwright pin).
+### Done
+- **DEC-28 / DEC-29 / LAND-01 / ADMIN-05 (partial):** categories removed from UI; `neighborhoods` + Torres Paz seed; optional barrio on onboarding/perfil; feed cards (photo, title, barrio/district, first name, `hace…`); no Perfil → `/admin`; landing copy updated.
+- Migration `0007_neighborhoods.sql`; posts store category default `Otros`.
+- Tests: `formatPostAge` unit; browser e2e feed cards + no admin link; full suite 54 unit + 27 e2e green.
+- Screenshots: `captures/ui-feed-cards/{375,1280}/` (entrar, feed, perfil).
 
-### Next in this branch
-Implement migration + UI + tests + screenshots; open PR.
+### Open
+- **OQ-13:** which Barranco barrios before Phase 1.
+- Phase 0 launch ops; then M10.
 
 ---
 
