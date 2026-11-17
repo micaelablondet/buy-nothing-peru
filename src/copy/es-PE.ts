@@ -8,7 +8,7 @@ export const copy = {
     title: "Tu barrio empieza contigo",
     body: "Entra con Google para regalar y pedir en tu edificio.",
     ctaGoogle: "Continuar con Google",
-    ctaStub: "Continuar con cuenta seed (dev)",
+    ctaStub: "Continuar",
     note: "Solo pedimos nombre, correo (Google) y luego tu WhatsApp.",
     terms: "Términos de uso",
     privacy: "Política de privacidad",

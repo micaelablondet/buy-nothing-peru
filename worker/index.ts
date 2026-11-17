@@ -19,6 +19,7 @@ import {
   assertAuthIpLimit,
   clientIp,
 } from "./lib/rateLimit";
+import { isStubAuthEnabled } from "./lib/stubAuth";
 import {
   clearReturnPathCookie,
   readReturnPath,
@@ -87,8 +88,7 @@ app.get("/api/auth/config", (c) =>
   c.json({
     googleConfigured: googleConfigured(c.env),
     inviteRequired: c.env.INVITE_REQUIRED === "true",
-    stubAuth:
-      c.env.ENVIRONMENT !== "production" && c.env.DEV_STUB_AUTH === "true",
+    stubAuth: isStubAuthEnabled(c.env),
   }),
 );
 
@@ -277,7 +277,7 @@ app.post("/api/auth/logout", async (c) => {
 
 /** Dev-only stub (AUTH not available without Google). Optional `{ userId }` for e2e. */
 app.post("/api/dev/session", async (c) => {
-  if (c.env.ENVIRONMENT === "production" || c.env.DEV_STUB_AUTH !== "true") {
+  if (!isStubAuthEnabled(c.env)) {
     return c.json({ error: "not_available" }, 404);
   }
   const body = (await c.req.json().catch(() => ({}))) as { userId?: string };

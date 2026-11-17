@@ -1,4 +1,9 @@
-# Copy to .dev.vars (gitignored) for local Worker secrets.
+# Copy to .dev.vars (gitignored) for local Worker secrets and local [vars] overrides.
+# wrangler.toml [vars] are production; these values apply to `wrangler dev` locally.
+
+ENVIRONMENT=development
+APP_BASE_URL=http://127.0.0.1:8787
+
 SESSION_SECRET=local-dev-session-secret-change-me
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -6,7 +11,7 @@ GOOGLE_CLIENT_SECRET=
 # put real emails in wrangler.toml or other committed files. Example for local
 # seed user: match the email of user-mica in scripts/seed.sql.
 ADMIN_EMAILS=
-# Set true to enable stub sign-in without Google (local only)
+# Local/CI only. Never set this in production (stub auth is also code-gated off).
 DEV_STUB_AUTH=true
 # Optional Web Push (NOTIF-02). Inbox works without these.
 VAPID_PUBLIC_KEY=

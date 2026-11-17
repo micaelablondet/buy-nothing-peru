@@ -1,26 +1,24 @@
 # Phase 0 launch checklist (SPEC §16)
 
-Code slices **M0–M7** are in `main`. Before launch: **M8 pre-launch hardening** and **M9 Parkside restyle** (`SPEC.md` section 13; prompts in `docs/cursor-prompts.md`). This doc tracks launch ops that Mica owns.
+Code slices **M0–M9** are in `main` (or about to be). This doc tracks launch ops that Mica owns.
 
 ## Done in product (agents)
 
-- [x] M0–M6 shipped
+- [x] M0–M9 shipped (hardening + Parkside)
 - [x] Authorization contract tests + API e2e (`npm test`, `npm run test:e2e`)
 - [x] Terms + Privacy pages (`/legal/terminos`, `/legal/privacidad`) linked from Entrar and app footer
 - [x] Admin metrics (`/admin`)
 - [x] PWA manifest + `Añadir a inicio` prompt after first post/response (R-06)
 - [x] CI workflow (`.github/workflows/ci.yml`)
-
-## Before launch (agents)
-
-- [ ] M8: admin check reads the current allowlist on every request; `ADMIN_EMAILS` out of `wrangler.toml`; CORS limited to the app origin; core-loop e2e for Regalo and Pido
-- [ ] M9: Parkside restyle merged; Mica reviewed the 375px screenshots
+- [x] `wrangler.toml` `[vars]` are production (`ENVIRONMENT=production`); local overrides in `.dev.vars`
+- [x] `DEV_STUB_AUTH` is code-gated off whenever `ENVIRONMENT=production` (`worker/lib/stubAuth.ts`)
 
 ## Mica / ops (before go-live)
 
 - [ ] Google OAuth consent screen **In production** with Privacy Policy URL (OQ-04)
-- [ ] Production secrets: `SESSION_SECRET`, `GOOGLE_CLIENT_*`, `ADMIN_EMAILS` (secret, never in `wrangler.toml`: the repo is public), optional VAPID; `ENVIRONMENT=production`; `DEV_STUB_AUTH` off
-- [ ] Real `database_id` in `wrangler.toml`; `APP_BASE_URL` = the deployed `https://barrio.<account>.workers.dev`; Google redirect URI `<APP_BASE_URL>/api/auth/google/callback`
+- [ ] Production secrets via `wrangler secret put`: `SESSION_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_EMAILS` (never in `wrangler.toml`); optional VAPID. Do **not** set `DEV_STUB_AUTH` in production.
+- [ ] Real `database_id` in `wrangler.toml` (from `npx wrangler d1 create barrio` or `wrangler d1 list`)
+- [ ] `APP_BASE_URL` in `wrangler.toml` = `https://barrio.<account-subdomain>.workers.dev`; Google redirect URI `<APP_BASE_URL>/api/auth/google/callback`
 - [ ] R2 bucket created (Cloudflare may ask for a payment method when R2 is first enabled; see OQ-03)
 - [ ] Branch protection on `main`: require a PR and green CI (available on GitHub Free because the repo is public)
 - [ ] Fonts and feed checked on a mid-range Android over 4G (3s budget)
@@ -34,8 +32,13 @@ Code slices **M0–M7** are in `main`. Before launch: **M8 pre-launch hardening*
 ## Commands
 
 ```bash
+# Local
+cp .dev.vars.example .dev.vars   # includes ENVIRONMENT=development + APP_BASE_URL for local
 npm run db:reset:local
 npm run build && npm run test:e2e
+
+# Production deploy (after secrets + real database_id + APP_BASE_URL)
+npm run db:migrate:remote
 npm run deploy
 ```
 
