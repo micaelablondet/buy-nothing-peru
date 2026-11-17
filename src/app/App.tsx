@@ -1,7 +1,6 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/app/AppShell";
 import { RequireSession } from "@/app/RequireSession";
-import { copy } from "@/copy/es-PE";
 import { CreatePostPage } from "@/pages/CreatePostPage";
 import { EntrarPage } from "@/pages/EntrarPage";
 import { FeedPage } from "@/pages/FeedPage";
@@ -10,21 +9,30 @@ import { LegalPrivacyPage } from "@/pages/LegalPrivacyPage";
 import { LegalTermsPage } from "@/pages/LegalTermsPage";
 import { MyPostsPage } from "@/pages/MyPostsPage";
 import { OnboardingProfilePage } from "@/pages/OnboardingProfilePage";
-import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { HandoffPage } from "@/pages/HandoffPage";
 import { InboxPage } from "@/pages/InboxPage";
 import { PostDetailPage } from "@/pages/PostDetailPage";
 import { PostResponsesPage } from "@/pages/PostResponsesPage";
 import { AdminPage } from "@/pages/AdminPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { SearchPage } from "@/pages/SearchPage";
+
+function PhoneShell() {
+  return (
+    <div className="phone-frame">
+      <Outlet />
+    </div>
+  );
+}
 
 export function App() {
   return (
     <BrowserRouter>
-      <div className="phone-frame">
-        <Routes>
+      <Routes>
+        <Route path="/entrar" element={<EntrarPage />} />
+
+        <Route element={<PhoneShell />}>
           <Route path="/" element={<Navigate to="/app" replace />} />
-          <Route path="/entrar" element={<EntrarPage />} />
           <Route path="/invitar" element={<InvitePage />} />
           <Route path="/onboarding/perfil" element={<OnboardingProfilePage />} />
           <Route path="/legal/terminos" element={<LegalTermsPage />} />
@@ -34,15 +42,7 @@ export function App() {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/app" element={<AppShell />}>
               <Route index element={<FeedPage />} />
-              <Route
-                path="busca"
-                element={
-                  <PlaceholderPage
-                    title={copy.shell.search}
-                    body={copy.shell.emptySearch}
-                  />
-                }
-              />
+              <Route path="busca" element={<SearchPage />} />
               <Route path="publica" element={<CreatePostPage />} />
               <Route path="perfil" element={<ProfilePage />} />
               <Route path="inbox" element={<InboxPage />} />
@@ -54,8 +54,8 @@ export function App() {
           </Route>
 
           <Route path="*" element={<Navigate to="/app" replace />} />
-        </Routes>
-      </div>
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }

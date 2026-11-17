@@ -26,17 +26,31 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
 
-  /* Type */
-  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  /* Type — WiP article body (Editor) stand-in: Source Serif 4 throughout */
+  --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino,
+    Georgia, serif;
+  --font-sans: var(--font-serif);
+  --font-display: var(--font-serif);
+  --font-body-serif: var(--font-serif);
+  --font-mono: var(--font-serif);
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
+  --text-md: 1.125rem; /* ~18px, matches WiP body */
+  --text-lg: 1.25rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2rem;
   --line-tight: 1.25;
   --line-normal: 1.5;
+
+  /* Entrar landing (WiP-inspired paper editorial) */
+  --landing-paper: #fff7f4;
+  --landing-ink: #0c0c0c;
+  --landing-muted: #5c534e;
+  --landing-accent: #243d32;
+  --landing-olive: #4a5d3a;
+  --landing-flush: #c45c48;
+  --landing-sky: #6f6280;
 
   /* Radius & tap */
   --radius-sm: 0.5rem;
@@ -47,4 +61,5 @@
 
   /* Layout */
   --shell-max: 26.875rem; /* 430px phone frame */
+  --shell-sidebar: 14.5rem; /* desktop left nav */
 }

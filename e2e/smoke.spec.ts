@@ -9,11 +9,11 @@ test.describe("Phase 0 smoke", () => {
   });
 
   test("public post SSR has OG tags and no phone", async ({ request }) => {
-    const res = await request.get("/p/post-open-regalo");
+    const res = await request.get("/p/post-regalo-cuisinart");
     expect(res.ok()).toBeTruthy();
     const html = await res.text();
     expect(html).toContain('property="og:title"');
-    expect(html).toContain("Microondas seed");
+    expect(html).toContain("Accesorios Cuisinart");
     expect(html).not.toContain("+51");
     expect(html).not.toContain("Removido");
   });

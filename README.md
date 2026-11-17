@@ -15,7 +15,7 @@ npm run dev:worker   # :8787 (API + built SPA + SSR /p/*)
 npm run dev          # Vite UI with HMR (proxies /api and /p)
 ```
 
-Sign in with **Continuar con cuenta seed (dev)** on `/entrar` when stub auth is on. Google OAuth for production.
+Sign in with **Continuar** on `/entrar` when stub auth is on. Google OAuth for production.
 
 ## Scripts
 

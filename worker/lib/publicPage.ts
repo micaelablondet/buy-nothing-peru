@@ -148,6 +148,9 @@ function documentShell(input: {
   <meta property="og:url" content="${escapeHtml(input.pageUrl)}" />
   ${ogImageTag}
   <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --color-surface: #f7f6f2;
@@ -161,22 +164,23 @@ function documentShell(input: {
       --space-4: 1rem;
       --space-6: 1.5rem;
       --space-8: 2rem;
-      --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
-      --text-md: 1rem;
+      --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --text-md: 1.125rem;
       --text-sm: 0.875rem;
-      --text-xl: 1.25rem;
-      --text-2xl: 1.5rem;
+      --text-xl: 1.375rem;
+      --text-2xl: 1.625rem;
       --radius-md: 0.75rem;
       --touch-min: 2.75rem;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: var(--font-sans);
+      font-family: var(--font-serif);
       background: var(--color-surface);
       color: var(--color-ink);
       font-size: var(--text-md);
       line-height: 1.5;
+      font-weight: 400;
     }
     .public {
       max-width: 28rem;
