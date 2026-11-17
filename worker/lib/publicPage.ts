@@ -148,27 +148,24 @@ function documentShell(input: {
   <meta property="og:url" content="${escapeHtml(input.pageUrl)}" />
   ${ogImageTag}
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --color-surface: #f7f6f2;
-      --color-ink: #1b4332;
-      --color-ink-muted: #52796f;
-      --color-brand: #2d6a4f;
-      --color-border: #e4e6e3;
-      --color-on-brand: #ffffff;
+      --color-surface: #F1EDDA;
+      --color-ink: #2A231B;
+      --color-ink-muted: #5F5548;
+      --color-brand: #2F5D3A;
+      --color-border: #D5CDAE;
+      --color-on-brand: #FFFFFF;
       --space-2: 0.5rem;
       --space-3: 0.75rem;
       --space-4: 1rem;
       --space-6: 1.5rem;
       --space-8: 2rem;
-      --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-      --text-md: 1.125rem;
+      --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --text-md: 1rem;
       --text-sm: 0.875rem;
-      --text-xl: 1.375rem;
-      --text-2xl: 1.625rem;
+      --text-xl: 1.125rem;
+      --text-2xl: 1.5rem;
       --radius-md: 0.75rem;
       --touch-min: 2.75rem;
     }

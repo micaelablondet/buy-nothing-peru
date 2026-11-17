@@ -430,6 +430,23 @@ app.get("/api/seed-stats", async (c) => {
   }
 });
 
+/**
+ * SPA fallback for Wrangler 3 (assets `not_found_handling` / `run_worker_first`
+ * are unreliable here). Serve static files; unknown paths get index.html.
+ */
+app.get("*", async (c) => {
+  const path = new URL(c.req.url).pathname;
+  if (path.startsWith("/api/") || path.startsWith("/p/")) {
+    return c.notFound();
+  }
+  const asset = await c.env.ASSETS.fetch(c.req.raw);
+  if (asset.status !== 404) {
+    return asset;
+  }
+  const indexUrl = new URL("/index.html", c.req.url);
+  return c.env.ASSETS.fetch(new Request(indexUrl.toString(), c.req.raw));
+});
+
 function publicMe(session: SessionUser) {
   return {
     id: session.id,
