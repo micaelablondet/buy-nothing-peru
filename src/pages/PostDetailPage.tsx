@@ -146,7 +146,6 @@ export function PostDetailPage() {
       <p className="post-detail__body">{post.description}</p>
 
       <SharePostButton postId={post.id} />
-      <ReportButton postId={post.id} />
 
       {actions?.showOwnerResponses ? (
         <Link className="btn-primary" to={`/app/p/${post.id}/respuestas`}>
@@ -188,6 +187,8 @@ export function PostDetailPage() {
           {post.type === "pido" ? copy.post.capPido : copy.post.capRegalo}
         </p>
       ) : null}
+
+      <ReportButton postId={post.id} />
 
       {actions?.showHandoff ? (
         <Link className="btn-primary" to={`/app/p/${post.id}/recojo`}>

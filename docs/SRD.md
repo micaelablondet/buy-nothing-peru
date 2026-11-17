@@ -279,7 +279,7 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 
 | ID | Pri | Requirement | Acceptance criteria |
 |---|---|---|---|
-| SAFE-01 | P0 | `Reportar` on every post and response with reasons: `Artículo prohibido`, `Estafa o engaño`, `Comportamiento inapropiado`, `Otro` plus optional text. | A report is stored and appears in the admin view. The reporter sees a confirmation. |
+| SAFE-01 | P0 | `Reportar` on every post and response with reasons: `Artículo prohibido`, `Estafa o engaño`, `Comportamiento inapropiado`, `Otro` plus optional text. On **post detail**, `Reportar` sits **below** the main response button (`Me interesa` / `Yo tengo`), not above it. | A report is stored and appears in the admin view. The reporter sees a confirmation. On post detail, `Reportar` appears after the primary respond CTA. |
 | SAFE-02 | P0 | **Prohibited-items list** shown at post creation and in the Terms. Draft list: weapons, drugs and alcohol, medicines, live animals, stolen or illegal items, perishable or opened food. | The list is visible before submit on both post types. Mica reviews the final list (OQ-07). |
 | SAFE-03 | P0 | Admin can **remove** a post. | Post becomes `removed` (through `postStateMachine`) and leaves feed and public page (public page shows `Esta publicación ya no está disponible`). |
 | SAFE-04 | P0 | **Rate limits:** per user, max 10 posts/day and 30 responses/day; per IP, sensible limits on auth endpoints. | Exceeding returns a friendly Spanish message. |
