@@ -14,7 +14,7 @@ async function signInAsMica(page: Page) {
 test.describe("POST-04 feed cards / ADMIN-05 perfil", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
-  test("Regalo card shows title, barrio, first name, hace; no category chips", async ({
+  test("Regalo card shows title, district, first name, hace; no category chips", async ({
     page,
   }) => {
     await signInAsMica(page);
@@ -26,7 +26,8 @@ test.describe("POST-04 feed cards / ADMIN-05 perfil", () => {
     const card = page.locator(".feed-card").filter({ hasText: "Peluche Pikachu" });
     await expect(card).toBeVisible();
     await expect(card.getByRole("heading", { name: "Peluche Pikachu" })).toBeVisible();
-    await expect(card).toContainText("Torres Paz");
+    await expect(card).toContainText("Barranco");
+    await expect(card).not.toContainText("Torres Paz");
     await expect(card).toContainText("de Mica");
     await expect(card).toContainText("hace");
     await expect(card).not.toContainText("Juguetes");

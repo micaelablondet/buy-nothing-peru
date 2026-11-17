@@ -25,6 +25,26 @@ export function buildGoogleAuthUrl(env: WorkerEnv, state: string): string {
   return `${AUTH_URL}?${params.toString()}`;
 }
 
+/** Map Google userinfo JSON → pending identity (reads email_verified). */
+export function identityFromGoogleUserinfo(profile: {
+  sub?: string;
+  email?: string;
+  email_verified?: boolean;
+  given_name?: string;
+  name?: string;
+}): PendingGoogleIdentity {
+  if (!profile.sub || !profile.email) {
+    throw new Error("google_profile_incomplete");
+  }
+  return {
+    googleSub: profile.sub,
+    email: profile.email,
+    displayName:
+      profile.given_name || profile.name || profile.email.split("@")[0]!,
+    emailVerified: profile.email_verified === true,
+  };
+}
+
 export async function exchangeGoogleCode(
   env: WorkerEnv,
   code: string,
@@ -59,18 +79,11 @@ export async function exchangeGoogleCode(
   const profile = (await userRes.json()) as {
     sub?: string;
     email?: string;
+    email_verified?: boolean;
     given_name?: string;
     name?: string;
   };
-  if (!profile.sub || !profile.email) {
-    throw new Error("google_profile_incomplete");
-  }
-
-  return {
-    googleSub: profile.sub,
-    email: profile.email,
-    displayName: profile.given_name || profile.name || profile.email.split("@")[0],
-  };
+  return identityFromGoogleUserinfo(profile);
 }
 
 export function googleConfigured(env: WorkerEnv): boolean {

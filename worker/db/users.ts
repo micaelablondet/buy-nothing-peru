@@ -11,13 +11,14 @@ export type UserRow = {
   whatsapp: string | null;
   district_id: string | null;
   neighborhood_id: string | null;
+  email_verified: number;
   invite_accepted_at: string | null;
   created_at: string;
   deleted_at: string | null;
 };
 
 const USER_SELECT = `SELECT id, google_sub, email, first_name, display_name, whatsapp, district_id,
-              neighborhood_id, invite_accepted_at, created_at, deleted_at
+              neighborhood_id, email_verified, invite_accepted_at, created_at, deleted_at
        FROM users`;
 
 export function rowToSession(row: UserRow, adminEmails: string): SessionUser {
@@ -31,7 +32,7 @@ export function rowToSession(row: UserRow, adminEmails: string): SessionUser {
     neighborhoodId: row.neighborhood_id,
     whatsapp,
     inviteAcceptedAt: row.invite_accepted_at,
-    isAdmin: isAdminEmail(row.email, adminEmails),
+    isAdmin: isAdminEmail(row.email, adminEmails, row.email_verified === 1),
     profileComplete: Boolean(whatsapp && row.district_id),
   };
 }
@@ -65,6 +66,7 @@ export async function createUser(
     displayName: string;
     inviteAcceptedAt: string | null;
     districtId: string;
+    emailVerified: boolean;
   },
 ): Promise<UserRow> {
   const now = new Date().toISOString();
@@ -72,8 +74,9 @@ export async function createUser(
     .prepare(
       `INSERT INTO users (
          id, google_sub, email, first_name, display_name, whatsapp, district_id,
-         neighborhood_id, is_admin, created_at, deleted_at, invite_accepted_at
-       ) VALUES (?, ?, ?, ?, ?, NULL, ?, NULL, 0, ?, NULL, ?)`,
+         neighborhood_id, is_admin, created_at, deleted_at, invite_accepted_at,
+         email_verified
+       ) VALUES (?, ?, ?, ?, ?, NULL, ?, NULL, 0, ?, NULL, ?, ?)`,
     )
     .bind(
       input.id,
@@ -84,6 +87,7 @@ export async function createUser(
       input.districtId,
       now,
       input.inviteAcceptedAt,
+      input.emailVerified ? 1 : 0,
     )
     .run();
   const row = await findUserById(db, input.id);
@@ -91,6 +95,22 @@ export async function createUser(
     throw new Error("user_create_failed");
   }
   return row;
+}
+
+/** Refresh email + verified flag from Google on each sign-in (AUTH-04). */
+export async function updateGoogleIdentity(
+  db: D1Database,
+  userId: string,
+  input: { email: string; emailVerified: boolean },
+): Promise<UserRow | null> {
+  await db
+    .prepare(
+      `UPDATE users SET email = ?, email_verified = ?
+       WHERE id = ? AND deleted_at IS NULL`,
+    )
+    .bind(input.email, input.emailVerified ? 1 : 0, userId)
+    .run();
+  return findUserById(db, userId);
 }
 
 export async function updateProfile(

@@ -4,6 +4,31 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Prod bootstrap + district-only (SRD v0.6.2 / DEC-30 / DEC-31)
+
+**Stage:** Branch `prod-bootstrap` — reference data, admin invite bootstrap, drop barrio, `email_verified` for admin.
+
+### Spec
+- Migration `0008` inserts **Barranco only** (`INSERT OR IGNORE`); no Torres Paz seed.
+- AUTH-02 / AUTH-04: `ADMIN_EMAILS` + Google `email_verified` for invite bypass and admin.
+- **DEC-31** replaces DEC-29: V1 district only; cards show district name; no barrio picker.
+- Keep `neighborhoods` table/columns unused; do not delete migrations.
+- **OQ-13 closed** (barrios; brief sometimes called this OQ-12 — CI pin remains OQ-12).
+- **OQ-14:** districts beyond Barranco.
+
+### Done in this stage
+- Migration `0008_reference_districts.sql` (Barranco only); seed without neighborhoods.
+- `mustEnterInviteCode` + unit tests; Google callback uses it.
+- Launch checklist: admin → create invite → share.
+- Migration `0009_email_verified.sql`; `identityFromGoogleUserinfo` + `isAdminEmail(..., emailVerified)`.
+- Removed barrio from onboarding, Perfil, cards, seed; `placeLabel` = district name.
+- Docs: SRD v0.6.2, DEC-31, CSV, OQ-13 resolved.
+
+### Next owner
+Mica: `db:migrate:remote`, deploy, sign in as verified ADMIN_EMAILS, create invite in `/admin`, then share.
+
+---
+
 ## 2026-11-17 — Feed cards / no categories / barrio (SRD v0.6)
 
 **Stage:** Branch `ui-feed-cards` — docs + implementation.
@@ -15,7 +40,7 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 - Screenshots: `captures/ui-feed-cards/{375,1280}/` (entrar, feed, perfil).
 
 ### Open
-- **OQ-13:** which Barranco barrios before Phase 1.
+- ~~OQ-13 barrios~~ → closed by DEC-31 on `prod-bootstrap`.
 - Phase 0 launch ops; then M10.
 
 ---

@@ -101,6 +101,7 @@ export async function signPendingToken(
     googleSub: identity.googleSub,
     email: identity.email,
     displayName: identity.displayName,
+    emailVerified: identity.emailVerified,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -129,6 +130,7 @@ export async function readPending(
       googleSub: payload.googleSub,
       email: payload.email,
       displayName: payload.displayName,
+      emailVerified: payload.emailVerified === true,
     };
   } catch {
     return null;

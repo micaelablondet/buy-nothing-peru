@@ -2,26 +2,17 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
 import { copy } from "@/copy/es-PE";
-import {
-  deleteAccount,
-  fetchDistricts,
-  fetchNeighborhoods,
-  updateProfile,
-} from "@/lib/api";
+import { deleteAccount, fetchDistricts, updateProfile } from "@/lib/api";
 
 export function ProfilePage() {
   const { me, refreshMe } = useOutletContext<SessionOutletContext>();
   const navigate = useNavigate();
   const [districts, setDistricts] = useState<{ id: string; name: string }[]>([]);
-  const [neighborhoods, setNeighborhoods] = useState<
-    { id: string; name: string }[]
-  >([]);
   const [displayName, setDisplayName] = useState(me.displayName);
   const [whatsapp, setWhatsapp] = useState(
     me.whatsapp?.replace(/^\+51/, "") ?? "",
   );
   const [districtId, setDistrictId] = useState(me.districtId ?? "dist-barranco");
-  const [neighborhoodId, setNeighborhoodId] = useState(me.neighborhoodId ?? "");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,17 +22,6 @@ export function ProfilePage() {
       .then(setDistricts)
       .catch(() => setDistricts([{ id: "dist-barranco", name: "Barranco" }]));
   }, []);
-
-  useEffect(() => {
-    fetchNeighborhoods(districtId)
-      .then((list) => {
-        setNeighborhoods(list);
-        if (neighborhoodId && !list.some((n) => n.id === neighborhoodId)) {
-          setNeighborhoodId("");
-        }
-      })
-      .catch(() => setNeighborhoods([]));
-  }, [districtId]);
 
   const onSave = async (event: FormEvent) => {
     event.preventDefault();
@@ -53,7 +33,6 @@ export function ProfilePage() {
         displayName,
         whatsapp,
         districtId,
-        neighborhoodId: neighborhoodId || null,
       });
       await refreshMe();
       setMessage(copy.profile.saved);
@@ -109,32 +88,11 @@ export function ProfilePage() {
           <select
             className="field__input"
             value={districtId}
-            onChange={(e) => {
-              setDistrictId(e.target.value);
-              setNeighborhoodId("");
-            }}
+            onChange={(e) => setDistrictId(e.target.value)}
           >
             {districts.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span className="field__label">
-            {copy.onboarding.neighborhood}{" "}
-            <span className="field__hint">({copy.onboarding.neighborhoodOptional})</span>
-          </span>
-          <select
-            className="field__input"
-            value={neighborhoodId}
-            onChange={(e) => setNeighborhoodId(e.target.value)}
-          >
-            <option value="">{copy.onboarding.neighborhoodNone}</option>
-            {neighborhoods.map((n) => (
-              <option key={n.id} value={n.id}>
-                {n.name}
               </option>
             ))}
           </select>

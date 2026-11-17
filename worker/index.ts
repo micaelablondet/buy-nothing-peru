@@ -11,10 +11,12 @@ import {
   findUserByGoogleSub,
   findUserById,
   rowToSession,
+  updateGoogleIdentity,
   updateProfile,
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
 import { resolveCorsOrigin } from "./lib/cors";
+import { mustEnterInviteCode } from "./lib/inviteGate";
 import {
   assertAuthIpLimit,
   clientIp,
@@ -164,14 +166,27 @@ app.get("/api/auth/google/callback", async (c) => {
     const existing = await findUserByGoogleSub(c.env.DB, identity.googleSub);
 
     if (existing) {
-      const session = rowToSession(existing, c.env.ADMIN_EMAILS ?? "");
+      const refreshed =
+        (await updateGoogleIdentity(c.env.DB, existing.id, {
+          email: identity.email,
+          emailVerified: identity.emailVerified,
+        })) ?? existing;
+      const session = rowToSession(refreshed, c.env.ADMIN_EMAILS ?? "");
       appendCookie(c, await sessionSetCookie(c.env, session));
       appendCookie(c, clearPendingCookie(c.env));
       appendCookie(c, clearOauthStateCookie(c.env));
       return c.redirect(finishAuthRedirect(c, session, cookie), 302);
     }
 
-    if (c.env.INVITE_REQUIRED !== "true") {
+    // AUTH-02 / DEC-30: invite off, or verified ADMIN_EMAILS bootstrap — create without code.
+    if (
+      !mustEnterInviteCode(
+        c.env.INVITE_REQUIRED === "true",
+        identity.email,
+        c.env.ADMIN_EMAILS ?? "",
+        identity.emailVerified,
+      )
+    ) {
       const nowIso = new Date().toISOString();
       const user = await createUser(c.env.DB, {
         id: crypto.randomUUID(),
@@ -180,6 +195,7 @@ app.get("/api/auth/google/callback", async (c) => {
         displayName: identity.displayName,
         inviteAcceptedAt: nowIso,
         districtId: DEFAULT_DISTRICT,
+        emailVerified: identity.emailVerified,
       });
       await recordEvent(c.env.DB, {
         id: crypto.randomUUID(),
@@ -252,6 +268,7 @@ app.post("/api/auth/invite", async (c) => {
     displayName: pending.displayName,
     inviteAcceptedAt: nowIso,
     districtId: DEFAULT_DISTRICT,
+    emailVerified: pending.emailVerified,
   });
   await recordEvent(c.env.DB, {
     id: crypto.randomUUID(),
@@ -320,7 +337,6 @@ app.patch("/api/me/profile", async (c) => {
     displayName?: string;
     whatsapp?: string;
     districtId?: string;
-    neighborhoodId?: string | null;
   };
   const displayName = body.displayName?.trim() ?? "";
   if (!displayName) {
@@ -340,28 +356,12 @@ app.patch("/api/me/profile", async (c) => {
     return c.json({ error: "validation", message: "Elige un distrito válido." }, 400);
   }
 
-  let neighborhoodId: string | null = null;
-  const rawNeighborhood = body.neighborhoodId?.trim() || "";
-  if (rawNeighborhood) {
-    const neighborhood = await c.env.DB.prepare(
-      `SELECT id FROM neighborhoods WHERE id = ? AND district_id = ?`,
-    )
-      .bind(rawNeighborhood, districtId)
-      .first<{ id: string }>();
-    if (!neighborhood) {
-      return c.json(
-        { error: "validation", message: "Elige un barrio válido." },
-        400,
-      );
-    }
-    neighborhoodId = neighborhood.id;
-  }
-
+  // DEC-31: barrio unused — always clear neighborhood_id on profile save.
   const updated = await updateProfile(c.env.DB, session.id, {
     displayName,
     whatsapp: phone.e164,
     districtId,
-    neighborhoodId,
+    neighborhoodId: null,
   });
   if (!updated) {
     return c.json({ error: "not_found" }, 404);
@@ -388,20 +388,6 @@ app.get("/api/districts", async (c) => {
     `SELECT id, name FROM districts ORDER BY name`,
   ).all<{ id: string; name: string }>();
   return c.json({ districts: rows.results ?? [] });
-});
-
-/** DEC-29: barrios for a district (optional profile field). */
-app.get("/api/neighborhoods", async (c) => {
-  const districtId =
-    c.req.query("districtId")?.trim() || DEFAULT_DISTRICT;
-  const rows = await c.env.DB.prepare(
-    `SELECT id, district_id AS districtId, name FROM neighborhoods
-     WHERE district_id = ?
-     ORDER BY name`,
-  )
-    .bind(districtId)
-    .all<{ id: string; districtId: string; name: string }>();
-  return c.json({ neighborhoods: rows.results ?? [] });
 });
 
 registerPostRoutes(app);
