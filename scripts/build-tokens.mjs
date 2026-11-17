@@ -88,6 +88,7 @@ ${radiusLines.join("\n")}
 const handKept = `
 /**
  * Barrio-only layout tokens (docs/SRD.md §11.3). Hand-kept — not in Parkside JSON.
+ * Landing colors: mapped to Parkside where possible; see PR for no-match list.
  */
 :root {
   --space-3: 0.75rem;
@@ -97,6 +98,37 @@ const handKept = `
   --line-normal: 1.5;
   --tap-min: 2.75rem; /* 44px */
   --shell-max: 26.875rem; /* 430px phone frame */
+  --shell-sidebar: 14.5rem; /* desktop left nav (NAV-02) */
+  --landing-max: 40rem;
+
+  /* Aliases used by recover UI / landing (Parkside names preferred in new code) */
+  --font-serif: var(--font-sans);
+  --font-body-serif: var(--font-sans);
+  --font-mono: var(--font-sans);
+  --text-xs: var(--text-label);
+  --text-sm: var(--text-body-small);
+  --text-md: var(--text-body);
+  --text-lg: var(--text-heading-3);
+  --text-xl: var(--text-heading-3);
+  --text-2xl: var(--text-heading-2);
+  --text-3xl: var(--text-heading-1);
+  --color-border: var(--color-line);
+  --color-surface-elevated: var(--color-surface-raised);
+  --color-brand: var(--color-primary);
+  --color-brand-soft: var(--color-moss);
+  --color-on-brand: var(--color-on-primary);
+  --color-focus: var(--color-primary);
+  --radius-full: var(--radius-pill);
+
+  /* LAND-01 — closest Parkside mapping */
+  --landing-paper: var(--color-surface);
+  --landing-ink: var(--color-ink);
+  --landing-muted: var(--color-ink-muted);
+  --landing-accent: var(--color-primary);
+  --landing-olive: var(--color-olive);
+  /* No close Parkside match (kept for landing accents): */
+  --landing-flush: #c45c48;
+  --landing-sky: #6f6280;
 }
 `;
 
@@ -125,11 +157,9 @@ function face(family, weight, fileBase) {
 }
 
 const fonts = `
-/* Self-hosted Parkside fonts (Latin + Latin Ext for Spanish). Weights 400 & 600. */
-${face("Work Sans", 400, "work-sans")}
-${face("Work Sans", 600, "work-sans")}
-${face("EB Garamond", 400, "eb-garamond")}
-${face("EB Garamond", 600, "eb-garamond")}
+/* Self-hosted Source Serif 4 (DEC-25). Latin + Latin Ext. Weights 400 & 600. */
+${face("Source Serif 4", 400, "source-serif-4")}
+${face("Source Serif 4", 600, "source-serif-4")}
 `;
 
 writeFileSync(

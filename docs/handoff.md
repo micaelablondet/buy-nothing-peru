@@ -10,13 +10,48 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ### Comparison seed (track in Phase 0)
 When seeding Barrio for launch, include counterparts of the E-01 items and **check whether they find takers** (and how the handoff compares to the group):
-- **Plushies** (three / “dos peluches” style post)
+- **3 plushies (one post)**
 - **Pikachu + lunchbox** (or separate Pikachu / lonchera posts — already in local seed photos)
 
 Also note the third E-01 post (**kids ice-cream maker**) if a similar item is available to seed. Goal: compare group baseline vs Barrio response rate and friction (see OQ-11).
 
 ### Next owner
 Still Phase 0 launch ops first (`phase0-launch.md`). Before invite goes out: ask building staff about Google accounts (R-05 / H4).
+
+---
+
+## 2026-11-17 — Recover UI merged onto main (NAV / Busca / landing / Source Serif 4)
+
+**Stage:** Branch `recover/ui-nov16` brings Nov 16 UI recover work up to date with `main` (M8/M9/launch + Valere docs). Phase 0 still **not** live.
+
+### Done in this stage
+- **DEC-25–27 / SRD v0.5:** Source Serif 4 for all text; keyword search in V1; desktop sidebar from 768px.
+- **NAV-01 / NAV-02:** Header ☰ menu (Términos, Privacidad, Salir); bottom tabs &lt;768px, left sidebar ≥768px.
+- **SRCH-01:** `GET /api/search?q=` (signed-in, own district, max 50, no WhatsApp in payload).
+- **LAND-01:** `/entrar` hero landing.
+- Seed: M8 e2e fixtures **plus** real photo posts (`scripts/seed-photos/`).
+- Fonts: self-hosted Source Serif 4 WOFF2; EB Garamond / Work Sans / Google Fonts links removed.
+- Browser Playwright for NAV-01/02 (375/768/1280) + API tests for SRCH-01; full suite 25 green.
+- Screenshots: `captures/recover-ui/{375,1280}/` (entrar, feed, busca, menu-open, post-detail).
+
+### Landing colors vs Parkside
+| Token | Mapping |
+|---|---|
+| `--landing-paper` | `--color-surface` |
+| `--landing-ink` | `--color-ink` |
+| `--landing-muted` | `--color-ink-muted` |
+| `--landing-accent` | `--color-primary` |
+| `--landing-olive` | `--color-olive` |
+| `--landing-flush` (#c45c48) | **no close Parkside match** (kept barrio-only) |
+| `--landing-sky` (#6f6280) | **no close Parkside match** (kept barrio-only) |
+
+### Real vs mocked / stubbed
+Same as prior entry: stub auth local-only; WhatsApp self-declared; admin still in-app `/admin`.
+
+### What the next owner does first
+1. Review PR screenshots at 375 and 1280.
+2. Phase 0 launch ops (`docs/phase0-launch.md`): secrets, `db:migrate:remote`, deploy, Google redirect URI.
+3. Then M10 admin portal split.
 
 ---
 
@@ -42,8 +77,8 @@ Still Phase 0 launch ops first (`phase0-launch.md`). Before invite goes out: ask
 | Production deploy | Config filled; **secrets, remote migrate, and deploy not done yet**. |
 
 ### Not tested / gaps
-- **No browser-level (UI) Playwright e2e.** `npm run test:e2e` is **API-level** Playwright (request contexts): smoke, core loop, rules, authz.
-- No real-device check of Parkside fonts / 3s-on-4G feed yet (launch checklist).
+- Browser e2e for NAV added later the same day (see entry above). Core loop remains API-level Playwright.
+- No real-device check of fonts / 3s-on-4G feed yet (launch checklist).
 - M10 Access JWT / boundary / admin smoke tests do not exist yet.
 
 ### Known issues / open

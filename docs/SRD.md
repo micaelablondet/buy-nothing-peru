@@ -1,6 +1,6 @@
 # Barrio: Solution Requirements Document (SRD)
 
-**Version:** v0.4 | **Date:** November 17, 2026 | **Status:** M0 to M9 built; Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
+**Version:** v0.5.1 | **Date:** November 17, 2026 | **Status:** M0 to M9 built; UI recover (nav, search, landing, Source Serif 4) merged. Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
 **Owner:** Micaela (Mica) Blondet, product | **Builders:** Mica + coding agents (Cursor)
 **Source of truth:** this file (`docs/SRD.md`) in the repo. Any hosted copy (Claude Doc, Google Doc) is an export. Companion docs: `docs/README.md`.
 **Adapted from:** the Valere SRD template, trimmed for a solo, agent-built side project.
@@ -24,7 +24,8 @@
 | v0.2 | 2026-11-10 | Resolved OQ-01, OQ-02, OQ-05 (DEC-17 to DEC-19); Pido photo confirmed optional (DEC-20); visual identity now comes from the Parkside design system (section 11); M0 exit criteria and launch checklist updated |
 | v0.3 | 2026-11-16 | **Reconciled with the code as built (M0 to M7).** Admin moves to a separate app on its own URL before Phase 1 (DEC-21, DEC-22), as a second Worker in the same package (no monorepo restructure). New slices: M8 pre-launch hardening (AUTH-04 revised, SAFE-05), M9 Parkside restyle (token mapping in 11.3, light theme only, DEC-23), M10 admin portal split (ADMIN-04 to ADMIN-06). Real names used: Worker `barrio`, `APP_BASE_URL`, `/api/auth/google/callback`. R-09, R-10, OQ-10 added; OQ-04 widened; launch checklist and Phase 1 gate updated. Added `docs/adr/0001-separate-admin-portal.md`, `docs/m10-admin-portal-setup.md`, `docs/cursor-prompts.md`, `design/parkside.tokens.json` |
 | v0.4 | 2026-11-17 | **Valere docs convention (DEC-24).** `SPEC.md` moved to `docs/SRD.md`; decision log → `docs/decisions.md`; risks and open questions → `docs/assumptions-and-questions.md`; added `docs/handoff.md`, `docs/feature-prioritization.csv` and `docs/README.md`. M8 and M9 marked Done in section 13. |
-| v0.4.1 | 2026-11-17 | **Evidence E-01** (building WhatsApp group baseline): new §2.4; R-01/R-05 updated; OQ-11 added. |
+| v0.5 | 2026-11-17 | **App shell, search, landing, fonts (DEC-25 to DEC-27).** New §8.10: NAV-01 header menu, NAV-02 responsive shell, SRCH-01 keyword search, LAND-01 `/entrar` hero. Non-goal search wording narrowed; Devices adds desktop; §11.3 fonts → Source Serif 4 for all text (Parkside color/spacing/radius unchanged). |
+| v0.5.1 | 2026-11-17 | **Evidence E-01** (building WhatsApp group baseline): new §2.4; R-01/R-05 updated; OQ-11 added. |
 
 ---
 
@@ -67,7 +68,7 @@ Baseline qualitative evidence from the building WhatsApp group is in **§2.4 (E-
 
 | ID | Date | Source | What happened | What it suggests |
 |---|---|---|---|---|
-| E-01 | 2026-11 | Building WhatsApp group; manual test by Mica | **3 posts:** (1) 3 plushies; (2) Pikachu + lunchbox; (3) kids ice-cream maker. **1 of 3 answered (33%)**; first reply after ~**3 hours**, from a neighbor. **Handoff:** item left outside Mica's door; neighbor picked it up and confirmed by message the **same day**; no further coordination needed. **2 posts got no reply.** Building **staff are not in the WhatsApp group.** | The group already completes some giveaways with very low friction (doorstep / first-come). Reply rate in this sample is well below Barrio's Phase 0 guardrail of **60%+** posts with a response in 48h — that 60%+ bar is what Barrio must beat to feel useful next to the group. Staff absence from the group is a reach gap Barrio can close (see H4, R-05). |
+| E-01 | 2026-11 | Building WhatsApp group; manual test by Mica | **3 posts:** (1) 3 plushies; (2) Pikachu + lunchbox; (3) kids ice-cream maker. **1 of 3 answered (33%)**; first reply after ~**3 hours**, from a neighbor. **Handoff:** item left outside Mica's door; neighbor picked it up and confirmed by message the **same day**; no further coordination needed. **2 posts got no reply.** Building **staff are not in the WhatsApp group.** | **Small sample (3 posts, one day): directional only.** The group already completes some giveaways with very low friction (doorstep / first-come). Reply rate in this sample is well below Barrio's Phase 0 guardrail of **60%+** posts with a response in 48h — that 60%+ bar is what Barrio must beat to feel useful next to the group. Staff absence from the group is a reach gap Barrio can close (see H4, R-05). |
 
 ---
 
@@ -103,7 +104,7 @@ Neighbors and staff are the same account type in the product. Nothing in the dat
 ## 5. Scope
 
 ### 5.1 In scope (V1)
-Google sign-in; building invite code (Phase 0); profile with a self-declared WhatsApp number; Regalo and Pido posts with photos; feed with category filter; responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages.
+Google sign-in; building invite code (Phase 0); profile with a self-declared WhatsApp number; Regalo and Pido posts with photos; feed with category filter; **keyword search** (SRCH-01); responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages; **app shell** with header menu and responsive nav (NAV-01, NAV-02); **`/entrar` landing** with hero (LAND-01).
 
 ### 5.2 Non-goals (do NOT build in V1)
 - **Presto (lending)** and any lending states (due dates, returns, overdue).
@@ -113,7 +114,7 @@ Google sign-in; building invite code (Phase 0); profile with a self-declared Wha
 - Any AI feature in the product (photo-to-listing, AI moderation). Trigger to revisit: median post time over ~90 seconds.
 - Payments, selling, donations, ads.
 - SMS or email sending of any kind. Notifications are web push and in-app only.
-- Full-text search, maps, geolocation, address collection.
+- **Advanced search beyond keywords** (ranked full-text, filters beyond district, typo tolerance), maps, geolocation, address collection. Simple keyword search on title + description is in V1 (SRCH-01, DEC-26).
 - Native iOS/Android apps. Multiple languages. Offline mode.
 - Moderation tooling beyond ADMIN-01 to ADMIN-06. From M10, any admin feature inside the end-user app.
 - **Dark mode.** Parkside has a dark theme, but Barrio ships light only in V1 (DEC-23).
@@ -300,13 +301,22 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 |---|---|---|---|
 | LEGAL-01 | P0 | Spanish `Términos de uso` and `Política de privacidad` pages, linked from the sign-in screen, the footer and the Google consent screen. | Both URLs resolve publicly. Privacy policy states what is stored (name, email via Google, WhatsApp number, photos), why, and how to delete it. |
 
+### 8.10 App shell and navigation (NAV, SRCH, LAND)
+
+| ID | Pri | Requirement | Acceptance criteria |
+|---|---|---|---|
+| NAV-01 | P0 | **Header menu (☰).** A menu button in the app header opens a panel with `Términos`, `Privacidad` and `Salir` when signed in; when signed out, only `Términos` and `Privacidad`. | The panel closes on **Escape** or a tap outside. The control is labelled `Menú` for screen readers. Menu items and the button meet the **44px** tap-target minimum. |
+| NAV-02 | P0 | **Responsive shell.** Below **768px**: the four primary destinations (`Inicio`, `Busca`, `Publica`, `Perfil`) are a **bottom tab bar**. From **768px**: the same four items appear in a **left sidebar**; main content stays centred. | No horizontal scroll at 375px, 768px or 1280px. The four destinations match on mobile and desktop. |
+| SRCH-01 | P0 | **Busca:** `GET /api/search?q=` returns open posts whose **title or description** contains the query (case-insensitive), in the viewer's **own district** by default, **max 50** results. Signed-in only. | Signed-out → **401**. Results never include WhatsApp numbers (or emails). Empty or whitespace `q` returns an empty list (200). |
+| LAND-01 | P0 | **`/entrar` landing** with a hero image and the sign-in call to action (stub `Continuar` when stub auth is on; Google when configured). | The first viewport shows the brand, hero, headline and primary sign-in action. Terms and Privacy remain linked. |
+
 ---
 
 ## 9. Non-functional requirements
 
 | Area | Requirement |
 |---|---|
-| Devices | Mobile-first at **375px**. Android Chrome (last 2 versions) and iOS Safari 16.4+. Works on slow 4G. |
+| Devices | **Mobile-first at 375px**; also usable on **desktop from 768px** (NAV-02). Android Chrome (last 2 versions) and iOS Safari 16.4+. Works on slow 4G. |
 | Performance | Feed loads usable content in under **3s on 4G** on a mid-range Android. Photos resized client-side before upload; images served in web-appropriate sizes. |
 | Accessibility | Body text at least 16px, tap targets at least 44px, WCAG AA color contrast, plain-language Spanish. Designed so staff with limited tech comfort can complete a post and a response. |
 | Security | Authorization checked server-side on **every** write and on every read of private data. Secrets in Cloudflare environment variables only, set per Worker (the end-user app never holds admin secrets and the reverse). No personal data in URLs or logs. Upload validation: image types only, size limit. Tests required (section 12.3). |
@@ -375,14 +385,14 @@ wrangler.admin.toml           M10: Worker "barrio-admin"
 - `admin/**` may import `src/styles/**` (tokens) and nothing else from `src/`. `src/**` never imports `admin/**`.
 - All status changes, including admin removal, go through `postStateMachine` in `worker/domain`.
 
-### 11.3 Visual identity (M9)
+### 11.3 Visual identity (M9 + DEC-25)
 
-**DEC-17:** Barrio uses the **Parkside design system** for color, type, spacing and radius, in both apps. The source is `design/parkside.tokens.json`. **Light theme only** in V1 (DEC-23).
+**DEC-17 / DEC-25:** Barrio uses the **Parkside design system** for **color, spacing and radius**. The source is `design/parkside.tokens.json`. **Light theme only** in V1 (DEC-23). **Fonts (DEC-25):** **Source Serif 4** for **all text** (stand-in for paid Editor); set the families in `design/parkside.tokens.json` so `npm run tokens` keeps them. This **replaces** the EB Garamond + Work Sans font choice from DEC-17.
 
-M9 does three things in one PR:
-1. Write `scripts/build-tokens.mjs`, which generates the Parkside block of `src/styles/tokens.css` from the JSON (light values only). Barrio-only layout tokens (`--tap-min`, `--shell-max`, `--line-tight`, `--line-normal`, `--space-3`, `--space-5`, `--space-8`) stay in a hand-kept block of the same file.
-2. Rename the variables used in components and `src/styles/shell.css` to Parkside names, using the table below. Components already use tokens everywhere (no hard-coded hex), so this is a rename, not a redesign.
-3. Self-host the fonts and apply EB Garamond to headings.
+M9 (done) generated tokens and renamed CSS variables. Ongoing rules:
+1. `scripts/build-tokens.mjs` generates the Parkside block of `src/styles/tokens.css` from the JSON (light values only). Barrio-only layout tokens (`--tap-min`, `--shell-max`, `--shell-sidebar`, `--line-tight`, `--line-normal`, `--space-3`, `--space-5`, `--space-8`, and any landing-only aliases that map to Parkside colors) stay in a hand-kept block of the same file.
+2. Components use Parkside variable names (table below). No hard-coded hex or pixel sizes in components.
+3. Self-host **Source Serif 4** WOFF2 (weights 400 and 600; latin + latin-ext), `font-display: swap`. No Google Fonts links.
 
 | Current variable | Parkside variable | Notes |
 |---|---|---|
@@ -395,7 +405,7 @@ M9 does three things in one PR:
 | `--color-border` | `--color-line` | Inputs and controls use `--color-line-strong` |
 | `--color-danger` | `--color-danger` | |
 | `--color-focus` | `--color-primary` | Focus ring |
-| `--font-sans` | `--font-sans` (Work Sans) | Add `--font-display` (EB Garamond) for headings |
+| `--font-sans` / `--font-display` | **Source Serif 4** for both (DEC-25) | One family for UI and headings; Editor later if licensed |
 | `--text-xs`, `-sm`, `-md`, `-lg` | `label` 12px, `body-small` 14px, `body` 16px, `heading-3` 18px | Same sizes |
 | `--text-xl` (20px) | `heading-3` (18px) | Small change |
 | `--text-2xl`, `--text-3xl` | `heading-2` 24px, `heading-1` 32px | 30 to 32px |
@@ -403,12 +413,12 @@ M9 does three things in one PR:
 | `--space-1`, `-2`, `-4`, `-6`, `-10` | same names | Same values |
 
 Parkside rules that apply to Barrio:
-- **Fonts:** EB Garamond for display and headings (`display`, `heading-1`, `heading-2`), Work Sans for UI and body. Self-host WOFF2 subsets (Latin, with Spanish accents and `¿ ¡ ñ`), weights 400 and 600 only, `font-display: swap`, system fallbacks as in the tokens. Fonts must not break the 3s-on-4G budget (section 9).
+- **Fonts (DEC-25):** Source Serif 4 for all text. Self-host WOFF2 subsets (Latin + Latin-ext, with Spanish accents and `¿ ¡ ñ`), weights 400 and 600 only, `font-display: swap`, system serif fallbacks. Fonts must not break the 3s-on-4G budget (section 9).
 - **One primary action per view**, as a filled `primary` button with `on-primary` text. Secondary actions use `bark`; destructive actions use `danger`.
 - **Contrast:** `leaf`, `clay` and `olive` are under 4.5:1 on light surfaces, so use them only for text of 24px or more, icons, or decoration. Body and small text use `ink`, `ink-muted`, `primary`, `bark` or `robin-deep`. `moss` and `robin` are backgrounds only, with `ink` text.
 - **Status colors:** `warning` and `danger` are for text or icons, never fills with white text unless contrast is verified.
 - **Gaps in Parkside:** it has no logo, icons or components. Keep Barrio's existing components and icons and restyle them through tokens; do not add new ones. The wordmark stays plain text until OQ-08 (name validation).
-- **M9 exit:** before and after screenshots at 375px of Entrar, feed, post detail, create post, profile and admin in the PR; contrast spot-checked; no hard-coded hex or pixel sizes added.
+- **M9 exit (met):** before and after screenshots at 375px; contrast spot-checked; no hard-coded hex or pixel sizes added.
 
 ### 11.4 Hostnames and URLs
 

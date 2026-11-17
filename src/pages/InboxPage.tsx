@@ -30,6 +30,9 @@ export function InboxPage() {
 
   return (
     <section className="feed">
+      <Link to="/app" className="legal__back">
+        ← {copy.post.back}
+      </Link>
       <h1 className="publish__title">{copy.inbox.title}</h1>
       {error ? <p className="entrar__error">{error}</p> : null}
       {items && items.length === 0 ? (
@@ -56,9 +59,6 @@ export function InboxPage() {
           </li>
         ))}
       </ul>
-      <Link to="/app" className="legal__back">
-        ← {copy.post.back}
-      </Link>
     </section>
   );
 }

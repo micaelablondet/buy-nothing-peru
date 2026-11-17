@@ -5,16 +5,31 @@ export const copy = {
   tagline: "Regala y pide entre vecinos, sin precio.",
 
   entrar: {
-    title: "Tu barrio empieza contigo",
-    body: "Entra con Google para regalar y pedir en tu edificio.",
+    kicker: "Regalar y pedir entre vecinos",
+    title: "Lo que sobra en un piso le falta a otro",
+    lede: "Barrio es una app para tu edificio: publicas lo que ya no usas, o pides lo que necesitas — sin precio, sin chat dentro de la app.",
     ctaGoogle: "Continuar con Google",
     ctaStub: "Continuar",
-    note: "Solo pedimos nombre, correo (Google) y luego tu WhatsApp.",
-    terms: "Términos de uso",
-    privacy: "Política de privacidad",
+    note: "Entras con Google. Luego nos das tu WhatsApp solo para coordinar la entrega; no aparece en el feed.",
+    terms: "Términos",
+    privacy: "Privacidad",
     oauthError: "No pudimos completar el ingreso con Google. Intenta de nuevo.",
     googleMissing:
-      "Google no está configurado aún. Pide a Mica las credenciales o usa el modo seed en local.",
+      "Google no está configurado aún. Pide a Mica las credenciales o entra en local con Continuar.",
+    sections: {
+      whatLabel: "01 — Qué es",
+      whatTitle: "Un tablón de regalos del edificio",
+      whatBody:
+        "Ves lo que ofrecen tus vecinos y lo que buscan. Fotos, distrito, un botón. Nada de marketplace ni precios.",
+      howLabel: "02 — Cómo funciona",
+      howTitle: "Eliges a quién le toca, luego WhatsApp",
+      howBody:
+        "Si publicas, eliges a una persona interesada. Ahí recién se revelan los números para coordinar el recojo.",
+      freeLabel: "03 — Por qué gratis",
+      freeTitle: "Porque el punto es no comprar",
+      freeBody:
+        "Barrio no cobra comisión. Es un piloto entre vecinos: menos cosas nuevas, más cosas que ya están cerca.",
+    },
   },
 
   invite: {
@@ -55,10 +70,21 @@ export const copy = {
     profile: "Perfil",
     navAria: "Principal",
     greeting: "Hola, {name}",
-    emptySearch: "La búsqueda llega más adelante.",
     signOut: "Salir",
+    menuOpen: "Abrir menú",
+    menuClose: "Cerrar menú",
+    menuAria: "Menú",
     inbox: "Notificaciones",
     inboxUnread: "{count} sin leer",
+  },
+
+  search: {
+    title: "Busca",
+    placeholder: "Ej. disfraz, bici, peluche…",
+    submit: "Buscar",
+    hint: "Busca por título, descripción o categoría en tu distrito.",
+    emptyQuery: "Escribe algo para buscar entre los regalos y pidos abiertos.",
+    noResults: "No encontramos nada con «{query}». Prueba con otra palabra.",
   },
 
   inbox: {
@@ -69,7 +95,7 @@ export const copy = {
 
   feed: {
     tabRegalos: "Regalos",
-    tabPidos: "Pidos",
+    tabPidos: "Pedidos",
     emptyRegalos: "Aún no hay regalos abiertos en tu distrito.",
     emptyPidos: "Aún no hay pedidos abiertos en tu distrito.",
     allCategories: "Todas",

@@ -9,6 +9,7 @@ import {
   listMyPosts,
   listPhotosForPost,
   publicAuthorName,
+  searchPosts,
   setDiscAnswer,
   validatePostInput,
   withdrawPost,
@@ -94,6 +95,40 @@ export function registerPostRoutes(app: Hono<AppEnv>) {
       );
     }
     return c.json({ posts: serialized });
+  });
+
+  app.get("/api/search", async (c) => {
+    const session = await requireSession(c);
+    if (!session) {
+      return c.json({ error: "unauthorized" }, 401);
+    }
+    const q = c.req.query("q")?.trim() ?? "";
+    const districtId =
+      c.req.query("districtId")?.trim() || session.districtId || "dist-barranco";
+    if (!q) {
+      return c.json({ posts: [], query: q });
+    }
+    const posts = await searchPosts(c.env.DB, {
+      districtId,
+      query: q,
+      limit: 50,
+    });
+    const covers = await listCoverPhotos(
+      c.env.DB,
+      posts.map((p) => p.id),
+    );
+    const serialized = [];
+    for (const p of posts) {
+      serialized.push(
+        await serializePost(
+          c.env.DB,
+          p,
+          covers.get(p.id) ? [covers.get(p.id)!] : [],
+          session,
+        ),
+      );
+    }
+    return c.json({ posts: serialized, query: q });
   });
 
   app.get("/api/me/posts", async (c) => {

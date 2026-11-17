@@ -9,7 +9,7 @@ test.describe("authorization API", () => {
     const res = await request.post("/api/posts");
     expect(res.status()).toBe(401);
     const report = await request.post("/api/reports", {
-      data: { postId: "post-open-regalo", reason: "Otro" },
+      data: { postId: "post-regalo-cuisinart", reason: "Otro" },
     });
     expect(report.status()).toBe(401);
   });
@@ -28,7 +28,7 @@ test.describe("authorization API", () => {
     const metrics = await request.get("/api/admin/metrics");
     expect(metrics.ok()).toBeTruthy();
 
-    const pub = await request.get("/api/public/posts/post-open-regalo");
+    const pub = await request.get("/api/public/posts/post-regalo-cuisinart");
     expect(pub.ok()).toBeTruthy();
     const body = await pub.json();
     expect(JSON.stringify(body)).not.toMatch(/\+51|whatsapp|@/i);

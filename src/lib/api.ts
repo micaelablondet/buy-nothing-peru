@@ -238,6 +238,22 @@ export async function fetchFeed(input: {
   return data.posts;
 }
 
+export async function fetchSearch(input: {
+  query: string;
+  districtId?: string | null;
+}): Promise<PostSummary[]> {
+  const params = new URLSearchParams({ q: input.query });
+  if (input.districtId) {
+    params.set("districtId", input.districtId);
+  }
+  const res = await fetch(`/api/search?${params}`, { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("search_failed");
+  }
+  const data = await parseJson<{ posts: PostSummary[] }>(res);
+  return data.posts;
+}
+
 export async function fetchMyPosts(): Promise<PostSummary[]> {
   const res = await fetch("/api/me/posts", { credentials: "include" });
   if (!res.ok) {
