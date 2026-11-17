@@ -7,8 +7,8 @@ export type WorkerEnv = {
   ENVIRONMENT: string;
   /** Public origin, e.g. https://barrio.example.com or http://127.0.0.1:8787 */
   APP_BASE_URL: string;
-  /** Comma-separated Google emails with admin access (AUTH-04). */
-  ADMIN_EMAILS: string;
+  /** Comma-separated Google emails with admin access (AUTH-04). Worker secret. */
+  ADMIN_EMAILS?: string;
   /** Required in production; HS256 secret for session + pending-auth JWTs. */
   SESSION_SECRET: string;
   GOOGLE_CLIENT_ID: string;

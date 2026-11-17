@@ -5,7 +5,7 @@ import {
   shouldExpire,
 } from "./postStateMachine";
 
-describe("postStateMachine (SPEC §7.3)", () => {
+describe("postStateMachine (docs/SRD.md §7.3)", () => {
   it("allows open → chosen / expired / withdrawn / removed", () => {
     expect(applyPostTransition("open", "choose")).toEqual({
       ok: true,

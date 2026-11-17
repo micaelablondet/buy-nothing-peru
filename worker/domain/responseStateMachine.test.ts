@@ -4,7 +4,7 @@ import {
   applyResponseTransition,
 } from "./responseStateMachine";
 
-describe("responseStateMachine (SPEC §7.4)", () => {
+describe("responseStateMachine (docs/SRD.md §7.4)", () => {
   it("allows active → chosen / not_chosen / withdrawn", () => {
     expect(applyResponseTransition("active", "choose")).toMatchObject({
       to: "chosen",

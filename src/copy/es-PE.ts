@@ -1,4 +1,4 @@
-/** Peruvian Spanish (informal tú). SPEC §0 / AGENTS.md §4. */
+/** Peruvian Spanish (informal tú). docs/SRD.md §0 / AGENTS.md §4. */
 
 export const copy = {
   appName: "Barrio",

@@ -1,4 +1,4 @@
-/** ADMIN-03 / ANLY-01 metric definitions (SPEC §10). */
+/** ADMIN-03 / ANLY-01 metric definitions (docs/SRD.md §10). */
 
 const LIMA_OFFSET_MS = -5 * 60 * 60 * 1000;
 

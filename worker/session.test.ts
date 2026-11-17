@@ -20,7 +20,7 @@ const env = {
 const user: SessionUser = {
   id: "user-1",
   displayName: "Mica",
-  email: "mica@valere.io",
+  email: "mica@example.test",
   districtId: "dist-barranco",
   whatsapp: "+51987654321",
   inviteAcceptedAt: "2026-11-10T00:00:00.000Z",
@@ -37,6 +37,8 @@ describe("signed session cookie (AUTH-03)", () => {
     expect(parsed?.id).toBe("user-1");
     expect(parsed?.displayName).toBe("Mica");
     expect(parsed?.profileComplete).toBe(true);
+    // AUTH-04: isAdmin is never trusted from the token
+    expect(parsed?.isAdmin).toBe(false);
   });
 
   it("clears with Max-Age=0", () => {

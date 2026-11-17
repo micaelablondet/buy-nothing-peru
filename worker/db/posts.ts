@@ -181,7 +181,7 @@ export async function listFeed(
   return rows.results ?? [];
 }
 
-/** Simple substring search over open posts in a district (title, description, category). */
+/** SRCH-01: substring search over open posts in a district (title + description). */
 export async function searchPosts(
   db: D1Database,
   input: {
@@ -194,7 +194,7 @@ export async function searchPosts(
   if (!q) {
     return [];
   }
-  const limit = Math.min(Math.max(input.limit, 1), 100);
+  const limit = Math.min(Math.max(input.limit, 1), 50);
   const pattern = `%${q.replace(/[%_]/g, "")}%`;
   const rows = await db
     .prepare(
@@ -203,12 +203,11 @@ export async function searchPosts(
          AND (
            p.title LIKE ? COLLATE NOCASE
            OR p.description LIKE ? COLLATE NOCASE
-           OR IFNULL(p.category, '') LIKE ? COLLATE NOCASE
          )
        ORDER BY p.created_at DESC
        LIMIT ?`,
     )
-    .bind(input.districtId, pattern, pattern, pattern, limit)
+    .bind(input.districtId, pattern, pattern, limit)
     .all<PostRow>();
   return rows.results ?? [];
 }

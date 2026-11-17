@@ -3,14 +3,14 @@ import { isAdminEmail } from "./admin";
 
 describe("isAdminEmail (AUTH-04)", () => {
   it("matches allowlist case-insensitively", () => {
-    expect(isAdminEmail("mica@valere.io", "mica@valere.io")).toBe(true);
-    expect(isAdminEmail("Mica@Valere.io", "admin@x.com, mica@valere.io")).toBe(
-      true,
-    );
+    expect(isAdminEmail("mica@example.test", "mica@example.test")).toBe(true);
+    expect(
+      isAdminEmail("Mica@Example.test", "admin@x.com, mica@example.test"),
+    ).toBe(true);
   });
 
   it("rejects others", () => {
-    expect(isAdminEmail("other@example.com", "mica@valere.io")).toBe(false);
-    expect(isAdminEmail(null, "mica@valere.io")).toBe(false);
+    expect(isAdminEmail("other@example.com", "mica@example.test")).toBe(false);
+    expect(isAdminEmail(null, "mica@example.test")).toBe(false);
   });
 });

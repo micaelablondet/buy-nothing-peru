@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Phase 0 smoke", () => {
-  test("health reports M7", async ({ request }) => {
+  test("health reports M9", async ({ request }) => {
     const health = await request.get("/api/health");
     expect(health.ok()).toBeTruthy();
     const json = await health.json();
-    expect(json.slice).toBe("M7");
+    expect(json.slice).toBe("M9");
   });
 
   test("public post SSR has OG tags and no phone", async ({ request }) => {

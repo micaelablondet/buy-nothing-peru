@@ -32,6 +32,7 @@ export async function signSessionToken(
   user: SessionUser,
   secret: string,
 ): Promise<string> {
+  // AUTH-04 (M8): never put isAdmin in the token — admin is checked from DB + ADMIN_EMAILS.
   return new SignJWT({
     sub: user.id,
     displayName: user.displayName,
@@ -39,7 +40,6 @@ export async function signSessionToken(
     districtId: user.districtId,
     whatsapp: user.whatsapp,
     inviteAcceptedAt: user.inviteAcceptedAt,
-    isAdmin: user.isAdmin,
     profileComplete: user.profileComplete,
   })
     .setProtectedHeader({ alg: "HS256" })
@@ -69,7 +69,8 @@ export async function readSession(
       whatsapp: typeof payload.whatsapp === "string" ? payload.whatsapp : null,
       inviteAcceptedAt:
         typeof payload.inviteAcceptedAt === "string" ? payload.inviteAcceptedAt : null,
-      isAdmin: Boolean(payload.isAdmin),
+      // Ignore any legacy isAdmin claim in old tokens (AUTH-04).
+      isAdmin: false,
       profileComplete: Boolean(payload.profileComplete),
     };
   } catch {

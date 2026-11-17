@@ -14,10 +14,12 @@ import {
   updateProfile,
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
+import { resolveCorsOrigin } from "./lib/cors";
 import {
   assertAuthIpLimit,
   clientIp,
 } from "./lib/rateLimit";
+import { isStubAuthEnabled } from "./lib/stubAuth";
 import {
   clearReturnPathCookie,
   readReturnPath,
@@ -46,20 +48,35 @@ type AppEnv = {
 };
 
 const DEFAULT_DISTRICT = "dist-barranco";
+/** Seed users allowed for local/CI stub sessions (e2e multi-actor). */
+const STUB_USER_IDS = new Set([
+  "user-mica",
+  "user-lucia",
+  "user-carlos",
+  "user-cap-1",
+  "user-cap-2",
+  "user-cap-3",
+  "user-cap-4",
+  "user-cap-5",
+  "user-cap-6",
+  "user-cap-7",
+]);
+
 const app = new Hono<AppEnv>();
 
-app.use(
-  "/api/*",
-  cors({
-    origin: (origin) => origin || "*",
+app.use("/api/*", async (c, next) => {
+  const corsMiddleware = cors({
+    origin: (origin) =>
+      resolveCorsOrigin(c.env, origin) ?? undefined,
     credentials: true,
-  }),
-);
+  });
+  return corsMiddleware(c, next);
+});
 
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M7",
+    slice: "M9",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
@@ -71,8 +88,7 @@ app.get("/api/auth/config", (c) =>
   c.json({
     googleConfigured: googleConfigured(c.env),
     inviteRequired: c.env.INVITE_REQUIRED === "true",
-    stubAuth:
-      c.env.ENVIRONMENT !== "production" && c.env.DEV_STUB_AUTH === "true",
+    stubAuth: isStubAuthEnabled(c.env),
   }),
 );
 
@@ -148,7 +164,7 @@ app.get("/api/auth/google/callback", async (c) => {
     const existing = await findUserByGoogleSub(c.env.DB, identity.googleSub);
 
     if (existing) {
-      const session = rowToSession(existing, c.env.ADMIN_EMAILS);
+      const session = rowToSession(existing, c.env.ADMIN_EMAILS ?? "");
       appendCookie(c, await sessionSetCookie(c.env, session));
       appendCookie(c, clearPendingCookie(c.env));
       appendCookie(c, clearOauthStateCookie(c.env));
@@ -172,7 +188,7 @@ app.get("/api/auth/google/callback", async (c) => {
         props: { via_invite: false },
         nowIso,
       });
-      const session = rowToSession(user, c.env.ADMIN_EMAILS);
+      const session = rowToSession(user, c.env.ADMIN_EMAILS ?? "");
       appendCookie(c, await sessionSetCookie(c.env, session));
       appendCookie(c, clearPendingCookie(c.env));
       appendCookie(c, clearOauthStateCookie(c.env));
@@ -219,7 +235,7 @@ app.post("/api/auth/invite", async (c) => {
   const cookie = c.req.header("Cookie") ?? "";
   const existing = await findUserByGoogleSub(c.env.DB, pending.googleSub);
   if (existing) {
-    const session = rowToSession(existing, c.env.ADMIN_EMAILS);
+    const session = rowToSession(existing, c.env.ADMIN_EMAILS ?? "");
     appendCookie(c, await sessionSetCookie(c.env, session));
     appendCookie(c, clearPendingCookie(c.env));
     return c.json({
@@ -244,7 +260,7 @@ app.post("/api/auth/invite", async (c) => {
     props: { via_invite: true },
     nowIso,
   });
-  const session = rowToSession(user, c.env.ADMIN_EMAILS);
+  const session = rowToSession(user, c.env.ADMIN_EMAILS ?? "");
   appendCookie(c, await sessionSetCookie(c.env, session));
   appendCookie(c, clearPendingCookie(c.env));
   return c.json({
@@ -259,16 +275,21 @@ app.post("/api/auth/logout", async (c) => {
   return c.json({ ok: true });
 });
 
-/** Dev-only stub (AUTH not available without Google). */
+/** Dev-only stub (AUTH not available without Google). Optional `{ userId }` for e2e. */
 app.post("/api/dev/session", async (c) => {
-  if (c.env.ENVIRONMENT === "production" || c.env.DEV_STUB_AUTH !== "true") {
+  if (!isStubAuthEnabled(c.env)) {
     return c.json({ error: "not_available" }, 404);
   }
-  const seed = await findUserById(c.env.DB, "user-mica");
+  const body = (await c.req.json().catch(() => ({}))) as { userId?: string };
+  const requested =
+    typeof body.userId === "string" && STUB_USER_IDS.has(body.userId)
+      ? body.userId
+      : "user-mica";
+  const seed = await findUserById(c.env.DB, requested);
   if (!seed) {
     return c.json({ error: "seed_missing", message: "Corre npm run db:reset:local" }, 500);
   }
-  const session = rowToSession(seed, c.env.ADMIN_EMAILS);
+  const session = rowToSession(seed, c.env.ADMIN_EMAILS ?? "");
   appendCookie(c, await sessionSetCookie(c.env, session));
   const cookie = c.req.header("Cookie") ?? "";
   return c.json({
@@ -286,7 +307,8 @@ app.get("/api/me", async (c) => {
   if (!fresh) {
     return c.json({ error: "unauthorized" }, 401);
   }
-  return c.json(publicMe(rowToSession(fresh, c.env.ADMIN_EMAILS)));
+  // AUTH-04: isAdmin is a UI hint only, computed fresh from DB + ADMIN_EMAILS.
+  return c.json(publicMe(rowToSession(fresh, c.env.ADMIN_EMAILS ?? "")));
 });
 
 app.patch("/api/me/profile", async (c) => {
@@ -325,7 +347,7 @@ app.patch("/api/me/profile", async (c) => {
   if (!updated) {
     return c.json({ error: "not_found" }, 404);
   }
-  const nextSession = rowToSession(updated, c.env.ADMIN_EMAILS);
+  const nextSession = rowToSession(updated, c.env.ADMIN_EMAILS ?? "");
   appendCookie(c, await sessionSetCookie(c.env, nextSession));
   const cookie = c.req.header("Cookie") ?? "";
   const returnTo = finishAuthRedirect(c, nextSession, cookie);
