@@ -1,5 +1,6 @@
-# Barrio — Cloudflare Worker (M0 foundation)
-# Replace database_id / account after `wrangler d1 create barrio` (see docs/m0-setup.md).
+# Barrio — Cloudflare Worker.
+# [vars] are production values. Local overrides live in .dev.vars (see .dev.vars.example).
+# After `npx wrangler d1 create barrio`, paste the real database_id below.
 
 name = "barrio"
 main = "worker/index.ts"
@@ -16,6 +17,7 @@ run_worker_first = ["/api/*", "/p/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "barrio"
+# REPLACE: paste uuid from `npx wrangler d1 create barrio` (or `wrangler d1 list`)
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
 
@@ -27,11 +29,13 @@ preview_bucket_name = "barrio-photos-preview"
 [vars]
 APP_NAME = "Barrio"
 INVITE_REQUIRED = "true"
-ENVIRONMENT = "development"
-APP_BASE_URL = "http://127.0.0.1:8787"
+ENVIRONMENT = "production"
+# REPLACE: your account workers.dev subdomain, e.g. https://barrio.abc123.workers.dev
+APP_BASE_URL = "https://barrio.REPLACE_ME.workers.dev"
 # Secrets (wrangler secret / .dev.vars): SESSION_SECRET, GOOGLE_CLIENT_ID,
 # GOOGLE_CLIENT_SECRET, ADMIN_EMAILS (AUTH-04 — never commit emails here)
-# Optional local: DEV_STUB_AUTH=true
+# Never set DEV_STUB_AUTH in production secrets. Stub auth is gated off when
+# ENVIRONMENT=production (see worker/lib/stubAuth.ts).
 
 # POST-06: expire open posts past expires_at (idempotent)
 [triggers]

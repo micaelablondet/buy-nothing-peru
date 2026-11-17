@@ -2,20 +2,22 @@
 
 Free-giving PWA for neighbors in Peru (**Regalo** / **Pido**). Spec: [`SPEC.md`](./SPEC.md). Agent rules: [`AGENTS.md`](./AGENTS.md).
 
-**Status:** slices M0–M7 built. **Next:** M8 pre-launch hardening and M9 Parkside restyle, then the Phase 0 launch ([`docs/phase0-launch.md`](./docs/phase0-launch.md)). M10 moves admin to its own URL before Phase 1. Prompts for each slice: [`docs/cursor-prompts.md`](./docs/cursor-prompts.md).
+**Status:** slices M0–M9 built. **Next:** Phase 0 launch ([`docs/phase0-launch.md`](./docs/phase0-launch.md)). M10 moves admin to its own URL before Phase 1. Prompts: [`docs/cursor-prompts.md`](./docs/cursor-prompts.md).
 
 ## Quick start
 
 ```bash
 npm install
-cp .dev.vars.example .dev.vars   # enable DEV_STUB_AUTH locally
+cp .dev.vars.example .dev.vars   # local ENVIRONMENT + APP_BASE_URL + DEV_STUB_AUTH
 npm run db:reset:local
 npm run build
 npm run dev:worker   # :8787 (API + built SPA + SSR /p/*)
 npm run dev          # Vite UI with HMR (proxies /api and /p)
 ```
 
-Sign in with **Continuar con cuenta seed (dev)** on `/entrar` when stub auth is on. Google OAuth for production.
+`wrangler.toml` `[vars]` are production. Local overrides live in `.dev.vars`.
+
+Sign in with **Continuar** on `/entrar` when stub auth is on. Google OAuth for production.
 
 ## Scripts
 
@@ -28,7 +30,8 @@ Sign in with **Continuar con cuenta seed (dev)** on `/entrar` when stub auth is 
 | `npm test` | Vitest unit tests |
 | `npm run test:e2e` | Playwright smoke + authz (needs build + local D1) |
 | `npm run db:reset:local` | Local D1 migrate + seed |
-| `npm run deploy` | Build + `wrangler deploy` |
+| `npm run db:migrate:remote` | Apply D1 migrations to production |
+| `npm run deploy` | Build + `wrangler deploy` (run `db:migrate:remote` first) |
 
 Setup: [`docs/m0-setup.md`](./docs/m0-setup.md), admin portal (M10): [`docs/m10-admin-portal-setup.md`](./docs/m10-admin-portal-setup.md). Decisions: [`docs/adr/`](./docs/adr/). Launch: [`docs/phase0-launch.md`](./docs/phase0-launch.md). Free-plan limits: [`docs/cloudflare-free-limits.md`](./docs/cloudflare-free-limits.md).
 

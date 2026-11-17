@@ -6,6 +6,7 @@ Exit criteria (SPEC §13): repo, Cloudflare project, CI, seed script, `tokens.cs
 
 ```bash
 npm install
+cp .dev.vars.example .dev.vars   # local ENVIRONMENT + APP_BASE_URL + DEV_STUB_AUTH
 npm run db:reset:local    # D1 migrations + seed (local)
 npm run dev:worker        # API on :8787 (also serves built assets if present)
 npm run build && npm run dev:worker   # full Worker + SPA locally
@@ -15,7 +16,9 @@ npm run dev:worker   # terminal 1
 npm run dev          # terminal 2 → Vite
 ```
 
-Open the Vite URL, tap **Continuar como Mica (prueba)** for the stub session (M1 replaces this with Google).
+`wrangler.toml` `[vars]` are **production**. Local overrides come from `.dev.vars` (`ENVIRONMENT=development`, `APP_BASE_URL=http://127.0.0.1:8787`).
+
+Open the Vite URL, tap **Continuar** for the stub session when `DEV_STUB_AUTH=true` (Google for production).
 
 ## CI workflow file
 

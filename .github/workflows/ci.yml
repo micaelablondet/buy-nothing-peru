@@ -36,6 +36,8 @@ jobs:
       - name: Dev vars for stub auth e2e
         run: |
           printf '%s\n' \
+            'ENVIRONMENT=development' \
+            'APP_BASE_URL=http://127.0.0.1:8787' \
             'SESSION_SECRET=ci-test-secret-min-16' \
             'DEV_STUB_AUTH=true' \
             'ADMIN_EMAILS=mica@example.test' \
