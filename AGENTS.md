@@ -65,7 +65,7 @@ docs/                    SRD, decisions, handoff, feature plan, setup, ADRs, Cur
 1. One **branch per slice** (e.g. `m10-admin-portal`). Never commit straight to `main`.
 2. Implement in the slice order in `docs/SRD.md` section 13. Do not start a slice before the previous one passes its exit criteria.
 3. Write tests **with** the code: unit tests for the state machines and rules, Playwright e2e for the core loop (12.2), and the authorization tests in `docs/SRD.md` 12.3. Test the M10 Access check with a locally signed test key, never a real Access token.
-4. Before opening a PR, run: `npm run typecheck`, `npm test`, `npm run build`, `npm run db:reset:local`, `npm run test:e2e`. (No linter yet.) From M10 also the admin build and tests.
+4. Before opening a PR, run: `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e` (resets local D1 first). (No linter yet.) From M10 also the admin build and tests.
 5. Open a **pull request** that lists the slice and requirement IDs covered, what changed, how it was tested, screenshots for UI changes (375px), and anything you were unsure about.
 6. **CI must be green** before merge. If a check fails, fix it; do not disable or skip tests.
 7. Prefer a **review by a different model or agent** than the one that wrote the code (a second model catches blind spots the first one shares with its own work).

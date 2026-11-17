@@ -30,9 +30,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Local D1 migrate + seed
-        run: npm run db:reset:local
-
       - name: Dev vars for stub auth e2e
         run: |
           printf '%s\n' \
@@ -48,7 +45,7 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium --with-deps
 
-      - name: E2E (authz + smoke)
+      - name: E2E (resets local D1, then Playwright)
         run: npm run test:e2e
         env:
           CI: "true"
