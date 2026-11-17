@@ -72,17 +72,19 @@ export function PostResponsesPage() {
                 {item.districtName} · {formatPostAge(item.createdAt)}
               </p>
               {item.note ? <p className="response-card__note">{item.note}</p> : null}
-              <ReportButton postId={id} responseId={item.id} />
-              {post?.status === "open" ? (
-                <button
-                  type="button"
-                  className="btn-primary"
-                  disabled={busy}
-                  onClick={() => void onChoose(item)}
-                >
-                  {copy.post.choose}
-                </button>
-              ) : null}
+              <div className="response-card__actions">
+                <ReportButton postId={id} responseId={item.id} />
+                {post?.status === "open" ? (
+                  <button
+                    type="button"
+                    className="btn-primary response-card__choose"
+                    disabled={busy}
+                    onClick={() => void onChoose(item)}
+                  >
+                    {copy.post.choose}
+                  </button>
+                ) : null}
+              </div>
             </div>
           </li>
         ))}

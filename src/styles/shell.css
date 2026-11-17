@@ -814,6 +814,43 @@ h2 {
   line-height: var(--line-normal);
 }
 
+/* Reportar left, Elegir right — clear gap, 44px taps (AUTH/RESP choose UI). */
+.response-card__actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.response-card__actions .btn-text {
+  flex: 0 1 auto;
+  align-self: center;
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  padding: var(--space-3) var(--space-2);
+  margin: 0;
+}
+
+.response-card__choose {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+/* When Reportar opens its sheet, stack full-width instead of crowding Elegir. */
+.response-card__actions:has(.report-sheet) {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.response-card__actions:has(.report-sheet) .response-card__choose {
+  margin-inline-start: 0;
+  width: 100%;
+}
+
 .handoff {
   display: flex;
   flex-direction: column;
