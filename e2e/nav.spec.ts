@@ -53,10 +53,19 @@ test.describe("NAV-02 responsive shell", () => {
       await signInAsMica(page);
 
       const nav = page.getByRole("navigation", { name: "Principal" });
-      await expect(nav.getByRole("link", { name: "Inicio" })).toBeVisible();
-      await expect(nav.getByRole("link", { name: "Busca" })).toBeVisible();
-      await expect(nav.getByRole("link", { name: "Publica" })).toBeVisible();
-      await expect(nav.getByRole("link", { name: "Perfil" })).toBeVisible();
+      // exact: avoid matching NAV-03 brand ("Barrio, ir a Inicio").
+      await expect(
+        nav.getByRole("link", { name: "Inicio", exact: true }),
+      ).toBeVisible();
+      await expect(
+        nav.getByRole("link", { name: "Busca", exact: true }),
+      ).toBeVisible();
+      await expect(
+        nav.getByRole("link", { name: "Publica", exact: true }),
+      ).toBeVisible();
+      await expect(
+        nav.getByRole("link", { name: "Perfil", exact: true }),
+      ).toBeVisible();
 
       const scrollWidth = await page.evaluate(
         () => document.documentElement.scrollWidth,
@@ -80,4 +89,38 @@ test.describe("NAV-02 responsive shell", () => {
       }
     });
   }
+});
+
+test.describe("NAV-03 brand home link", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  for (const path of ["/app/perfil", "/app/publica", "/app/busca"] as const) {
+    test(`Barrio from ${path} lands on Inicio`, async ({ page }) => {
+      await signInAsMica(page);
+      await page.goto(path);
+
+      const brand = page
+        .locator(".app-shell__header")
+        .getByRole("link", { name: "Barrio, ir a Inicio" });
+      await expect(brand).toBeVisible();
+      await brand.click();
+      await expect(page).toHaveURL(/\/app\/?$/);
+      await expect(
+        page.getByRole("navigation", { name: "Principal" }),
+      ).toBeVisible();
+    });
+  }
+
+  test("desktop sidebar Barrio links to Inicio", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await signInAsMica(page);
+    await page.goto("/app/perfil");
+
+    const brand = page
+      .locator(".app-shell__nav")
+      .getByRole("link", { name: "Barrio, ir a Inicio" });
+    await expect(brand).toBeVisible();
+    await brand.click();
+    await expect(page).toHaveURL(/\/app\/?$/);
+  });
 });

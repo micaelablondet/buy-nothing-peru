@@ -103,9 +103,14 @@ export function EntrarPage() {
 
           <div className="landing__auth">
             {config?.googleConfigured ? (
-              <a className="landing__cta" href={googleAuthHref(next)}>
-                {copy.entrar.ctaGoogle}
-              </a>
+              <>
+                <a className="landing__cta" href={googleAuthHref(next)}>
+                  {copy.entrar.ctaGoogle}
+                </a>
+                <a className="landing__cta-signin" href={googleAuthHref(next)}>
+                  {copy.entrar.ctaSignIn}
+                </a>
+              </>
             ) : null}
 
             {config?.stubAuth ? (

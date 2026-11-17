@@ -87,7 +87,13 @@ export function AppShell() {
     <div className="app-shell">
       <nav className="app-shell__nav" aria-label={copy.shell.navAria}>
         <div className="app-shell__nav-brand">
-          <p className="app-shell__brand">{copy.appName}</p>
+          <Link
+            to="/app"
+            className="app-shell__brand"
+            aria-label={copy.shell.brandHome}
+          >
+            {copy.appName}
+          </Link>
           <p className="app-shell__user">{greeting}</p>
         </div>
 
@@ -126,7 +132,13 @@ export function AppShell() {
       <div className="app-shell__column">
         <header className="app-shell__header">
           <div className="app-shell__identity">
-            <p className="app-shell__brand">{copy.appName}</p>
+            <Link
+              to="/app"
+              className="app-shell__brand"
+              aria-label={copy.shell.brandHome}
+            >
+              {copy.appName}
+            </Link>
             <p className="app-shell__user">{greeting}</p>
           </div>
           <div className="app-shell__actions">

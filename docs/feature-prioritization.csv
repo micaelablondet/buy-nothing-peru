@@ -1,5 +1,5 @@
 ID,Area,Feature,Description,User role,Priority,Phase,Complexity,Source,Depends on,SRD section,Status,Notes
-AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only); no passwords,Neighbor,Must,Phase 0,M,SRD,,8.1,built,Continuar con Google
+AUTH-01,Auth,Google sign-in,Sign in with Google OIDC (openid email profile only); no passwords; landing CTAs per LAND-01,Neighbor,Must,Phase 0,M,SRD,,8.1,built,Regístrate con Google
 AUTH-02,Auth,Invite code gate,New accounts enter invite when INVITE_REQUIRED=true; verified ADMIN_EMAILS skip so first admin can bootstrap codes,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,DEC-30; email_verified required
 AUTH-03,Auth,Session cookie,Signed HttpOnly Secure SameSite=Lax cookie; 30-day lifetime; logout clears it,Neighbor,Must,Phase 0,S,SRD,AUTH-01,8.1,built,
 AUTH-04,Auth,Admin allowlist check,Admin = current Google email in ADMIN_EMAILS and email_verified; checked on every admin request (M8); M10 removes admin from end-user app,Admin,Must,Phase 0,M,SRD,AUTH-03,8.1,built,email_verified required; M10 version (404 on end-user admin) is next
@@ -52,6 +52,7 @@ LEGAL-01,Legal,Terms and Privacy,Spanish Términos and Política de privacidad l
 ANLY-01,Analytics,Event + metric definitions,Record product events; ADMIN-03 computes CH/wk 48h rate median post time inflation,System,Must,Phase 0,M,SRD,,10,built,
 NAV-01,Shell,Header menu,Hamburger menu: Términos Privacidad Salir (+ Invitar a alguien when AUTH-05); Escape/outside close; Menú label; 44px targets,Neighbor,Must,Phase 0,S,SRD,LEGAL-01,8.10,built,AUTH-05; recover/ui-nov16
 NAV-02,Shell,Responsive nav,Bottom tabs below 768px; left sidebar from 768px; content centred; no horizontal scroll,Neighbor,Must,Phase 0,M,SRD,NAV-01,8.10,built,DEC-27; recover/ui-nov16
+NAV-03,Shell,Brand home link,Barrio wordmark in mobile header and desktop sidebar links to /app; aria Barrio ir a Inicio,Neighbor,Must,Phase 0,S,SRD,NAV-02,8.10,built,v0.7.1
 SRCH-01,Search,Keyword Busca,GET /api/search?q= signed-in; title+description; own district; max 50; no WhatsApp numbers,Neighbor,Must,Phase 0,M,SRD,AUTH-03,8.10,built,DEC-26; recover/ui-nov16
-LAND-01,Landing,Entrar hero,/entrar hero; headline casa o depa; comunidad lede; no WhatsApp note on landing,Anyone,Must,Phase 0,M,SRD,AUTH-01,8.10,built,v0.6 copy
+LAND-01,Landing,Entrar hero,/entrar hero; Regístrate con Google + Inicia sesión link; stub Continuar (prueba local); headline with comma,Anyone,Must,Phase 0,M,SRD,AUTH-01,8.10,built,v0.7.1
 NEIGH-01,Profile,Neighborhoods list (retired),Retired DEC-31 — neighborhoods table/columns kept unused; no barrio UI or seed,Neighbor,—,Phase 0,—,SRD,PROF-01,7.2,retired,DEC-31 replaces DEC-29; OQ-13 closed

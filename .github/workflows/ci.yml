@@ -39,8 +39,8 @@ jobs:
             'SESSION_SECRET=ci-test-secret-min-16' \
             'DEV_STUB_AUTH=true' \
             'ADMIN_EMAILS=mica@example.test' \
-            'GOOGLE_CLIENT_ID=' \
-            'GOOGLE_CLIENT_SECRET=' \
+            'GOOGLE_CLIENT_ID=e2e-test-client' \
+            'GOOGLE_CLIENT_SECRET=e2e-test-secret' \
             > .dev.vars
 
       - name: Install Playwright Chromium

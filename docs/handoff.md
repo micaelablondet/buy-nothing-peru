@@ -4,6 +4,22 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Landing CTAs + brand home (SRD v0.7.1 / LAND-01 / NAV-03)
+
+**Stage:** Branch `landing-ctas`.
+
+### Spec
+- LAND-01: `Regístrate con Google` + `¿Ya tienes cuenta? Inicia sesión`; stub `Continuar (prueba local)`; headline comma.
+- NAV-03: Barrio wordmark → `/app` (`Barrio, ir a Inicio`).
+
+### Done
+- Docs v0.7.1; copy + EntrarPage + AppShell; browser e2e; screenshots `captures/landing-ctas/`.
+
+### Next owner
+Phase 0 launch ops, then M10.
+
+---
+
 ## 2026-11-17 — Invite share (SRD v0.7 / AUTH-05)
 
 **Stage:** Branch `invite-share` — neighbors can share the building invite via WhatsApp from the ☰ menu.
