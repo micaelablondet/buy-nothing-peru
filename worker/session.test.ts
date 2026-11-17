@@ -46,17 +46,19 @@ describe("signed session cookie (AUTH-03)", () => {
     expect(clearSessionCookie(env)).toContain("Max-Age=0");
   });
 
-  it("stores pending Google identity", async () => {
+  it("stores pending Google identity including emailVerified", async () => {
     const set = await pendingSetCookie(env, {
       googleSub: "sub-1",
       email: "a@b.com",
       displayName: "Ana",
+      emailVerified: true,
     });
     const token = set.split(";")[0]?.split("=")[1] ?? "";
     const pending = await readPending(`barrio_pending=${token}`, secret);
     expect(pending?.googleSub).toBe("sub-1");
+    expect(pending?.emailVerified).toBe(true);
     const signed = await signPendingToken(
-      { googleSub: "x", email: "e", displayName: "D" },
+      { googleSub: "x", email: "e", displayName: "D", emailVerified: false },
       secret,
     );
     expect(signed.length).toBeGreaterThan(20);

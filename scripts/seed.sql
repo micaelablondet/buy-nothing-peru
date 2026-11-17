@@ -26,17 +26,17 @@ INSERT OR IGNORE INTO neighborhoods (id, district_id, name, created_at) VALUES
 INSERT INTO invite_codes (id, code, active, created_at, deactivated_at) VALUES
   ('invite-phase0', 'BARRIO-PILOTO', 1, '2026-11-01T00:00:00.000Z', NULL);
 
-INSERT INTO users (id, google_sub, email, first_name, display_name, whatsapp, district_id, neighborhood_id, is_admin, created_at, deleted_at, invite_accepted_at) VALUES
-  ('user-mica', 'seed-google-mica', 'mica@example.test', 'Mica', 'Mica', '+51900000001', 'dist-barranco', 'nbh-torres-paz', 1, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-lucia', 'seed-google-lucia', 'lucia@example.test', 'Lucía', 'Lucía', '+51900000002', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-carlos', 'seed-google-carlos', 'carlos@example.test', 'Carlos', 'Carlos', '+51900000003', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-1', 'seed-google-cap-1', 'cap1@example.test', 'Cap1', 'Cap1', '+51900000011', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-2', 'seed-google-cap-2', 'cap2@example.test', 'Cap2', 'Cap2', '+51900000012', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-3', 'seed-google-cap-3', 'cap3@example.test', 'Cap3', 'Cap3', '+51900000013', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-4', 'seed-google-cap-4', 'cap4@example.test', 'Cap4', 'Cap4', '+51900000014', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-5', 'seed-google-cap-5', 'cap5@example.test', 'Cap5', 'Cap5', '+51900000015', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-6', 'seed-google-cap-6', 'cap6@example.test', 'Cap6', 'Cap6', '+51900000016', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z'),
-  ('user-cap-7', 'seed-google-cap-7', 'cap7@example.test', 'Cap7', 'Cap7', '+51900000017', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z');
+INSERT INTO users (id, google_sub, email, first_name, display_name, whatsapp, district_id, neighborhood_id, is_admin, created_at, deleted_at, invite_accepted_at, email_verified) VALUES
+  ('user-mica', 'seed-google-mica', 'mica@example.test', 'Mica', 'Mica', '+51900000001', 'dist-barranco', 'nbh-torres-paz', 1, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-lucia', 'seed-google-lucia', 'lucia@example.test', 'Lucía', 'Lucía', '+51900000002', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-carlos', 'seed-google-carlos', 'carlos@example.test', 'Carlos', 'Carlos', '+51900000003', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-1', 'seed-google-cap-1', 'cap1@example.test', 'Cap1', 'Cap1', '+51900000011', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-2', 'seed-google-cap-2', 'cap2@example.test', 'Cap2', 'Cap2', '+51900000012', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-3', 'seed-google-cap-3', 'cap3@example.test', 'Cap3', 'Cap3', '+51900000013', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-4', 'seed-google-cap-4', 'cap4@example.test', 'Cap4', 'Cap4', '+51900000014', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-5', 'seed-google-cap-5', 'cap5@example.test', 'Cap5', 'Cap5', '+51900000015', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-6', 'seed-google-cap-6', 'cap6@example.test', 'Cap6', 'Cap6', '+51900000016', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1),
+  ('user-cap-7', 'seed-google-cap-7', 'cap7@example.test', 'Cap7', 'Cap7', '+51900000017', 'dist-barranco', 'nbh-torres-paz', 0, '2026-11-01T00:00:00.000Z', NULL, '2026-11-01T00:00:00.000Z', 1);
 
 -- Open posts for UI (photos in scripts/seed-photos) + M8 e2e fixtures (far-future expiry).
 INSERT INTO posts (id, author_id, type, status, title, description, category, district_id, neighborhood_id, created_at, expires_at, chosen_response_id, delivered_at, withdrawn_at, chosen_at, received_confirmed_at, nudge_sent_at) VALUES

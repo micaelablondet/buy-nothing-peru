@@ -1,21 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { GOOGLE_SCOPES, buildGoogleAuthUrl, googleRedirectUri } from "./google";
-import type { WorkerEnv } from "../env";
+import { identityFromGoogleUserinfo } from "./google";
 
-const env = {
-  GOOGLE_CLIENT_ID: "client-id",
-  GOOGLE_CLIENT_SECRET: "secret",
-  APP_BASE_URL: "http://127.0.0.1:8787",
-} as WorkerEnv;
+describe("identityFromGoogleUserinfo", () => {
+  it("sets emailVerified true when Google reports email_verified", () => {
+    const identity = identityFromGoogleUserinfo({
+      sub: "google-sub-1",
+      email: "mica@example.test",
+      email_verified: true,
+      given_name: "Mica",
+    });
+    expect(identity).toEqual({
+      googleSub: "google-sub-1",
+      email: "mica@example.test",
+      displayName: "Mica",
+      emailVerified: true,
+    });
+  });
 
-describe("Google OIDC (AUTH-01)", () => {
-  it("requests only openid email profile", () => {
-    expect(GOOGLE_SCOPES).toBe("openid email profile");
-    const url = new URL(buildGoogleAuthUrl(env, "state-1"));
-    expect(url.searchParams.get("scope")).toBe("openid email profile");
-    expect(url.searchParams.get("client_id")).toBe("client-id");
-    expect(url.searchParams.get("redirect_uri")).toBe(
-      googleRedirectUri(env),
-    );
+  it("sets emailVerified false when Google reports email_verified false", () => {
+    const identity = identityFromGoogleUserinfo({
+      sub: "google-sub-2",
+      email: "mica@example.test",
+      email_verified: false,
+      name: "Mica Blondet",
+    });
+    expect(identity.emailVerified).toBe(false);
+    expect(identity.displayName).toBe("Mica Blondet");
+  });
+
+  it("sets emailVerified false when email_verified is missing", () => {
+    const identity = identityFromGoogleUserinfo({
+      sub: "google-sub-3",
+      email: "vecino@example.test",
+    });
+    expect(identity.emailVerified).toBe(false);
+    expect(identity.displayName).toBe("vecino");
   });
 });

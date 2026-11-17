@@ -13,14 +13,16 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 - AUTH-02: `ADMIN_EMAILS` skip invite when `INVITE_REQUIRED=true`.
 - `phase0-launch.md`: migrate → deploy → admin sign-in → create invite → share.
 - **OQ-14:** districts beyond Barranco (brief said OQ-13; that ID is barrios).
+- Google `email_verified`: admin / invite bypass only when verified.
 
 ### Done in this stage
 - Migration `0008_reference_districts.sql`; seed `INSERT OR IGNORE` for Barranco + Torres Paz.
 - `mustEnterInviteCode` + unit tests; Google callback uses it.
 - Launch checklist updated for admin → create invite → share.
+- Migration `0009_email_verified.sql`; `identityFromGoogleUserinfo` + `isAdminEmail(..., emailVerified)`; persist on create/sign-in; seed verified; unit tests for verified vs unverified.
 
 ### Next owner
-Mica: `db:migrate:remote`, deploy, sign in as ADMIN_EMAILS, create invite in `/admin`, then share.
+Mica: `db:migrate:remote`, deploy, sign in as ADMIN_EMAILS (verified Google email), create invite in `/admin`, then share.
 
 ---
 

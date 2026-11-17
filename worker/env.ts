@@ -36,4 +36,6 @@ export type PendingGoogleIdentity = {
   googleSub: string;
   email: string;
   displayName: string;
+  /** From Google userinfo `email_verified` — required for admin / invite bypass. */
+  emailVerified: boolean;
 };

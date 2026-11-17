@@ -11,6 +11,7 @@ import {
   findUserByGoogleSub,
   findUserById,
   rowToSession,
+  updateGoogleIdentity,
   updateProfile,
 } from "./db/users";
 import type { SessionUser, WorkerEnv } from "./env";
@@ -165,19 +166,25 @@ app.get("/api/auth/google/callback", async (c) => {
     const existing = await findUserByGoogleSub(c.env.DB, identity.googleSub);
 
     if (existing) {
-      const session = rowToSession(existing, c.env.ADMIN_EMAILS ?? "");
+      const refreshed =
+        (await updateGoogleIdentity(c.env.DB, existing.id, {
+          email: identity.email,
+          emailVerified: identity.emailVerified,
+        })) ?? existing;
+      const session = rowToSession(refreshed, c.env.ADMIN_EMAILS ?? "");
       appendCookie(c, await sessionSetCookie(c.env, session));
       appendCookie(c, clearPendingCookie(c.env));
       appendCookie(c, clearOauthStateCookie(c.env));
       return c.redirect(finishAuthRedirect(c, session, cookie), 302);
     }
 
-    // AUTH-02 / DEC-30: invite off, or ADMIN_EMAILS bootstrap — create without code.
+    // AUTH-02 / DEC-30: invite off, or verified ADMIN_EMAILS bootstrap — create without code.
     if (
       !mustEnterInviteCode(
         c.env.INVITE_REQUIRED === "true",
         identity.email,
         c.env.ADMIN_EMAILS ?? "",
+        identity.emailVerified,
       )
     ) {
       const nowIso = new Date().toISOString();
@@ -188,6 +195,7 @@ app.get("/api/auth/google/callback", async (c) => {
         displayName: identity.displayName,
         inviteAcceptedAt: nowIso,
         districtId: DEFAULT_DISTRICT,
+        emailVerified: identity.emailVerified,
       });
       await recordEvent(c.env.DB, {
         id: crypto.randomUUID(),
@@ -260,6 +268,7 @@ app.post("/api/auth/invite", async (c) => {
     displayName: pending.displayName,
     inviteAcceptedAt: nowIso,
     districtId: DEFAULT_DISTRICT,
+    emailVerified: pending.emailVerified,
   });
   await recordEvent(c.env.DB, {
     id: crypto.randomUUID(),

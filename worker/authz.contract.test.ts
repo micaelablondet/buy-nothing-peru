@@ -39,17 +39,25 @@ function samplePost(overrides: Partial<PostRow> = {}): PostRow {
 
 describe("authorization contracts (docs/SRD.md §12.3)", () => {
   it("non-admins are rejected by allowlist (admin routes)", () => {
-    expect(isAdminEmail("vecino@example.test", "mica@example.test")).toBe(
+    expect(isAdminEmail("vecino@example.test", "mica@example.test", true)).toBe(
       false,
     );
-    expect(isAdminEmail("mica@example.test", "mica@example.test")).toBe(true);
+    expect(isAdminEmail("mica@example.test", "mica@example.test", true)).toBe(
+      true,
+    );
   });
 
   it("AUTH-04: allowlist change denies a previously-admin email without re-login", () => {
     const email = "mica@example.test";
-    expect(isAdminEmail(email, "mica@example.test")).toBe(true);
-    expect(isAdminEmail(email, "other@example.test")).toBe(false);
-    expect(isAdminEmail(email, "")).toBe(false);
+    expect(isAdminEmail(email, "mica@example.test", true)).toBe(true);
+    expect(isAdminEmail(email, "other@example.test", true)).toBe(false);
+    expect(isAdminEmail(email, "", true)).toBe(false);
+  });
+
+  it("AUTH-04: unverified Google email is never admin even on allowlist", () => {
+    expect(isAdminEmail("mica@example.test", "mica@example.test", false)).toBe(
+      false,
+    );
   });
 
   it("only the author may withdraw (owner check is required before transition)", () => {
