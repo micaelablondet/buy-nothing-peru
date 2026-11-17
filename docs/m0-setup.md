@@ -1,11 +1,12 @@
 # M0 setup — Cloudflare project and local shell
 
-Exit criteria (SPEC §13): repo, Cloudflare project, CI, seed script, `tokens.css`, copy file, empty authenticated app shell.
+Exit criteria (docs/SRD.md §13): repo, Cloudflare project, CI, seed script, `tokens.css`, copy file, empty authenticated app shell.
 
 ## Local development
 
 ```bash
 npm install
+cp .dev.vars.example .dev.vars   # local ENVIRONMENT + APP_BASE_URL + DEV_STUB_AUTH
 npm run db:reset:local    # D1 migrations + seed (local)
 npm run dev:worker        # API on :8787 (also serves built assets if present)
 npm run build && npm run dev:worker   # full Worker + SPA locally
@@ -15,7 +16,9 @@ npm run dev:worker   # terminal 1
 npm run dev          # terminal 2 → Vite
 ```
 
-Open the Vite URL, tap **Continuar como Mica (prueba)** for the stub session (M1 replaces this with Google).
+`wrangler.toml` `[vars]` are **production**. Local overrides come from `.dev.vars` (`ENVIRONMENT=development`, `APP_BASE_URL=http://127.0.0.1:8787`).
+
+Open the Vite URL, tap **Continuar** for the stub session when `DEV_STUB_AUTH=true` (Google for production).
 
 ## CI workflow file
 
@@ -32,7 +35,7 @@ CI lives at [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) (typecheck
 
 ## Tokens (OQ-01)
 
-`src/styles/tokens.css` proposes a Phase 0 green palette. Approve or send replacements before heavy UI work in M1+.
+Resolved: Barrio uses the **Parkside** design system (DEC-17). Source: `design/parkside.tokens.json`. Slice M9 generates `src/styles/tokens.css` from it and renames variables (mapping in `docs/SRD.md` 11.3).
 
 ## Stub auth
 
