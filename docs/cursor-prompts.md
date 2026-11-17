@@ -1,6 +1,6 @@
 # Cursor prompts for the next slices
 
-Paste one prompt per slice, in order, each on a fresh branch. Review the PR (and ask a second model to review it) before starting the next one. Source of truth: `docs/SRD.md` v0.3.
+Paste one prompt per slice, in order, each on a fresh branch. Review the PR (and ask a second model to review it) before starting the next one. Source of truth: `docs/SRD.md` v0.4.
 
 ## M8: Pre-launch hardening (before Phase 0)
 

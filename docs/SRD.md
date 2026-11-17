@@ -1,6 +1,6 @@
 # Barrio: Solution Requirements Document (SRD)
 
-**Version:** v0.3 | **Date:** November 16, 2026 | **Status:** M0 to M9 built; Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
+**Version:** v0.4 | **Date:** November 17, 2026 | **Status:** M0 to M9 built; Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
 **Owner:** Micaela (Mica) Blondet, product | **Builders:** Mica + coding agents (Cursor)
 **Source of truth:** this file (`docs/SRD.md`) in the repo. Any hosted copy (Claude Doc, Google Doc) is an export. Companion docs: `docs/README.md`.
 **Adapted from:** the Valere SRD template, trimmed for a solo, agent-built side project.
@@ -23,6 +23,7 @@
 | v0.1 | 2026-11-10 | First draft from the product brief and the decision session (see [`docs/decisions.md`](./decisions.md)) |
 | v0.2 | 2026-11-10 | Resolved OQ-01, OQ-02, OQ-05 (DEC-17 to DEC-19); Pido photo confirmed optional (DEC-20); visual identity now comes from the Parkside design system (section 11); M0 exit criteria and launch checklist updated |
 | v0.3 | 2026-11-16 | **Reconciled with the code as built (M0 to M7).** Admin moves to a separate app on its own URL before Phase 1 (DEC-21, DEC-22), as a second Worker in the same package (no monorepo restructure). New slices: M8 pre-launch hardening (AUTH-04 revised, SAFE-05), M9 Parkside restyle (token mapping in 11.3, light theme only, DEC-23), M10 admin portal split (ADMIN-04 to ADMIN-06). Real names used: Worker `barrio`, `APP_BASE_URL`, `/api/auth/google/callback`. R-09, R-10, OQ-10 added; OQ-04 widened; launch checklist and Phase 1 gate updated. Added `docs/adr/0001-separate-admin-portal.md`, `docs/m10-admin-portal-setup.md`, `docs/cursor-prompts.md`, `design/parkside.tokens.json` |
+| v0.4 | 2026-11-17 | **Valere docs convention (DEC-24).** `SPEC.md` moved to `docs/SRD.md`; decision log → `docs/decisions.md`; risks and open questions → `docs/assumptions-and-questions.md`; added `docs/handoff.md`, `docs/feature-prioritization.csv` and `docs/README.md`. M8 and M9 marked Done in section 13. |
 
 ---
 
