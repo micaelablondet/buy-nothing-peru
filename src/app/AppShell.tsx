@@ -14,7 +14,8 @@ import { fetchUnreadCount, logout } from "@/lib/api";
 import { isInstallPromptArmed } from "@/lib/install";
 
 export function AppShell() {
-  const { me } = useOutletContext<SessionOutletContext>();
+  const session = useOutletContext<SessionOutletContext>();
+  const { me } = session;
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
   const [installArmed, setInstallArmed] = useState(false);
@@ -70,7 +71,7 @@ export function AppShell() {
 
       <main className="app-shell__main">
         <InstallPrompt armed={installArmed} />
-        <Outlet />
+        <Outlet context={session} />
       </main>
 
       <footer className="app-shell__footer">

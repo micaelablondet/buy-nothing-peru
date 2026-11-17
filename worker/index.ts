@@ -75,7 +75,7 @@ app.use("/api/*", async (c, next) => {
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
-    slice: "M8",
+    slice: "M9",
     app: c.env.APP_NAME,
     environment: c.env.ENVIRONMENT,
     googleConfigured: googleConfigured(c.env),
