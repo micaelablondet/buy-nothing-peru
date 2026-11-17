@@ -1,6 +1,6 @@
 # M10 setup: admin portal on its own URL
 
-Steps **Mica** does in Cloudflare while the agent builds slice M10 (`SPEC.md` section 13, ADR 0001). Do them in this order. The old `/admin` stays until step 5 passes.
+Steps **Mica** does in Cloudflare while the agent builds slice M10 (`docs/SRD.md` section 13, ADR 0001). Do them in this order. The old `/admin` stays until step 5 passes.
 
 | App | Worker | URL now | URL with a domain (OQ-04) |
 |---|---|---|---|

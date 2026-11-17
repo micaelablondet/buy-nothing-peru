@@ -1,8 +1,8 @@
 # Barrio
 
-Free-giving PWA for neighbors in Peru (**Regalo** / **Pido**). Spec: [`SPEC.md`](./SPEC.md). Agent rules: [`AGENTS.md`](./AGENTS.md).
+Free-giving PWA for neighbors in Peru (**Regalo** / **Pido**). Requirements: [`docs/SRD.md`](./docs/SRD.md). Docs map: [`docs/README.md`](./docs/README.md). Agent rules: [`AGENTS.md`](./AGENTS.md).
 
-**Status:** slices M0–M9 built. **Next:** Phase 0 launch ([`docs/phase0-launch.md`](./docs/phase0-launch.md)). M10 moves admin to its own URL before Phase 1. Prompts: [`docs/cursor-prompts.md`](./docs/cursor-prompts.md).
+**Status:** see [`docs/handoff.md`](./docs/handoff.md). Slices M0–M9 built. **Next:** Phase 0 launch ([`docs/phase0-launch.md`](./docs/phase0-launch.md)). M10 moves admin to its own URL before Phase 1. Prompts: [`docs/cursor-prompts.md`](./docs/cursor-prompts.md).
 
 ## Quick start
 
@@ -33,7 +33,7 @@ Sign in with **Continuar** on `/entrar` when stub auth is on. Google OAuth for p
 | `npm run db:migrate:remote` | Apply D1 migrations to production |
 | `npm run deploy` | Build + `wrangler deploy` (run `db:migrate:remote` first) |
 
-Setup: [`docs/m0-setup.md`](./docs/m0-setup.md), admin portal (M10): [`docs/m10-admin-portal-setup.md`](./docs/m10-admin-portal-setup.md). Decisions: [`docs/adr/`](./docs/adr/). Launch: [`docs/phase0-launch.md`](./docs/phase0-launch.md). Free-plan limits: [`docs/cloudflare-free-limits.md`](./docs/cloudflare-free-limits.md).
+Setup: [`docs/m0-setup.md`](./docs/m0-setup.md), admin portal (M10): [`docs/m10-admin-portal-setup.md`](./docs/m10-admin-portal-setup.md). Product decisions: [`docs/decisions.md`](./docs/decisions.md). ADRs: [`docs/adr/`](./docs/adr/). Launch: [`docs/phase0-launch.md`](./docs/phase0-launch.md). Free-plan limits: [`docs/cloudflare-free-limits.md`](./docs/cloudflare-free-limits.md).
 
 ## Stack (DEC-15)
 

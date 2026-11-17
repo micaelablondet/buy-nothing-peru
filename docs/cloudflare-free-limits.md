@@ -36,7 +36,7 @@ Verified against Cloudflare docs (Workers pricing & limits, D1 limits), November
 
 - Building pilot (~32 apartments) stays well under request and D1 caps if queries stay indexed and light.
 - Prefer `SELECT` columns you need; index `district_id` + `status` (already in `0001_foundation.sql`).
-- Photo uploads: client-side resize before R2 (SPEC §11) to protect Class A ops and storage.
+- Photo uploads: client-side resize before R2 (docs/SRD.md §11) to protect Class A ops and storage.
 - Cron (expiry + nudge): at most a few runs/day; keep jobs idempotent (SPEC / AGENTS).
 
 If the Worker hits Error **1027**, the daily request quota was exceeded.

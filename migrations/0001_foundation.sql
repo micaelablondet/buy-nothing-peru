@@ -1,5 +1,5 @@
 -- M0 foundation schema (minimal). Posts/responses expand in M2–M3.
--- Status values align with SPEC.md §7.3 / §7.4.
+-- Status values align with docs/SRD.md §7.3 / §7.4.
 
 CREATE TABLE districts (
   id TEXT PRIMARY KEY NOT NULL,

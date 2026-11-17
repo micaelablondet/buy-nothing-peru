@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { createRegalo, respondToPost, stubSession } from "./helpers";
 
-/** SPEC §12.2 rule tests (API e2e). */
+/** docs/SRD.md §12.2 rule tests (API e2e). */
 test.describe("12.2 rules", () => {
   test("cap of 7 blocks a new response; withdraw reopens a slot", async ({
     request,

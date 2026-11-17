@@ -1,6 +1,6 @@
 # ADR 0001: The admin portal becomes a separate app on its own URL
 
-**Status:** Accepted | **Date:** 2026-11-16 | **Decisions:** DEC-21, DEC-22 in `SPEC.md` | **Slice:** M10 (before Phase 1)
+**Status:** Accepted | **Date:** 2026-11-16 | **Decisions:** DEC-21, DEC-22 in `docs/decisions.md` | **Slice:** M10 (before Phase 1)
 
 ## Context
 

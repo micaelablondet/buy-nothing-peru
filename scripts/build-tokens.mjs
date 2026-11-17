@@ -87,7 +87,7 @@ ${radiusLines.join("\n")}
 
 const handKept = `
 /**
- * Barrio-only layout tokens (SPEC §11.3). Hand-kept — not in Parkside JSON.
+ * Barrio-only layout tokens (docs/SRD.md §11.3). Hand-kept — not in Parkside JSON.
  */
 :root {
   --space-3: 0.75rem;

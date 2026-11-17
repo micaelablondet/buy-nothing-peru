@@ -1,4 +1,4 @@
--- Seed data for local / CI (SPEC.md §12.4). Safe to re-run after wiping D1.
+-- Seed data for local / CI (docs/SRD.md §12.4). Safe to re-run after wiping D1.
 -- WhatsApp numbers exist only in DB for handoff tests — never exposed by open APIs.
 
 DELETE FROM push_subscriptions;
