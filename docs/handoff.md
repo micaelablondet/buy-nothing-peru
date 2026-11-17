@@ -4,6 +4,22 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — E-01 WhatsApp-group baseline (evidence)
+
+**Evidence:** [`SRD.md`](./SRD.md) §2.4 **E-01** — building WhatsApp group answered 1 of 3 posts (~33%); one same-day doorstep handoff; staff not in the group. Risks/OQs updated: R-01, R-05, **OQ-11**.
+
+### Comparison seed (track in Phase 0)
+When seeding Barrio for launch, include counterparts of the E-01 items and **check whether they find takers** (and how the handoff compares to the group):
+- **3 plushies (one post)**
+- **Pikachu + lunchbox** (or separate Pikachu / lonchera posts — already in local seed photos)
+
+Also note the third E-01 post (**kids ice-cream maker**) if a similar item is available to seed. Goal: compare group baseline vs Barrio response rate and friction (see OQ-11).
+
+### Next owner
+Still Phase 0 launch ops first (`phase0-launch.md`). Before invite goes out: ask building staff about Google accounts (R-05 / H4).
+
+---
+
 ## 2026-11-17 — Recover UI merged onto main (NAV / Busca / landing / Source Serif 4)
 
 **Stage:** Branch `recover/ui-nov16` brings Nov 16 UI recover work up to date with `main` (M8/M9/launch + Valere docs). Phase 0 still **not** live.
