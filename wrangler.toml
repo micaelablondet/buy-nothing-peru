@@ -5,6 +5,7 @@
 name = "barrio"
 main = "worker/index.ts"
 compatibility_date = "2025-11-01"
+account_id = "ea3b14ec9990cf47cebe6c64f89659b9"
 workers_dev = true
 
 [assets]
@@ -17,8 +18,7 @@ run_worker_first = ["/api/*", "/p/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "barrio"
-# REPLACE: paste uuid from `npx wrangler d1 create barrio` (or `wrangler d1 list`)
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "4c972659-50cd-4431-b170-9db31ea28139"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
