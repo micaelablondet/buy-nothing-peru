@@ -678,6 +678,26 @@ a.app-shell__brand:focus-visible {
   background: var(--color-moss);
 }
 
+.feed-card__type {
+  display: inline-block;
+  margin: 0 0 var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-serif);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: var(--line-tight);
+  color: var(--color-ink);
+}
+
+.feed-card__type--regalo {
+  background: var(--color-moss);
+}
+
+.feed-card__type--pido {
+  background: var(--color-robin);
+}
+
 .feed-card__title {
   margin: 0 0 var(--space-1);
   font-size: var(--text-body);
