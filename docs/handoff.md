@@ -4,6 +4,29 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-18 — Show whole photos (DEC-32)
+
+**Stage:** Branch `fix-photo-crop`.
+
+### Spec
+- DEC-32: feed thumbnails and post-detail photos use `object-fit: contain`
+  (never crop). Same rule anywhere `.feed-card__img` / `.post-detail__photos`
+  is used. Public page unchanged.
+
+### Done
+- Docs DEC-32; CSS tokens only; Playwright object-fit check; before/after at 375px.
+
+### Next owner
+Phase 0 testing feedback; M10 when ready. Wrangler 4 after launch.
+
+---
+
+## 2026-11-17 — Phase 0 deployed
+
+Deployed to production at 10:08pm Lima time. Admin account set up and first invite code created.
+
+---
+
 ## 2026-11-17 — Fix assets routing (launch blocker)
 
 **Stage:** Branch `fix-assets-routing`.
