@@ -87,6 +87,8 @@ export const copy = {
     hint: "Busca por título o descripción en tu distrito.",
     emptyQuery: "Escribe algo para buscar entre los regalos y pidos abiertos.",
     noResults: "No encontramos nada con «{query}». Prueba con otra palabra.",
+    typeRegalo: "Regalo",
+    typePido: "Pido",
   },
 
   inbox: {

@@ -4,6 +4,22 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Busca type tags (SRD v0.7.2 / SRCH-01)
+
+**Stage:** Branch `search-type-label`.
+
+### Spec
+- SRCH-01: Busca result cards show small `Regalo` / `Pido` tags; Inicio unchanged.
+- Seed: rewrite `post-at-cap` and `post-nudge-ready` descriptions (no “interesados” copy).
+
+### Done
+- Docs v0.7.2; SearchPage + styles + copy; seed; browser e2e.
+
+### Next owner
+Phase 0 launch ops, then M10.
+
+---
+
 ## 2026-11-17 — Landing CTAs + brand home (SRD v0.7.1 / LAND-01 / NAV-03)
 
 **Stage:** Branch `landing-ctas`.
