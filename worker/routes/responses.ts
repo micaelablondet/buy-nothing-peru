@@ -114,7 +114,7 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
     }
     if (post.type === "regalo" && photoFile) {
       return c.json(
-        { error: "validation", message: "Solo un Pido admite foto en la respuesta." },
+        { error: "validation", message: "Solo un pedido admite foto en la respuesta." },
         400,
       );
     }

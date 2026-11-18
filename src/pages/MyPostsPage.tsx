@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { FeedCardPhoto } from "@/components/FeedCardPhoto";
 import { copy } from "@/copy/es-PE";
 import { fetchMyPosts, type PostSummary } from "@/lib/api";
+import { postStatusLabel } from "@/lib/postStatusLabel";
 
 export function MyPostsPage() {
   const [posts, setPosts] = useState<PostSummary[] | null>(null);
@@ -22,21 +24,14 @@ export function MyPostsPage() {
       ) : null}
       <ul className="feed__list">
         {(posts ?? []).map((post) => {
-          const status =
-            copy.post.status[post.status as keyof typeof copy.post.status] ??
-            post.status;
+          const status = postStatusLabel(post.status, post.type);
           return (
             <li key={post.id}>
               <Link to={`/app/p/${post.id}`} className="feed-card">
-                {post.photos[0] ? (
-                  <img
-                    className="feed-card__img"
-                    src={post.photos[0].url}
-                    alt=""
-                  />
-                ) : (
-                  <div className="feed-card__img feed-card__img--empty" />
-                )}
+                <FeedCardPhoto
+                  url={post.photos[0]?.url}
+                  emptyAsk={post.type === "pido"}
+                />
                 <div className="feed-card__body">
                   <h2 className="feed-card__title">{post.title}</h2>
                   <p className="feed-card__meta">

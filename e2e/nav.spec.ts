@@ -39,7 +39,7 @@ test.describe("NAV-01 header menu", () => {
     await page.getByRole("button", { name: "Abrir menú" }).click();
     await expect(page.getByRole("navigation", { name: "Menú" })).toBeVisible();
     // Tap outside the menu (feed heading area).
-    await page.getByRole("tab", { name: "Regalos" }).click({ force: true });
+    await page.getByRole("tab", { name: "Donaciones" }).click({ force: true });
     await expect(page.getByRole("navigation", { name: "Menú" })).toHaveCount(0);
   });
 });

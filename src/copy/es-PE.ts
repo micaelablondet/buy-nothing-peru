@@ -2,10 +2,10 @@
 
 export const copy = {
   appName: "Barrio",
-  tagline: "Regala y pide entre vecinos, sin precio.",
+  tagline: "Dona y pide entre vecinos, sin precio.",
 
   entrar: {
-    kicker: "Regalar y pedir entre vecinos",
+    kicker: "Donar y pedir entre vecinos",
     title: "Lo que sobra en una casa o depa, le falta a otro",
     lede: "Barrio es una app para tu comunidad: publicas lo que ya no usas, o pides lo que necesitas. Sin precio.",
     ctaGoogle: "Regístrate con Google",
@@ -18,7 +18,7 @@ export const copy = {
       "Google no está configurado aún. Pide a Mica las credenciales o entra en local con Continuar (prueba local).",
     sections: {
       whatLabel: "01 — Qué es",
-      whatTitle: "Un tablón de regalos de tu comunidad",
+      whatTitle: "Una lista de donaciones",
       whatBody:
         "Ves lo que ofrecen tus vecinos y lo que buscan. Fotos, distrito, un botón. Nada de marketplace ni precios.",
       howLabel: "02 — Cómo funciona",
@@ -85,10 +85,11 @@ export const copy = {
     placeholder: "Ej. disfraz, bici, peluche…",
     submit: "Buscar",
     hint: "Busca por título o descripción en tu distrito.",
-    emptyQuery: "Escribe algo para buscar entre los regalos y pidos abiertos.",
+    emptyQuery:
+      "Escribe algo para buscar entre las donaciones y los pedidos abiertos.",
     noResults: "No encontramos nada con «{query}». Prueba con otra palabra.",
-    typeRegalo: "Regalo",
-    typePido: "Pido",
+    typeRegalo: "Donación",
+    typePido: "Pedido",
   },
 
   inbox: {
@@ -98,9 +99,9 @@ export const copy = {
   },
 
   feed: {
-    tabRegalos: "Regalos",
+    tabRegalos: "Donaciones",
     tabPidos: "Pedidos",
-    emptyRegalos: "Aún no hay regalos abiertos en tu distrito.",
+    emptyRegalos: "Aún no hay donaciones abiertas en tu distrito.",
     emptyPidos: "Aún no hay pedidos abiertos en tu distrito.",
     by: "de {name}",
   },
@@ -108,8 +109,8 @@ export const copy = {
   publish: {
     title: "Publica",
     chooseType: "¿Qué quieres publicar?",
-    regalo: "Regalo",
-    pido: "Pido",
+    regalo: "Donación",
+    pido: "Pedido",
     regaloHint: "Algo que das gratis a un vecino.",
     pidoHint: "Algo que necesitas; un vecino puede ofrecerlo.",
     titleLabel: "Título",
@@ -117,7 +118,8 @@ export const copy = {
     photosLabel: "Fotos",
     photosHintRegalo: "1 a 3 fotos (obligatorio).",
     photosHintPido: "Foto de referencia opcional (máx. 1).",
-    addPhotos: "Agregar fotos",
+    addPhotos: "Añadir fotos",
+    noneChosen: "Ninguna foto elegida",
     photosSelected: "{count} foto(s)",
     submit: "Publicar",
     publishing: "Publicando…",
@@ -185,7 +187,8 @@ export const copy = {
     chooseConfirm: "¿Elegir a {name}? No se puede cambiar después.",
     goHandoff: "Ir al recojo",
     shareWhatsApp: "Compartir en WhatsApp",
-    status: {
+    /** Pedido (masculine). Action label `Entregado` stays in handoff.delivered. */
+    statusPedido: {
       open: "Abierto",
       chosen: "Elegido",
       delivered: "Entregado",
@@ -193,6 +196,16 @@ export const copy = {
       expired: "Venció",
       removed: "Eliminado",
       closed: "Cerrado",
+    },
+    /** Donación (feminine agreement, DEC-34). */
+    statusDonacion: {
+      open: "Abierta",
+      chosen: "Elegida",
+      delivered: "Entregada",
+      withdrawn: "Retirada",
+      expired: "Venció",
+      removed: "Eliminada",
+      closed: "Cerrada",
     },
     yaResuelto: "Ya resuelto",
     vencio: "Venció",
@@ -230,10 +243,10 @@ export const copy = {
     privacyTitle: "Política de privacidad",
     back: "Volver",
     termsIntro:
-      "Barrio es una app de regalo entre vecinos. No se vende ni se cobra por los objetos publicados. Al usar Barrio aceptas estas reglas de comunidad.",
+      "Barrio es una app de donaciones entre vecinos. No se vende ni se cobra por los objetos publicados. Al usar Barrio aceptas estas reglas de comunidad.",
     termsUseTitle: "Uso permitido",
     termsUseItems: [
-      "Solo regalar o pedir cosas entre vecinos, sin plata.",
+      "Solo donar o pedir cosas entre vecinos, sin plata.",
       "Coordinar la entrega por WhatsApp de forma respetuosa.",
       "No publicar artículos de la lista de prohibidos.",
     ],
@@ -259,7 +272,7 @@ export const copy = {
     ],
     privacyWhyTitle: "Para qué",
     privacyWhyBody:
-      "Operar el regalo y el pedido entre vecinos, mostrar tu nombre en el feed y revelar el WhatsApp solo a las dos personas de una entrega acordada.",
+      "Operar la donación y el pedido entre vecinos, mostrar tu nombre en el feed y revelar el WhatsApp solo a las dos personas de una entrega acordada.",
     privacyDeleteTitle: "Cómo borrar tus datos",
     privacyDeleteBody:
       "En Perfil → Eliminar mi cuenta borramos nombre, correo, WhatsApp y el vínculo con Google; retiramos publicaciones abiertas; en entregas ya cerradas tu nombre pasa a «Ex vecino».",

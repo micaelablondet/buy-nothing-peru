@@ -45,7 +45,7 @@ test.describe("NOTIF-02 push soft-ask", () => {
     await expect(
       page.getByRole("heading", { name: "Publica" }),
     ).toBeVisible();
-    await page.getByRole("button", { name: "Pido" }).click();
+    await page.getByRole("button", { name: "Pedido" }).click();
 
     const title = `E2E push soft-ask ${Date.now()}`;
     await page.getByLabel("Título").fill(title);

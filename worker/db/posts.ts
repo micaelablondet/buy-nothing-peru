@@ -75,10 +75,10 @@ export function validatePostInput(input: {
     };
   }
   if (input.type === "regalo" && (input.photoCount < 1 || input.photoCount > 3)) {
-    return { ok: false, message: "Un Regalo necesita de 1 a 3 fotos." };
+    return { ok: false, message: "Una donación necesita de 1 a 3 fotos." };
   }
   if (input.type === "pido" && input.photoCount > 1) {
-    return { ok: false, message: "Un Pido admite como máximo 1 foto." };
+    return { ok: false, message: "Un pedido admite como máximo 1 foto." };
   }
   return { ok: true };
 }

@@ -1,7 +1,7 @@
 import type { PostRow } from "../db/posts";
 import { escapeHtml, truncate } from "./html";
 
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_PEDIDO: Record<string, string> = {
   open: "Abierto",
   chosen: "Elegido",
   delivered: "Entregado",
@@ -9,6 +9,16 @@ const STATUS_LABEL: Record<string, string> = {
   expired: "Venció",
   removed: "Eliminado",
   closed: "Cerrado",
+};
+
+const STATUS_DONACION: Record<string, string> = {
+  open: "Abierta",
+  chosen: "Elegida",
+  delivered: "Entregada",
+  withdrawn: "Retirada",
+  expired: "Venció",
+  removed: "Eliminada",
+  closed: "Cerrada",
 };
 
 export type PublicPageInput = {
@@ -32,8 +42,10 @@ export function renderPublicPostHtml(input: PublicPageInput): string {
   const { post, photos, baseUrl, signedIn } = input;
   const pageUrl = `${baseUrl.replace(/\/$/, "")}/p/${post.id}`;
   const firstName = publicFirstName(post);
-  const statusLabel = STATUS_LABEL[post.status] ?? post.status;
-  const typeLabel = post.type === "regalo" ? "Regalo" : "Pido";
+  const statusMap =
+    post.type === "regalo" ? STATUS_DONACION : STATUS_PEDIDO;
+  const statusLabel = statusMap[post.status] ?? post.status;
+  const typeLabel = post.type === "regalo" ? "Donación" : "Pedido";
   const ogDescription = truncate(post.description, 160);
   const firstPhoto = photos[0];
   const ogImage = firstPhoto
