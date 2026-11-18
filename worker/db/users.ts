@@ -1,6 +1,7 @@
 import { isAdminEmail } from "../lib/admin";
 import type { SessionUser, WorkerEnv } from "../env";
 import { withdrawPost } from "./posts";
+import { deletePushForUser } from "./push";
 
 export type UserRow = {
   id: string;
@@ -154,6 +155,7 @@ export async function deleteAccount(db: D1Database, userId: string): Promise<voi
   for (const row of openOrChosen.results ?? []) {
     await withdrawPost(db, row.id, userId, now);
   }
+  await deletePushForUser(db, userId);
   await db
     .prepare(
       `UPDATE users SET

@@ -75,17 +75,18 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return output;
 }
 
-/** Must be called from a user gesture (tap). */
+/** Must be called from a user gesture (tap). Permission first (iPhone). */
 export async function subscribeToPush(
   vapidPublicKey: string,
 ): Promise<PushSubscriptionJSON | null> {
   try {
-    const reg = await registerServiceWorker();
-    if (!reg) {
-      return null;
-    }
     const permission = await Notification.requestPermission();
     if (permission !== "granted") {
+      return null;
+    }
+    const existing = await navigator.serviceWorker.getRegistration();
+    const reg = existing ?? (await registerServiceWorker());
+    if (!reg) {
       return null;
     }
     const sub = await reg.pushManager.subscribe({

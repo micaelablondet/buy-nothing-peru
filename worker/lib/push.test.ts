@@ -1,13 +1,35 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { webcrypto } from "node:crypto";
 import type { WorkerEnv } from "../env";
 import { runNudgeJob } from "../jobs/nudge";
 import { NOTIFICATION_TITLES } from "./notificationTitles";
 import { notifyUser } from "./notify";
 import { buildPushPayloadJson, sendPushToUser } from "./push";
 
-const PUBLIC_KEY =
-  "BN6IUD9Hogh604Kh_X6zOPP4XfG6QMtRBVcgLAR-tn7BpNGrzjdtTKnPtI7qj2-izavCrk185CyLAxyeGKqJOGY";
-const PRIVATE_KEY = "IcFvzq8OljMa4BfJzRC_675ooayujX1tJ2vuXQmwpHI";
+/** Fresh throwaway VAPID pair per test file — never hard-code key material. */
+let PUBLIC_KEY = "";
+let PRIVATE_KEY = "";
+
+beforeAll(async () => {
+  const pair = await webcrypto.subtle.generateKey(
+    { name: "ECDSA", namedCurve: "P-256" },
+    true,
+    ["sign", "verify"],
+  );
+  const rawPub = new Uint8Array(
+    await webcrypto.subtle.exportKey("raw", pair.publicKey),
+  );
+  const jwk = await webcrypto.subtle.exportKey("jwk", pair.privateKey);
+  if (!jwk.d) {
+    throw new Error("VAPID private key export missing d");
+  }
+  PUBLIC_KEY = Buffer.from(rawPub)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+  PRIVATE_KEY = jwk.d;
+});
 
 function makeEnv(overrides: Partial<WorkerEnv> = {}): WorkerEnv {
   return {

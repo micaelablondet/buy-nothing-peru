@@ -33,6 +33,7 @@ jobs:
 
       - name: Dev vars for stub auth e2e
         run: |
+          # VAPID keys are generated fresh by scripts/ensure-e2e-vapid.mjs (via npm run test:e2e).
           printf '%s\n' \
             'ENVIRONMENT=development' \
             'APP_BASE_URL=http://127.0.0.1:8787' \
@@ -41,8 +42,6 @@ jobs:
             'ADMIN_EMAILS=mica@example.test' \
             'GOOGLE_CLIENT_ID=e2e-test-client' \
             'GOOGLE_CLIENT_SECRET=e2e-test-secret' \
-            'VAPID_PUBLIC_KEY=BN6IUD9Hogh604Kh_X6zOPP4XfG6QMtRBVcgLAR-tn7BpNGrzjdtTKnPtI7qj2-izavCrk185CyLAxyeGKqJOGY' \
-            'VAPID_PRIVATE_KEY=IcFvzq8OljMa4BfJzRC_675ooayujX1tJ2vuXQmwpHI' \
             > .dev.vars
 
       - name: Install Playwright Chromium

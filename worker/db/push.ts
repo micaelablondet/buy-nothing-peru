@@ -72,3 +72,14 @@ export async function deletePushByEndpoint(
     .bind(endpoint)
     .run();
 }
+
+/** PROF-04: drop all push endpoints when the account is deleted. */
+export async function deletePushForUser(
+  db: D1Database,
+  userId: string,
+): Promise<void> {
+  await db
+    .prepare(`DELETE FROM push_subscriptions WHERE user_id = ?`)
+    .bind(userId)
+    .run();
+}
