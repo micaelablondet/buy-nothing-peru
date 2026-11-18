@@ -486,17 +486,19 @@ app.get("/api/seed-stats", async (c) => {
 });
 
 /**
- * SPA fallback for Wrangler 3 (assets `not_found_handling` / `run_worker_first`
- * are unreliable here). Serve static files; unknown paths get index.html.
+ * Asset + SPA fallback. With [assets] not_found_handling = "none", /api/*
+ * and /p/* reach their Worker routes; other paths land here.
+ * Only paths that look like static files go to ASSETS as-is — otherwise
+ * ASSETS may 307 to `/` (HTML handling). App routes get index.html.
  */
 app.get("*", async (c) => {
   const path = new URL(c.req.url).pathname;
   if (path.startsWith("/api/") || path.startsWith("/p/")) {
     return c.notFound();
   }
-  const asset = await c.env.ASSETS.fetch(c.req.raw);
-  if (asset.status !== 404) {
-    return asset;
+  const looksLikeFile = /\/[^/]+\.[a-zA-Z0-9]+$/.test(path);
+  if (looksLikeFile) {
+    return c.env.ASSETS.fetch(c.req.raw);
   }
   const indexUrl = new URL("/index.html", c.req.url);
   return c.env.ASSETS.fetch(new Request(indexUrl.toString(), c.req.raw));
