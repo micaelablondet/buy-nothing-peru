@@ -6,15 +6,16 @@ export const copy = {
 
   entrar: {
     kicker: "Regalar y pedir entre vecinos",
-    title: "Lo que sobra en una casa o depa le falta a otro",
+    title: "Lo que sobra en una casa o depa, le falta a otro",
     lede: "Barrio es una app para tu comunidad: publicas lo que ya no usas, o pides lo que necesitas. Sin precio.",
-    ctaGoogle: "Continuar con Google",
-    ctaStub: "Continuar",
+    ctaGoogle: "Regístrate con Google",
+    ctaSignIn: "¿Ya tienes cuenta? Inicia sesión",
+    ctaStub: "Continuar (prueba local)",
     terms: "Términos",
     privacy: "Privacidad",
     oauthError: "No pudimos completar el ingreso con Google. Intenta de nuevo.",
     googleMissing:
-      "Google no está configurado aún. Pide a Mica las credenciales o entra en local con Continuar.",
+      "Google no está configurado aún. Pide a Mica las credenciales o entra en local con Continuar (prueba local).",
     sections: {
       whatLabel: "01 — Qué es",
       whatTitle: "Un tablón de regalos de tu comunidad",
@@ -68,6 +69,7 @@ export const copy = {
     publish: "Publica",
     profile: "Perfil",
     navAria: "Principal",
+    brandHome: "Barrio, ir a Inicio",
     greeting: "Hola, {name}",
     signOut: "Salir",
     inviteSomeone: "Invitar a alguien",

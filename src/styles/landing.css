@@ -158,6 +158,33 @@
   cursor: not-allowed;
 }
 
+.landing__cta-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--landing-ink);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  font-weight: 400;
+  line-height: var(--line-normal);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.landing__cta-signin:hover {
+  color: var(--landing-accent);
+}
+
+.landing__cta-signin:focus-visible {
+  outline: 2px solid var(--landing-accent);
+  outline-offset: 3px;
+}
+
 .landing__note {
   margin: 0;
   font-family: var(--font-serif);
