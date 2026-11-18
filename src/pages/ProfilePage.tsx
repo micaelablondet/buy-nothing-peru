@@ -2,7 +2,18 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
 import { copy } from "@/copy/es-PE";
-import { deleteAccount, fetchDistricts, updateProfile } from "@/lib/api";
+import {
+  deleteAccount,
+  fetchDistricts,
+  fetchPushConfig,
+  savePushSubscription,
+  updateProfile,
+} from "@/lib/api";
+import {
+  getExistingPushSubscription,
+  isPushSupported,
+  subscribeToPush,
+} from "@/lib/push";
 
 export function ProfilePage() {
   const { me, refreshMe } = useOutletContext<SessionOutletContext>();
@@ -16,6 +27,10 @@ export function ProfilePage() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [vapidKey, setVapidKey] = useState<string | null>(null);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+  const [pushBlocked, setPushBlocked] = useState(false);
 
   useEffect(() => {
     fetchDistricts()
@@ -23,6 +38,31 @@ export function ProfilePage() {
       .catch(() => setDistricts([{ id: "dist-barranco", name: "Barranco" }]));
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadPush = async () => {
+      if (!isPushSupported()) {
+        return;
+      }
+      try {
+        const config = await fetchPushConfig();
+        if (cancelled) return;
+        setVapidKey(config.vapidPublicKey);
+        if (Notification.permission === "denied") {
+          setPushBlocked(true);
+        }
+        const sub = await getExistingPushSubscription();
+        if (cancelled) return;
+        setPushEnabled(Boolean(sub) && Notification.permission === "granted");
+      } catch {
+        // Optional row.
+      }
+    };
+    void loadPush();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const onSave = async (event: FormEvent) => {
     event.preventDefault();
     setBusy(true);
@@ -103,6 +143,59 @@ export function ProfilePage() {
       </form>
       {message ? <p className="empty-panel__meta">{message}</p> : null}
       {error ? <p className="entrar__error">{error}</p> : null}
+
+      {vapidKey && isPushSupported() ? (
+        <div className="profile-push">
+          <p className="profile-push__label">{copy.push.profileLabel}</p>
+          {pushEnabled ? (
+            <p className="profile-push__status">{copy.push.enabled}</p>
+          ) : (
+            <>
+              {pushBlocked ? (
+                <p className="profile-push__status">{copy.push.blocked}</p>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={pushBusy}
+                  onClick={() => {
+                    void (async () => {
+                      setPushBusy(true);
+                      setPushBlocked(false);
+                      try {
+                        const sub = await subscribeToPush(vapidKey);
+                        if (
+                          !sub?.endpoint ||
+                          !sub.keys?.p256dh ||
+                          !sub.keys?.auth
+                        ) {
+                          if (Notification.permission === "denied") {
+                            setPushBlocked(true);
+                          }
+                          return;
+                        }
+                        await savePushSubscription({
+                          endpoint: sub.endpoint,
+                          keys: {
+                            p256dh: sub.keys.p256dh,
+                            auth: sub.keys.auth,
+                          },
+                        });
+                        setPushEnabled(true);
+                      } finally {
+                        setPushBusy(false);
+                      }
+                    })();
+                  }}
+                >
+                  {copy.push.cta}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      ) : null}
+
       <button
         type="button"
         className="btn-danger"

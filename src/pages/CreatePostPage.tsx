@@ -40,7 +40,7 @@ export function CreatePostPage() {
         photos,
         formSessionId: formSessionId ?? undefined,
       });
-      void maybeOfferPushAfterAction();
+      maybeOfferPushAfterAction();
       navigate(`/app/p/${post.id}`, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.network);

@@ -4,6 +4,26 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-18 — Web push send (NOTIF-02/03 / DEC-33)
+
+**Stage:** Branch `notif-push-send`.
+
+### Spec
+- NOTIF-02/03 were marked built but **never sent** push (`notifyUser` deferred
+  encryption; nudge inbox-only). Soft ask must be from a tap; do not mark
+  offered before the config check.
+- DEC-33: `@block65/webcrypto-web-push@2.0.0`; soft ask `Activar avisos`;
+  Perfil row for later enable; leave CSV **partial** until real-phone check.
+
+### Done
+- Docs + send path + soft ask + Perfil + unit/e2e. Mica: `npm run vapid:keys`,
+  secrets, deploy, test Android + iPhone home-screen (`docs/phase0-launch.md`).
+
+### Next owner
+Real-phone push check → mark NOTIF-02/03 built; then M10 / Wrangler 4.
+
+---
+
 ## 2026-11-18 — Show whole photos (DEC-32)
 
 **Stage:** Branch `fix-photo-crop`.
@@ -207,7 +227,7 @@ Same as prior entry: stub auth local-only; WhatsApp self-declared; admin still i
 | Google OAuth | Real code path; production needs secrets + consent screen. Local/CI uses **`DEV_STUB_AUTH`** (`Continuar` on `/entrar`) — **always off** when `ENVIRONMENT=production`. |
 | WhatsApp numbers | **Self-declared**, format-validated only (PROF-02). **Not verified** (DEC-09). |
 | WhatsApp handoff | Real `wa.me` deep links; conversation stays in WhatsApp (no in-app chat). |
-| Web push | Real VAPID path when configured; inbox works without it. |
+| Web push | Subscriptions + SW UI existed; **send was missing until notif-push-send** (DEC-33). Inbox always works without VAPID. |
 | Admin | Real `/admin` in the end-user app (Phase 0). Separate Access-protected portal is **M10 (not built)**. |
 | Photos | Real R2 binding in config; production bucket/migrate/deploy still ops. |
 | Production deploy | Config filled; **secrets, remote migrate, and deploy not done yet**. |

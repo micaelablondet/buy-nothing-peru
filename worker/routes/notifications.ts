@@ -57,12 +57,13 @@ export function registerNotificationRoutes(app: Hono<AppEnv>) {
     return c.json({ ok: true });
   });
 
-  app.get("/api/push/config", (c) =>
-    c.json({
-      vapidPublicKey: c.env.VAPID_PUBLIC_KEY || null,
-      pushConfigured: Boolean(c.env.VAPID_PUBLIC_KEY),
-    }),
-  );
+  app.get("/api/push/config", (c) => {
+    const vapidPublicKey = c.env.VAPID_PUBLIC_KEY?.trim() || null;
+    return c.json({
+      vapidPublicKey,
+      pushConfigured: Boolean(vapidPublicKey),
+    });
+  });
 
   app.post("/api/push/subscribe", async (c) => {
     const session = await requireSession(c);

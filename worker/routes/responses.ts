@@ -177,12 +177,16 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
       return c.json({ error: result.error }, 400);
     }
 
-    await notifyUser(c.env, {
-      userId: post.author_id,
-      type: post.type === "pido" ? "nueva_oferta" : "nuevo_interesado",
-      postId: post.id,
-      nowIso,
-    });
+    await notifyUser(
+      c.env,
+      {
+        userId: post.author_id,
+        type: post.type === "pido" ? "nueva_oferta" : "nuevo_interesado",
+        postId: post.id,
+        nowIso,
+      },
+      { waitUntil: (p) => c.executionCtx.waitUntil(p) },
+    );
     await recordEvent(c.env.DB, {
       id: crypto.randomUUID(),
       userId: session.id,
@@ -266,12 +270,16 @@ export function registerResponseRoutes(app: Hono<AppEnv>) {
     }
     const chosen = await findResponseById(c.env.DB, body.responseId);
     if (chosen) {
-      await notifyUser(c.env, {
-        userId: chosen.responder_id,
-        type: "te_eligieron",
-        postId: result.post.id,
-        nowIso,
-      });
+      await notifyUser(
+        c.env,
+        {
+          userId: chosen.responder_id,
+          type: "te_eligieron",
+          postId: result.post.id,
+          nowIso,
+        },
+        { waitUntil: (p) => c.executionCtx.waitUntil(p) },
+      );
     }
     await recordEvent(c.env.DB, {
       id: crypto.randomUUID(),

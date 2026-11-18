@@ -1,14 +1,16 @@
-import { insertNotification, type NotificationType } from "../db/notifications";
+import { findPostById } from "../db/posts";
+import {
+  insertNotification,
+  type NotificationType,
+} from "../db/notifications";
 import type { WorkerEnv } from "../env";
+import { NOTIFICATION_TITLES } from "./notificationTitles";
+import { sendPushToUser } from "./push";
 
-export const NOTIFICATION_TITLES: Record<NotificationType, string> = {
-  nuevo_interesado: "Nuevo interesado",
-  nueva_oferta: "Nueva oferta",
-  te_eligieron: "Te eligieron",
-  recordatorio: "Recordatorio",
-};
+export { NOTIFICATION_TITLES };
+export type { NotificationType };
 
-/** Insert inbox notification. Push fan-out uses stored subscriptions when configured. */
+/** Insert inbox notification (source of truth), then fan-out push. */
 export async function notifyUser(
   env: WorkerEnv,
   input: {
@@ -17,6 +19,7 @@ export async function notifyUser(
     postId: string;
     nowIso: string;
   },
+  opts?: { waitUntil?: (promise: Promise<unknown>) => void },
 ): Promise<void> {
   await insertNotification(env.DB, {
     id: crypto.randomUUID(),
@@ -25,7 +28,19 @@ export async function notifyUser(
     postId: input.postId,
     nowIso: input.nowIso,
   });
-  // Push payload encryption is deferred; subscriptions are stored (NOTIF-02).
-  // Inbox remains the source of truth (NOTIF-01 / R-06).
-  void env;
+
+  const post = await findPostById(env.DB, input.postId).catch(() => null);
+  const postTitle = post?.title ?? "";
+
+  const pushTask = sendPushToUser(env, input.userId, {
+    type: input.type,
+    postId: input.postId,
+    postTitle,
+  });
+
+  if (opts?.waitUntil) {
+    opts.waitUntil(pushTask);
+  } else {
+    await pushTask;
+  }
 }

@@ -28,5 +28,6 @@ Risks (`R-*`) and open questions (`OQ-*`) for Barrio. IDs are stable. For the Va
 | OQ-12 | LOW | **CI runner pin:** GitHub `ubuntu-latest` moved to Ubuntu 26.04 (Nov 2026); Playwright **1.50.1** does not support it, so CI is pinned to **`ubuntu-24.04`**. | Upgrade Playwright to a release that supports Ubuntu 26.04, then unpin `runs-on` back to `ubuntu-latest` in `.github/workflows/ci.yml` and `docs/ci/github-actions-ci.yml`. | Agent / Mica |
 | OQ-13 | ~~MEDIUM~~ **RESOLVED** | Which Barranco barrios to seed? (Brief sometimes called this OQ-12; that ID is the CI pin.) | **DEC-31:** V1 drops barrio; district only. `neighborhoods` table kept unused. | Mica |
 | OQ-14 | MEDIUM | Which **districts** to list beyond **Barranco** before Phase 1? Phase 0 reference data is Barranco only (Miraflores remains local-seed test data). (Brief asked for "OQ-13"; that ID is barrios — this is **OQ-14**.) | Decide before Phase 1 open signup; add districts via migration/`INSERT OR IGNORE`, not hand edits. | Mica |
+| OQ-15 | MEDIUM | **`deleteAccount` does not withdraw the user's active responses.** An "Ex vecino" can still be chosen on someone else's open post; handoff then has no WhatsApp number. | Decide whether account deletion should withdraw/cancel active responses (and what the poster sees). Do not change behaviour until decided. | Mica |
 
 ---

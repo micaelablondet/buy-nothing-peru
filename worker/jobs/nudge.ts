@@ -1,10 +1,9 @@
 /** NOTIF-04: idempotent 48h nudge for open posts with a first response. */
 
 import { recordEvent } from "../db/events";
-import {
-  hasRecordatorioForPost,
-  insertNotification,
-} from "../db/notifications";
+import { hasRecordatorioForPost } from "../db/notifications";
+import type { WorkerEnv } from "../env";
+import { notifyUser } from "../lib/notify";
 
 const NUDGE_MS = 48 * 60 * 60 * 1000;
 
@@ -35,53 +34,50 @@ export function shouldNudge(
 }
 
 export async function runNudgeJob(
-  db: D1Database,
+  env: WorkerEnv,
   nowIso: string,
 ): Promise<{ nudged: number }> {
-  const rows = await db
-    .prepare(
-      `SELECT p.id, p.author_id, p.status, p.nudge_sent_at,
-              MIN(r.created_at) AS first_response_at
-       FROM posts p
-       JOIN responses r ON r.post_id = p.id
-       WHERE p.status = 'open' AND p.nudge_sent_at IS NULL
-       GROUP BY p.id
-       HAVING first_response_at IS NOT NULL`,
-    )
-    .all<NudgeCandidate>();
+  const rows = await env.DB.prepare(
+    `SELECT p.id, p.author_id, p.status, p.nudge_sent_at,
+            MIN(r.created_at) AS first_response_at
+     FROM posts p
+     JOIN responses r ON r.post_id = p.id
+     WHERE p.status = 'open' AND p.nudge_sent_at IS NULL
+     GROUP BY p.id
+     HAVING first_response_at IS NOT NULL`,
+  ).all<NudgeCandidate>();
 
   let nudged = 0;
   for (const row of rows.results ?? []) {
     if (!shouldNudge(row, nowIso)) {
       continue;
     }
-    if (await hasRecordatorioForPost(db, row.id)) {
-      await db
-        .prepare(`UPDATE posts SET nudge_sent_at = ? WHERE id = ? AND nudge_sent_at IS NULL`)
+    if (await hasRecordatorioForPost(env.DB, row.id)) {
+      await env.DB.prepare(
+        `UPDATE posts SET nudge_sent_at = ? WHERE id = ? AND nudge_sent_at IS NULL`,
+      )
         .bind(nowIso, row.id)
         .run();
       continue;
     }
 
-    const marked = await db
-      .prepare(
-        `UPDATE posts SET nudge_sent_at = ?
-         WHERE id = ? AND status = 'open' AND nudge_sent_at IS NULL`,
-      )
+    const marked = await env.DB.prepare(
+      `UPDATE posts SET nudge_sent_at = ?
+       WHERE id = ? AND status = 'open' AND nudge_sent_at IS NULL`,
+    )
       .bind(nowIso, row.id)
       .run();
     if ((marked.meta.changes ?? 0) === 0) {
       continue;
     }
 
-    await insertNotification(db, {
-      id: crypto.randomUUID(),
+    await notifyUser(env, {
       userId: row.author_id,
       type: "recordatorio",
       postId: row.id,
       nowIso,
     });
-    await recordEvent(db, {
+    await recordEvent(env.DB, {
       id: crypto.randomUUID(),
       userId: row.author_id,
       name: "nudge_sent",

@@ -33,6 +33,7 @@ jobs:
 
       - name: Dev vars for stub auth e2e
         run: |
+          # VAPID keys are generated fresh by scripts/ensure-e2e-vapid.mjs (via npm run test:e2e).
           printf '%s\n' \
             'ENVIRONMENT=development' \
             'APP_BASE_URL=http://127.0.0.1:8787' \

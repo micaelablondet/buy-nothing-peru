@@ -274,8 +274,19 @@ export const copy = {
     body: "Para recibir avisos en el celular, añade Barrio a tu pantalla de inicio.",
     cta: "Añadir a inicio",
     iosHint:
-      "En iPhone: Comparte → Añadir a pantalla de inicio. Así también funcionan las notificaciones.",
+      "En iPhone: toca Compartir → Añadir a pantalla de inicio. Luego abre Barrio desde el ícono y activa los avisos en Perfil.",
     dismiss: "Ahora no",
+  },
+
+  push: {
+    title: "¿Te avisamos?",
+    body: "Te avisamos cuando alguien responda a tu publicación o te elija.",
+    cta: "Activar avisos",
+    dismiss: "Ahora no",
+    enabled: "Avisos activados",
+    profileLabel: "Avisos en el celular",
+    blocked:
+      "Los avisos están bloqueados. Actívalos en los ajustes de tu navegador.",
   },
 
   footer: {
