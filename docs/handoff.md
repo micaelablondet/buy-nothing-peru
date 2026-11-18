@@ -4,6 +4,29 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-17 — Fix assets routing (launch blocker)
+
+**Stage:** Branch `fix-assets-routing`.
+
+### Spec
+- Wrangler 3.99 ignores `run_worker_first` (needs 4.20+). With
+  `not_found_handling = "single-page-application"`, navigations to `/api/*`
+  and `/p/*` got `index.html` instead of the Worker.
+- Fix: `[assets] not_found_handling = "none"` and `html_handling = "none"`;
+  drop `run_worker_first`. Worker catch-all serves file assets and falls
+  back to `index.html` for app routes (without `html_handling = "none"`,
+  ASSETS 307s `/entrar` → `/`).
+- **After launch:** upgrade to Wrangler 4 (then `run_worker_first` is an option again if useful).
+
+### Done
+- `wrangler.toml` + catch-all; browser e2e for `/api/auth/google/start`,
+  `/api/auth/google`, `/p/{id}`, `/app`, `/entrar`.
+
+### Next owner
+Phase 0 launch ops, then M10. Wrangler 4 upgrade after launch.
+
+---
+
 ## 2026-11-17 — Busca type tags (SRD v0.7.2 / SRCH-01)
 
 **Stage:** Branch `search-type-label`.
