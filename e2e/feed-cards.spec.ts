@@ -14,12 +14,12 @@ async function signInAsMica(page: Page) {
 test.describe("POST-04 feed cards / ADMIN-05 perfil", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
-  test("Regalo card shows title, district, first name, hace; no category chips", async ({
+  test("Donación card shows title, district, first name, hace; no category chips", async ({
     page,
   }) => {
     await signInAsMica(page);
 
-    await expect(page.getByRole("tab", { name: "Regalos" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Donaciones" })).toBeVisible();
     await expect(page.locator(".feed__chips")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Todas" })).toHaveCount(0);
 

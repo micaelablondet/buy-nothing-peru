@@ -74,22 +74,32 @@ export function ResponseSheet({
             <span className="field__hint">{copy.respond.noteHint}</span>
           </label>
           {postType === "pido" ? (
-            <label className="field">
+            <div className="field">
               <span className="field__label">{copy.respond.addPhoto}</span>
-              <input
-                className="field__input"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) {
-                    setPhoto(null);
-                    return;
-                  }
-                  void resizeImageFile(file).then(setPhoto);
-                }}
-              />
-            </label>
+              <label className="file-picker">
+                <input
+                  className="file-picker__input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) {
+                      setPhoto(null);
+                      return;
+                    }
+                    void resizeImageFile(file).then(setPhoto);
+                  }}
+                />
+                <span className="btn-secondary file-picker__trigger">
+                  {copy.respond.addPhoto}
+                </span>
+              </label>
+              <span className="field__hint">
+                {photo
+                  ? copy.publish.photosSelected.replace("{count}", "1")
+                  : copy.publish.noneChosen}
+              </span>
+            </div>
           ) : null}
           <button type="submit" className="btn-primary" disabled={busy}>
             {copy.respond.confirm}

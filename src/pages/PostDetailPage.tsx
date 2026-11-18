@@ -20,6 +20,7 @@ import {
   withdrawPost,
   type PostSummary,
 } from "@/lib/api";
+import { postStatusLabel } from "@/lib/postStatusLabel";
 
 export function PostDetailPage() {
   const { id = "" } = useParams();
@@ -76,9 +77,7 @@ export function PostDetailPage() {
   }
 
   const actions = post.actions;
-  const statusLabel =
-    copy.post.status[post.status as keyof typeof copy.post.status] ??
-    post.status;
+  const statusLabel = postStatusLabel(post.status, post.type);
 
   const onWithdraw = async () => {
     if (!window.confirm(copy.post.withdrawConfirm)) {

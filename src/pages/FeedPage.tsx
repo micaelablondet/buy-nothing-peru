@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import { FeedCardPhoto } from "@/components/FeedCardPhoto";
 import { copy } from "@/copy/es-PE";
 import { fetchFeed, type PostSummary, type PostType } from "@/lib/api";
 import { formatPostAge } from "@/lib/formatAge";
@@ -59,15 +60,10 @@ export function FeedPage() {
         {(posts ?? []).map((post) => (
           <li key={post.id}>
             <Link to={`/app/p/${post.id}`} className="feed-card">
-              {post.photos[0] ? (
-                <img
-                  className="feed-card__img"
-                  src={post.photos[0].url}
-                  alt=""
-                />
-              ) : (
-                <div className="feed-card__img feed-card__img--empty" />
-              )}
+              <FeedCardPhoto
+                url={post.photos[0]?.url}
+                emptyAsk={post.type === "pido"}
+              />
               <div className="feed-card__body">
                 <h2 className="feed-card__title">{post.title}</h2>
                 <p className="feed-card__meta">

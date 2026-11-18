@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import type { SessionOutletContext } from "@/app/RequireSession";
+import { FeedCardPhoto } from "@/components/FeedCardPhoto";
 import { copy } from "@/copy/es-PE";
 import { fetchSearch, type PostSummary } from "@/lib/api";
 
@@ -83,15 +84,10 @@ export function SearchPage() {
           {posts.map((post) => (
             <li key={post.id}>
               <Link to={`/app/p/${post.id}`} className="feed-card">
-                {post.photos[0] ? (
-                  <img
-                    className="feed-card__img"
-                    src={post.photos[0].url}
-                    alt=""
-                  />
-                ) : (
-                  <div className="feed-card__img feed-card__img--empty" />
-                )}
+                <FeedCardPhoto
+                  url={post.photos[0]?.url}
+                  emptyAsk={post.type === "pido"}
+                />
                 <div className="feed-card__body">
                   <p
                     className={

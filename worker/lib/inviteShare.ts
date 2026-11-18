@@ -12,7 +12,7 @@ export function inviteShareLink(baseUrl: string, code: string | null): string {
 
 export function inviteShareMessage(baseUrl: string, code: string | null): string {
   const link = inviteShareLink(baseUrl, code);
-  return `¡Hola! Te invito a Barrio, una app para regalar y pedir cosas en tu comunidad, sin precio. Entra aquí: ${link}`;
+  return `¡Hola! Te invito a Barrio, una app para donar y pedir cosas en tu comunidad, sin precio. Entra aquí: ${link}`;
 }
 
 export function inviteShareWhatsAppUrl(

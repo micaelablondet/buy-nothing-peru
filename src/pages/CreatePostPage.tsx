@@ -82,6 +82,11 @@ export function CreatePostPage() {
     );
   }
 
+  const photoCountLabel =
+    photos.length > 0
+      ? copy.publish.photosSelected.replace("{count}", String(photos.length))
+      : copy.publish.noneChosen;
+
   return (
     <section className="publish">
       <button
@@ -116,30 +121,28 @@ export function CreatePostPage() {
             required
           />
         </label>
-        <label className="field">
+        <div className="field">
           <span className="field__label">{copy.publish.photosLabel}</span>
           <span className="field__hint">
             {type === "regalo"
               ? copy.publish.photosHintRegalo
               : copy.publish.photosHintPido}
           </span>
-          <input
-            className="field__input"
-            type="file"
-            accept="image/*"
-            multiple={type === "regalo"}
-            required={type === "regalo"}
-            onChange={(e) => void onFiles(e.target.files)}
-          />
-          {photos.length > 0 ? (
-            <span className="field__hint">
-              {copy.publish.photosSelected.replace(
-                "{count}",
-                String(photos.length),
-              )}
+          <label className="file-picker">
+            <input
+              className="file-picker__input"
+              type="file"
+              accept="image/*"
+              multiple={type === "regalo"}
+              required={type === "regalo"}
+              onChange={(e) => void onFiles(e.target.files)}
+            />
+            <span className="btn-secondary file-picker__trigger">
+              {copy.publish.addPhotos}
             </span>
-          ) : null}
-        </label>
+          </label>
+          <span className="field__hint">{photoCountLabel}</span>
+        </div>
         <div className="publish__prohibited">
           <p className="field__label">{copy.publish.prohibitedTitle}</p>
           <p className="field__hint">{copy.publish.prohibitedIntro}</p>

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { stubSession } from "./helpers";
 
-/** SRCH-01 — Busca result cards show Regalo / Pido type tags. */
+/** SRCH-01 — Busca result cards show Donación / Pedido type tags. */
 
 async function signInAsMica(page: Page) {
   await stubSession(page.request, "user-mica");
@@ -18,7 +18,7 @@ async function search(page: Page, query: string) {
 test.describe("SRCH-01 Busca type tags", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
-  test("search results tag Pido and Regalo cards", async ({ page }) => {
+  test("search results tag Pedido and Donación cards", async ({ page }) => {
     await signInAsMica(page);
 
     await search(page, "macetas");
@@ -26,13 +26,13 @@ test.describe("SRCH-01 Busca type tags", () => {
       has: page.getByRole("heading", { name: "Macetas de barro" }),
     });
     await expect(pidoCard).toBeVisible();
-    await expect(pidoCard.getByText("Pido", { exact: true })).toBeVisible();
+    await expect(pidoCard.getByText("Pedido", { exact: true })).toBeVisible();
 
     await search(page, "microondas");
     const regaloCard = page.locator(".feed-card", {
       has: page.getByRole("heading", { name: "Microondas" }),
     });
     await expect(regaloCard).toBeVisible();
-    await expect(regaloCard.getByText("Regalo", { exact: true })).toBeVisible();
+    await expect(regaloCard.getByText("Donación", { exact: true })).toBeVisible();
   });
 });
