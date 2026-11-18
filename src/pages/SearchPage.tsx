@@ -93,6 +93,17 @@ export function SearchPage() {
                   <div className="feed-card__img feed-card__img--empty" />
                 )}
                 <div className="feed-card__body">
+                  <p
+                    className={
+                      post.type === "regalo"
+                        ? "feed-card__type feed-card__type--regalo"
+                        : "feed-card__type feed-card__type--pido"
+                    }
+                  >
+                    {post.type === "regalo"
+                      ? copy.search.typeRegalo
+                      : copy.search.typePido}
+                  </p>
                   <h2 className="feed-card__title">{post.title}</h2>
                   <p className="feed-card__meta">
                     {post.placeLabel} ·{" "}
