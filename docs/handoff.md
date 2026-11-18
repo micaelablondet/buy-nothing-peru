@@ -4,6 +4,26 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-18 — Donación / Pedido copy + Publica UI polish (DEC-34)
+
+**Stage:** Branch `copy-donacion-ui-polish`.
+
+### Spec
+- DEC-34: visible `Donación` / `Pedido` (internal types stay `regalo` / `pido`);
+  status gender on donaciones. Exact landing / search / legal / invite / photo
+  validation strings from Phase 0 testing.
+- Publica form: Source Serif on controls, Volver button, custom photo picker,
+  prohibited-box spacing; Pedido empty-card speech-bubble icon; select chevron.
+
+### Done
+- Docs + copy + UI + e2e; NOTIF-02/03 marked **built** (iPhone home-screen
+  Nuevo interesado verified 2026-11-18; Android / Te eligieron still Phase 0 §6).
+
+### Next owner
+Phase 0 launch ops; M10 when ready.
+
+---
+
 ## 2026-11-18 — Web push send (NOTIF-02/03 / DEC-33)
 
 **Stage:** Branch `notif-push-send`.
@@ -16,11 +36,11 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
   Perfil row for later enable; leave CSV **partial** until real-phone check.
 
 ### Done
-- Docs + send path + soft ask + Perfil + unit/e2e. Mica: `npm run vapid:keys`,
-  secrets, deploy, test Android + iPhone home-screen (`docs/phase0-launch.md`).
+- Docs + send path + soft ask + Perfil + unit/e2e. Verified on iPhone
+  home-screen (Nuevo interesado); Android and Te eligieron still Phase 0 §6.
 
 ### Next owner
-Real-phone push check → mark NOTIF-02/03 built; then M10 / Wrangler 4.
+M10 / Wrangler 4; finish remaining push checks in Phase 0 step 6.
 
 ---
 

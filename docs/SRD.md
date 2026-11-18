@@ -1,6 +1,6 @@
 # Barrio: Solution Requirements Document (SRD)
 
-**Version:** v0.7.2 | **Date:** November 17, 2026 | **Status:** M0 to M9 built; Busca type tags (SRCH-01). Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
+**Version:** v0.7.3 | **Date:** November 18, 2026 | **Status:** M0 to M9 built; NOTIF push send verified on iPhone (home screen). Phase 0 not launched. Next: Phase 0 launch ops, then M10 before Phase 1 (section 13)
 **Owner:** Micaela (Mica) Blondet, product | **Builders:** Mica + coding agents (Cursor)
 **Source of truth:** this file (`docs/SRD.md`) in the repo. Any hosted copy (Claude Doc, Google Doc) is an export. Companion docs: `docs/README.md`.
 **Adapted from:** the Valere SRD template, trimmed for a solo, agent-built side project.
@@ -32,12 +32,13 @@
 | v0.7 | 2026-11-17 | **AUTH-05 invite share.** Signed-in ☰ menu: `Invitar a alguien` opens WhatsApp (`wa.me`) with a fixed prefilled message and `{APP_BASE_URL}/entrar?codigo={CODE}` (or `/entrar` when invites are off). Active code only for signed-in users; hide the item if invites are required and no active code. `/entrar?codigo=` pre-fills the invite step. No per-person codes, no tracking. |
 | v0.7.1 | 2026-11-17 | **Landing CTAs + brand home (LAND-01, NAV-03).** When Google is configured: primary `Regístrate con Google`, secondary text link `¿Ya tienes cuenta? Inicia sesión` (same Google start; keep `?codigo=` and return path). Stub auth label `Continuar (prueba local)`. Headline comma: `Lo que sobra en una casa o depa, le falta a otro`. NAV-03: `Barrio` wordmark links to `/app`, aria `Barrio, ir a Inicio`. |
 | v0.7.2 | 2026-11-17 | **Busca type tags (SRCH-01).** Each Busca result card shows a small `Regalo` or `Pido` tag (post type). Inicio feed cards stay unchanged (tabs already name the type). |
+| v0.7.3 | 2026-11-18 | **Visible labels Donación / Pedido (DEC-34).** UI and quoted labels use `Donación` / `Pedido` (tabs `Donaciones` / `Pedidos`); status gender agrees on donaciones. Internal type values stay `regalo` / `pido`. LAND-01 section title → `Una lista de donaciones`. |
 
 ---
 
 ## 1. Summary
 
-**Barrio** is a free-giving app for neighbors in Peru, modelled on the US "Buy Nothing" idea. Neighbors **give** things (**Regalo**) or **ask** for things (**Pido**). Nothing is sold. When a giver and a receiver are matched, they coordinate pickup on **WhatsApp**, not in an in-app chat.
+**Barrio** is a free-giving app for neighbors in Peru, modelled on the US "Buy Nothing" idea. Neighbors **give** things (**Donación**, internal type `regalo`) or **ask** for things (**Pedido**, internal type `pido`). Nothing is sold. When a giver and a receiver are matched, they coordinate pickup on **WhatsApp**, not in an in-app chat.
 
 **V1 is a thin, working, Spanish-only mobile web app (PWA)** with real accounts, real posts and real handoffs, launched in two phases:
 
@@ -110,7 +111,7 @@ Neighbors and staff are the same account type in the product. Nothing in the dat
 ## 5. Scope
 
 ### 5.1 In scope (V1)
-Google sign-in; building invite code (Phase 0) with **share from the ☰ menu** (AUTH-05); profile with a self-declared WhatsApp number and **district** (DEC-31; no barrio); Regalo and Pido posts with photos; feed (Regalos / Pidos, no category chips); **keyword search** (SRCH-01); responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0 with **no Profile link**, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages; **app shell** with header menu and responsive nav (NAV-01 to NAV-03); **`/entrar` landing** with hero (LAND-01).
+Google sign-in; building invite code (Phase 0) with **share from the ☰ menu** (AUTH-05); profile with a self-declared WhatsApp number and **district** (DEC-31; no barrio); Donación and Pedido posts with photos (types `regalo` / `pido`); feed (Donaciones / Pedidos, no category chips); **keyword search** (SRCH-01); responses ("Me interesa" / "Yo tengo", max 7); choose a response; WhatsApp handoff; "Entregado" and optional "Lo recibí"; web push + in-app inbox notifications; public read-only post pages with a "Compartir en WhatsApp" button; report button, prohibited-items list, public-pickup tip; simple admin (reports, post removal, invite codes, metrics; at `/admin` in Phase 0 with **no Profile link**, a **separate admin portal on its own URL** from M10); minimal analytics; Terms and Privacy pages; **app shell** with header menu and responsive nav (NAV-01 to NAV-03); **`/entrar` landing** with hero (LAND-01).
 
 ### 5.2 Non-goals (do NOT build in V1)
 - **Presto (lending)** and any lending states (due dates, returns, overdue).
@@ -161,10 +162,12 @@ Metric definitions are in section 10 (ANLY-01).
 ## 7. Core concepts and domain model
 
 ### 7.1 The core loop
-Post (Regalo or Pido) → neighbors respond → the poster chooses one response → both are handed each other's WhatsApp contact → pickup on WhatsApp → the giver taps **Entregado**.
+Post (Donación or Pedido) → neighbors respond → the poster chooses one response → both are handed each other's WhatsApp contact → pickup on WhatsApp → the giver taps **Entregado**.
+
+Visible labels (DEC-34): UI shows **Donación** / **Pedido** (tabs **Donaciones** / **Pedidos**). Internal type values stay `regalo` / `pido` (DB, API, code). Status words on donaciones agree in gender (`Abierta`, `Elegida`, `Entregada`, `Retirada`, `Eliminada`, `Cerrada`; `Venció` unchanged).
 
 Terminology (use consistently in code and UI):
-| Concept | Regalo post | Pido post |
+| Concept | Donación post (`regalo`) | Pedido post (`pido`) |
 |---|---|---|
 | Poster | **Giver** | **Asker** (receiver) |
 | Responder | Interested neighbor (**Me interesa**), the receiver if chosen | Offerer (**Yo tengo**), the giver if chosen |
@@ -232,7 +235,7 @@ A response is `not_chosen` when another response is chosen on the same post. A u
 | POST-01 | P0 | Create a **Regalo**: title, description, **1 to 3 photos (required)**. No category field (DEC-28). District comes from the profile at creation (DEC-31). | A submission without a photo is rejected. Photos are resized on the device before upload (max 1600px longest side). A valid submission appears in the feed immediately. DB `posts.category` is set to the fixed default `Otros`. |
 | POST-02 | P0 | Create a **Pido**: title, description, optional single reference photo. No category field (DEC-28). | A Pido can be created with no photo. |
 | POST-03 | P0 | Post detail screen: photos, title, description, district, poster's name, status, age, and the actions allowed to this viewer. **No category** (DEC-28). | Own posts show `Ver ofertas` / `Ver interesados`. Posts of others show the response button (RESP-01). Closed states show a status label instead. |
-| POST-04 | P0 | Feed with two tabs: `Regalos` and `Pidos`. Newest first. Default filter: the viewer's district. **No category chips** (DEC-28). Only `open` posts are listed. Each **card shows only:** first photo (placeholder if a Pido has none), title, **district name** (e.g. Barranco; DEC-31), poster's **first name**, and age as `hace X min` / `hace X h` / `hace 1 día` / `hace X días`. | A `chosen`, `delivered`, `expired`, `withdrawn` or `removed` post is not in the feed. Card has no category and no barrio. |
+| POST-04 | P0 | Feed with two tabs: `Donaciones` and `Pedidos` (DEC-34). Newest first. Default filter: the viewer's district. **No category chips** (DEC-28). Only `open` posts are listed. Each **card shows only:** first photo (placeholder if a Pedido has none), title, **district name** (e.g. Barranco; DEC-31), poster's **first name**, and age as `hace X min` / `hace X h` / `hace 1 día` / `hace X días`. | A `chosen`, `delivered`, `expired`, `withdrawn` or `removed` post is not in the feed. Card has no category and no barrio. |
 | POST-05 | P0 | Owner can **withdraw** a post while `open` or `chosen`. | The status becomes `withdrawn`, the post leaves the feed, and active responses become `not_chosen`. |
 | POST-06 | P0 | Posts **expire 7 days after creation** if still `open` (scheduled job). | A post created 7 days ago with no choice becomes `expired` within one job cycle. A `chosen` post is not expired. |
 | POST-07 | P1 | `Mis publicaciones` list (all statuses). | Shows the user's posts with status. |
@@ -317,8 +320,8 @@ Responding is **"Me interesa"** on a Regalo and **"Yo tengo"** on a Pido. One en
 | NAV-01 | P0 | **Header menu (☰).** A menu button in the app header opens a panel with `Términos`, `Privacidad` and `Salir` when signed in; when signed out, only `Términos` and `Privacidad`. Signed-in menu may also include `Invitar a alguien` (AUTH-05). | The panel closes on **Escape** or a tap outside. The control is labelled `Menú` for screen readers. Menu items and the button meet the **44px** tap-target minimum. |
 | NAV-02 | P0 | **Responsive shell.** Below **768px**: the four primary destinations (`Inicio`, `Busca`, `Publica`, `Perfil`) are a **bottom tab bar**. From **768px**: the same four items appear in a **left sidebar**; main content stays centred. | No horizontal scroll at 375px, 768px or 1280px. The four destinations match on mobile and desktop. |
 | NAV-03 | P0 | **Brand home link.** The `Barrio` wordmark in the **mobile header** and the **desktop sidebar** is a link to Inicio (`/app`). | Screen-reader name is `Barrio, ir a Inicio`. **Given** the user is on Perfil, Publica or Busca **When** they activate the wordmark **Then** they land on Inicio (`/app`). |
-| SRCH-01 | P0 | **Busca:** `GET /api/search?q=` returns open posts whose **title or description** contains the query (case-insensitive), in the viewer's **own district** by default, **max 50** results. Signed-in only. Each **result card** shows a small type tag `Regalo` or `Pido` (Parkside tokens). Inicio feed cards stay unchanged (the Regalos / Pedidos tab already names the type). | Signed-out → **401**. Results never include WhatsApp numbers (or emails). Empty or whitespace `q` returns an empty list (200). **Given** a search that returns both types **When** the results render **Then** a Pido card shows the tag `Pido` and a Regalo card shows the tag `Regalo`. |
-| LAND-01 | P0 | **`/entrar` landing** with a hero image. Headline: `Lo que sobra en una casa o depa, le falta a otro`. Lede: `Barrio es una app para tu comunidad: publicas lo que ya no usas, o pides lo que necesitas. Sin precio.` Section title: `Un tablón de regalos de tu comunidad`. **When Google is configured:** primary filled button `Regístrate con Google`; below it, secondary text link `¿Ya tienes cuenta? Inicia sesión`. Both start the **same** Google OAuth and preserve `?codigo=` (AUTH-05 stash) and the return path (`next`). **When stub auth is on** (`DEV_STUB_AUTH`, never production): button label `Continuar (prueba local)`. No WhatsApp explanation note on the landing. | **Given** Google is configured **When** a signed-out user opens `/entrar` **Then** both CTAs are visible and point at the Google start URL. **Given** stub auth only **When** they open `/entrar` **Then** they see `Continuar (prueba local)`. Terms and Privacy remain linked. |
+| SRCH-01 | P0 | **Busca:** `GET /api/search?q=` returns open posts whose **title or description** contains the query (case-insensitive), in the viewer's **own district** by default, **max 50** results. Signed-in only. Each **result card** shows a small type tag `Donación` or `Pedido` (Parkside tokens; DEC-34). Inicio feed cards stay unchanged (the Donaciones / Pedidos tab already names the type). | Signed-out → **401**. Results never include WhatsApp numbers (or emails). Empty or whitespace `q` returns an empty list (200). **Given** a search that returns both types **When** the results render **Then** a Pedido card shows the tag `Pedido` and a Donación card shows the tag `Donación`. |
+| LAND-01 | P0 | **`/entrar` landing** with a hero image. Headline: `Lo que sobra en una casa o depa, le falta a otro`. Lede: `Barrio es una app para tu comunidad: publicas lo que ya no usas, o pides lo que necesitas. Sin precio.` Section title: `Una lista de donaciones`. **When Google is configured:** primary filled button `Regístrate con Google`; below it, secondary text link `¿Ya tienes cuenta? Inicia sesión`. Both start the **same** Google OAuth and preserve `?codigo=` (AUTH-05 stash) and the return path (`next`). **When stub auth is on** (`DEV_STUB_AUTH`, never production): button label `Continuar (prueba local)`. No WhatsApp explanation note on the landing. | **Given** Google is configured **When** a signed-out user opens `/entrar` **Then** both CTAs are visible and point at the Google start URL. **Given** stub auth only **When** they open `/entrar` **Then** they see `Continuar (prueba local)`. Terms and Privacy remain linked. |
 
 ---
 

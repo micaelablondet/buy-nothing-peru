@@ -30,8 +30,8 @@ HAND-04,Handoff,Lo recibí,Receiver optional confirmation stored as received_con
 HAND-05,Handoff,Public pickup tip,Safety tip on handoff screen to meet in public by day,Neighbor,Must,Phase 0,S,SRD,HAND-01,8.4,built,
 DISC-01,Discovery,Post-handoff survey,After Entregado ask how they would have done it without Barrio,Giver,Should,Phase 0,S,SRD,HAND-03,8.4,built,Tests H3
 NOTIF-01,Notifications,In-app inbox,Bell with unread count; open marks read; links to post,Neighbor,Must,Phase 0,M,SRD,,8.5,built,
-NOTIF-02,Notifications,Web push,Offer push after first post or response; inbox works if denied,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,partial,push send missing; found 2026-11-17; iOS needs PWA on home screen
-NOTIF-03,Notifications,Notification types,Nueva oferta/interesado; Te eligieron; 48h Recordatorio nudge,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,partial,push send missing; found 2026-11-17
+NOTIF-02,Notifications,Web push,Offer push after first post or response; inbox works if denied,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,built,verified on iPhone home-screen app 2026-11-18 (Nuevo interesado); Android and Te eligieron to verify in Phase 0 step 6
+NOTIF-03,Notifications,Notification types,Nueva oferta/interesado; Te eligieron; 48h Recordatorio nudge,Neighbor,Must,Phase 0,M,SRD,NOTIF-01,8.5,built,verified on iPhone home-screen app 2026-11-18 (Nuevo interesado); Android and Te eligieron to verify in Phase 0 step 6
 NOTIF-04,Notifications,Nudge job,Scheduled; at most one nudge per post; idempotent,System,Must,Phase 0,S,SRD,NOTIF-03,8.5,built,
 PUB-01,Public,Public post page,/p/{id} read-only; district; first name; no category no barrio no numbers,Anyone,Must,Phase 0,M,SRD,POST-01,8.6,built,DEC-28; DEC-31
 PUB-02,Public,OG tags SSR,Server-rendered Open Graph for WhatsApp previews,Anyone,Must,Phase 0,M,SRD,PUB-01,8.6,built,
