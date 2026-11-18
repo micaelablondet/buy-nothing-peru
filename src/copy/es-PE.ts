@@ -278,6 +278,17 @@ export const copy = {
     dismiss: "Ahora no",
   },
 
+  push: {
+    title: "¿Te avisamos?",
+    body: "Te avisamos cuando alguien responda a tu publicación o te elija.",
+    cta: "Activar avisos",
+    dismiss: "Ahora no",
+    enabled: "Avisos activados",
+    profileLabel: "Avisos en el celular",
+    blocked:
+      "Los avisos están bloqueados. Actívalos en los ajustes de tu navegador.",
+  },
+
   footer: {
     terms: "Términos",
     privacy: "Privacidad",

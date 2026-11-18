@@ -34,7 +34,7 @@ export function ResponseSheet({
     setError(null);
     try {
       await createResponse({ postId, note, photo });
-      void maybeOfferPushAfterAction();
+      maybeOfferPushAfterAction();
       onDone();
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.errors.network);

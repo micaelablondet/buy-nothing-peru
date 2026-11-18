@@ -1,8 +1,10 @@
 const ARMED_KEY = "barrio_install_armed";
 const DISMISS_KEY = "barrio_install_dismissed";
+export const INSTALL_OFFER_EVENT = "barrio:install-offer";
 
 export function armInstallPrompt(): void {
   sessionStorage.setItem(ARMED_KEY, "1");
+  window.dispatchEvent(new Event(INSTALL_OFFER_EVENT));
 }
 
 export function isInstallPromptArmed(): boolean {

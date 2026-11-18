@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b && tsc -p tsconfig.worker.json",
     "test": "vitest run",
-    "test:e2e": "npm run db:reset:local && playwright test",
+    "test:e2e": "npm run db:reset:local && node scripts/ensure-e2e-vapid.mjs && playwright test",
     "db:migrate:local": "wrangler d1 migrations apply barrio --local",
     "db:migrate:remote": "wrangler d1 migrations apply barrio --remote",
     "db:seed": "wrangler d1 execute barrio --local --file=./scripts/seed.sql",
@@ -18,9 +18,11 @@
     "db:reset:local": "npm run db:migrate:local && npm run db:seed && npm run db:seed-photos",
     "deploy": "npm run build && wrangler deploy",
     "cf:typegen": "wrangler types",
-    "tokens": "node scripts/build-tokens.mjs"
+    "tokens": "node scripts/build-tokens.mjs",
+    "vapid:keys": "node scripts/vapid-keys.mjs"
   },
   "dependencies": {
+    "@block65/webcrypto-web-push": "2.0.0",
     "hono": "4.13.19",
     "jose": "5.9.6",
     "react": "19.0.0",

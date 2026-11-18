@@ -457,7 +457,7 @@ app.post("/api/jobs/nudge", async (c) => {
   if (c.env.ENVIRONMENT === "production") {
     return c.json({ error: "not_available" }, 404);
   }
-  const result = await runNudgeJob(c.env.DB, new Date().toISOString());
+  const result = await runNudgeJob(c.env, new Date().toISOString());
   return c.json({ ok: true, ...result });
 });
 
@@ -581,7 +581,7 @@ export default {
           }
           console.log(`expireOpenPosts: ${result.expired}`);
         }),
-        runNudgeJob(env.DB, now).then((result) => {
+        runNudgeJob(env, now).then((result) => {
           console.log(`runNudgeJob: ${result.nudged}`);
         }),
       ]),
