@@ -51,6 +51,27 @@ Migrations insert Barranco (district only; DEC-31). Invite codes are **not** in 
 
 Do not share an invite before step 2 — there is no bootstrap code in production.
 
+## Turn on push (NOTIF-02 / DEC-33)
+
+Inbox works without this. To send real web push:
+
+1. Generate keys (printed to the terminal only — never commit them):
+   ```bash
+   npm run vapid:keys
+   ```
+2. Set both Worker secrets (same values in production):
+   ```bash
+   npx wrangler secret put VAPID_PUBLIC_KEY
+   npx wrangler secret put VAPID_PRIVATE_KEY
+   ```
+3. Deploy: `npm run deploy`.
+4. Test on a **real Android** browser and an **iPhone** with Barrio added to the
+   home screen (iOS push only works from the standalone PWA). After the first
+   post or response, tap `Activar avisos`. Or enable later from Perfil →
+   `Avisos en el celular`.
+5. Only then mark NOTIF-02 and NOTIF-03 as `built` in
+   `docs/feature-prioritization.csv`.
+
 ## Before Phase 1
 
 M10 admin portal split (`docs/m10-admin-portal-setup.md`). See `docs/SRD.md` section 16, "Before opening Phase 1".
