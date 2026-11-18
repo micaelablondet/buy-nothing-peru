@@ -669,9 +669,9 @@ a.app-shell__brand:focus-visible {
 .feed-card__img {
   width: 5.5rem;
   height: 5.5rem;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: var(--radius-md);
-  background: var(--color-moss);
+  background: var(--color-surface-sunken);
 }
 
 .feed-card__img--empty {
@@ -742,9 +742,9 @@ a.app-shell__brand:focus-visible {
 .post-detail__photos img {
   width: 100%;
   max-height: 18rem;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: var(--radius-lg);
-  background: var(--color-moss);
+  background: var(--color-surface-sunken);
 }
 
 .post-detail__eyebrow {
