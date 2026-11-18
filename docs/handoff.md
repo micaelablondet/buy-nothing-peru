@@ -4,6 +4,23 @@ Newest entry on top. Read this when you pick up the project; add a new entry whe
 
 ---
 
+## 2026-11-18 — README for reviewers and portfolio
+
+**Stage:** Branch `docs-readme-delivery`.
+
+### Spec
+- Rewrite root `README.md` (~80 lines) for a client-style reviewer and portfolio:
+  live pitch (Donación / Pedido), E-01 + 60% Phase 0 bar, Phase 0 live
+  status, 15-minute review doc list, how it was built, Quick start + Scripts.
+
+### Done
+- README rewritten from docs only; no admin URL; no personal data.
+
+### Next owner
+Phase 0 testing; M10 when ready.
+
+---
+
 ## 2026-11-18 — Donación / Pedido copy + Publica UI polish (DEC-34)
 
 **Stage:** Branch `copy-donacion-ui-polish`.
